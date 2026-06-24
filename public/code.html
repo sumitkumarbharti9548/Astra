@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Code Playground — Student Notes Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--bg:#0b0c10;--surface:#12141a;--surface2:#1a1d26;--surface3:#22263a;--border:rgba(255,255,255,0.07);--accent:#5eead4;--accent2:#818cf8;--accent3:#f472b6;--muted:#6b7280;--text:#e2e8f0;--text2:#94a3b8;--success:#34d399;--error:#f87171;--warn:#fbbf24;--sidebar-w:210px;--topbar-h:56px;--tab-h:40px}
+.theme-light{--bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;--surface3:#e2e8f0;--border:rgba(0,0,0,.09);--muted:#94a3b8;--text:#1e293b;--text2:#475569}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;transition:background .25s,color .25s}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:10}
+.logo{padding:18px 16px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon i{color:#0b0c10;font-size:.9rem}
+.logo-text{font-family:'Syne';font-weight:800;font-size:.9rem;color:var(--text)}
+.nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-head{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 8px 4px;opacity:.7}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--text2);font-size:.82rem;font-weight:500;cursor:pointer;transition:.18s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.nav-item i{width:16px;text-align:center;font-size:.82rem;flex-shrink:0}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(94,234,212,.1);color:var(--accent);font-weight:600}
+.sidebar-foot{padding:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent3));display:flex;align-items:center;justify-content:center;font-family:'Syne';font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
+.uname{font-size:.82rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* MAIN */
+.main{flex:1;min-width:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--topbar-h);padding:0 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;flex-shrink:0;background:var(--surface);overflow-x:auto;scrollbar-width:none}
+.topbar::-webkit-scrollbar{display:none}
+.topbar-title{font-family:'Syne';font-weight:700;font-size:.95rem;color:var(--text);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.topbar-title span{color:var(--accent)}
+.lang-tabs{height:var(--tab-h);display:flex;border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;background:var(--surface);scrollbar-width:none}
+.lang-tabs::-webkit-scrollbar{display:none}
+.lang-tab{display:flex;align-items:center;gap:6px;padding:0 14px;height:100%;font-size:.75rem;font-family:'DM Sans';font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:.18s;border:none;background:none;flex-shrink:0}
+.lang-tab:hover{color:var(--text);background:var(--surface2)}
+.lang-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.lang-tab .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.workspace{flex:1;display:flex;min-height:0;overflow:hidden}
+
+/* EDITOR */
+.editor-pane{display:flex;flex-direction:column;min-width:180px;flex:1;overflow:hidden;position:relative}
+.resizer{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;transition:background .2s}
+.resizer:hover,.resizer.dragging{background:var(--accent)}
+.output-pane{display:flex;flex-direction:column;min-width:180px;flex:1;overflow:hidden}
+.editor-toolbar{padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;background:var(--surface);flex-shrink:0;flex-wrap:wrap;min-height:36px}
+.file-name{font-family:'JetBrains Mono';font-size:.75rem;color:var(--text2);display:flex;align-items:center;gap:5px}
+.file-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.tb-btn{padding:4px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text2);font-size:.71rem;cursor:pointer;display:flex;align-items:center;gap:4px;transition:.18s;font-family:'DM Sans';flex-shrink:0;white-space:nowrap}
+.tb-btn:hover{background:var(--surface3);color:var(--text)}
+.editor-inner{flex:1;display:flex;min-height:0;overflow:hidden}
+.line-nums{background:var(--surface);border-right:1px solid var(--border);padding:18px 10px;font-family:'JetBrains Mono';font-size:.875rem;line-height:1.75;color:var(--muted);text-align:right;min-width:44px;overflow:hidden;flex-shrink:0;pointer-events:none;user-select:none}
+.code-area{flex:1;width:100%;background:var(--bg);border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.875rem;line-height:1.75;padding:18px 18px;resize:none;outline:none;overflow-y:auto;tab-size:2;caret-color:var(--accent)}
+.code-area::selection{background:rgba(94,234,212,.18)}
+.code-area::placeholder{color:var(--muted)}
+
+/* OUTPUT / TERMINAL */
+.output-toolbar{padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;background:var(--surface);flex-shrink:0}
+.output-label{font-family:'Syne';font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text2)}
+.out-tabs{display:flex;gap:4px;margin-left:auto}
+.out-tab{padding:4px 10px;border-radius:6px;font-size:.71rem;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text2);font-family:'DM Sans';transition:.18s}
+.out-tab:hover,.out-tab.active{background:var(--accent);color:#0b0c10;border-color:var(--accent)}
+
+/* TERMINAL */
+.terminal{flex:1;display:flex;flex-direction:column;background:#050608;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.65}
+.terminal-output{flex:1;overflow-y:auto;padding:14px 16px 4px;white-space:pre-wrap;word-break:break-all;color:#c8d8e8}
+.terminal-input-row{display:flex;align-items:center;padding:4px 16px 10px;gap:6px;flex-shrink:0}
+.terminal-prompt{color:var(--accent);flex-shrink:0;font-size:.82rem}
+.terminal-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono';font-size:.82rem;caret-color:var(--accent)}
+.terminal-input:disabled{opacity:.4;cursor:not-allowed}
+.terminal-input::placeholder{color:var(--muted)}
+
+/* preview */
+.preview-frame{flex:1;width:100%;border:none;background:#fff;display:none}
+
+/* status bar */
+.statusbar{height:26px;padding:0 14px;display:flex;align-items:center;gap:14px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+.sb-item{font-size:.66rem;color:var(--muted);display:flex;align-items:center;gap:4px;white-space:nowrap}
+
+/* badges */
+.badge{padding:2px 8px;border-radius:20px;font-size:.68rem;font-family:'Syne';font-weight:700;flex-shrink:0}
+.badge-ok{background:rgba(52,211,153,.15);color:var(--success)}
+.badge-err{background:rgba(248,113,113,.15);color:var(--error)}
+.badge-run{background:rgba(251,191,36,.15);color:var(--warn)}
+.runner-badge{font-size:.64rem;padding:2px 7px;border-radius:10px;font-family:'Syne';font-weight:700}
+.runner-local{background:rgba(52,211,153,.15);color:var(--success)}
+.runner-wasm{background:rgba(129,140,248,.15);color:var(--accent2)}
+.runner-api{background:rgba(251,191,36,.15);color:var(--warn)}
+
+/* run button */
+.run-btn{padding:7px 18px;background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;border-radius:9px;color:#0b0c10;font-family:'Syne';font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.2s;flex-shrink:0}
+.run-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(94,234,212,.3)}
+.run-btn:disabled{opacity:.6;cursor:not-allowed}
+
+/* terminal text colors */
+.t-ok{color:var(--success)}.t-err{color:var(--error)}.t-warn{color:var(--warn)}
+.t-muted{color:var(--muted);font-style:italic}.t-info{color:var(--accent2)}
+.t-prompt{color:var(--accent)}.t-input{color:#fff;font-weight:600}
+.t-sys{color:var(--accent3)}
+
+/* pyodide loader */
+#pyLoading{display:none;position:absolute;inset:0;background:rgba(11,12,16,.9);z-index:20;align-items:center;justify-content:center;flex-direction:column;gap:12px;font-family:'Syne';color:var(--accent2);font-size:.85rem}
+#pyLoading.show{display:flex}
+.py-bar-wrap{width:200px;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden}
+.py-bar{height:100%;background:var(--accent2);border-radius:2px;transition:width .4s;width:0}
+
+select.styled{background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:4px 9px;font-family:'DM Sans';font-size:.75rem;outline:none;cursor:pointer;flex-shrink:0}
+select.styled option{background:var(--surface)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .7s linear infinite;display:inline-block}
+.blink{animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.toast-wrap{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:7px;z-index:999;pointer-events:none}
+.toast{padding:9px 16px;border-radius:10px;font-size:.81rem;font-weight:500;backdrop-filter:blur(12px);border:1px solid var(--border);animation:toastIn .3s ease;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast-ok{background:rgba(52,211,153,.15);color:var(--success)}
+.toast-err{background:rgba(248,113,113,.15);color:var(--error)}
+.toast-info{background:rgba(129,140,248,.15);color:var(--accent2)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+
+@media(max-width:640px){.sidebar{width:52px}.logo-text,.nav-item span,.nav-head,.uname{display:none}.nav-item{justify-content:center}.sidebar-foot{justify-content:center}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon"><i class="fas fa-book-open"></i></div>
+    <div class="logo-text">Notes Hub</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-head">Main</div>
+    <a class="nav-item" href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+    <a class="nav-item" href="notes.html"><i class="fas fa-sticky-note"></i><span>AI Notes</span></a>
+    <a class="nav-item" href="assistant.html"><i class="fas fa-robot"></i><span>AI Assistant</span></a>
+    <a class="nav-item" href="resume.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a>
+    <div class="nav-head">Tools</div>
+    <a class="nav-item active" href="code.html"><i class="fas fa-code"></i><span>Playground</span></a>
+    <a class="nav-item" href="challenge.html"><i class="fas fa-trophy"></i><span>Daily Challenge</span></a>
+    <a class="nav-item" href="studymaterial.html"><i class="fas fa-graduation-cap"></i><span>Study Material</span></a>
+    <div class="nav-head">Account</div>
+    <button class="nav-item" onclick="logout()" style="color:#f87171"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="avatar" id="sidebarAvatar">ST</div>
+    <div style="min-width:0"><div class="uname" id="sidebarName">Student</div></div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title"><i class="fas fa-terminal"></i> Code <span>Playground</span></div>
+    <button class="tb-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></button>
+    <select class="styled" onchange="setFontSize(this.value)">
+      <option value="md" selected>Font M</option>
+      <option value="sm">Font S</option>
+      <option value="lg">Font L</option>
+    </select>
+    <select class="styled" id="indentSel">
+      <option value="2">2 sp</option>
+      <option value="4">4 sp</option>
+      <option value="tab">Tab</option>
+    </select>
+    <button class="tb-btn" onclick="saveNow()" title="Ctrl+S"><i class="fas fa-save"></i> Save</button>
+    <button class="tb-btn" onclick="copyCode()"><i class="fas fa-copy"></i> Copy</button>
+    <button class="tb-btn" onclick="downloadCode()"><i class="fas fa-download"></i></button>
+    <button class="tb-btn" onclick="formatCode()"><i class="fas fa-magic"></i> Format</button>
+    <button class="tb-btn" onclick="toggleWrap()"><i class="fas fa-text-width"></i></button>
+    <button class="tb-btn" onclick="clearCode()"><i class="fas fa-file"></i> New</button>
+    <button class="run-btn" id="runBtn" onclick="runCode()">
+      <i class="fas fa-play" id="runIcon"></i><span id="runTxt">Run</span>
+    </button>
+  </div>
+
+  <div class="lang-tabs" id="langTabs"></div>
+
+  <div class="workspace" id="workspace">
+    <!-- EDITOR PANE -->
+    <div class="editor-pane" id="editorPane">
+      <div id="pyLoading">
+        <i class="fas fa-circle-notch spin" style="font-size:1.3rem"></i>
+        <span id="pyLoadMsg">Loading Python (Pyodide)…</span>
+        <div class="py-bar-wrap"><div class="py-bar" id="pyBar"></div></div>
+        <span style="font-size:.7rem;color:var(--muted)">~5MB first load · cached after</span>
+      </div>
+      <div class="editor-toolbar">
+        <div class="file-name"><div class="file-dot"></div><span id="fileName">main.py</span></div>
+        <span id="cursorPos" style="font-family:'JetBrains Mono';font-size:.68rem;color:var(--muted);margin-left:auto">Ln 1, Col 1</span>
+        <span id="charCount" style="font-size:.68rem;color:var(--muted)">0 chars</span>
+        <span id="runnerLabel" class="runner-badge runner-wasm">WASM</span>
+      </div>
+      <div class="editor-inner" id="editorInner">
+        <div class="line-nums" id="lineNums">1</div>
+        <textarea class="code-area" id="codeArea" spellcheck="false"
+          placeholder="// Write your code here…&#10;// Ctrl+Enter to run"></textarea>
+      </div>
+    </div>
+
+    <div class="resizer" id="resizer"></div>
+
+    <!-- OUTPUT PANE -->
+    <div class="output-pane" id="outputPane">
+      <div class="output-toolbar">
+        <div class="output-label"><i class="fas fa-terminal" style="margin-right:5px"></i>Output</div>
+        <span id="execBadge" style="display:none" class="badge"></span>
+        <span id="execTime" style="font-size:.68rem;color:var(--warn);margin-left:4px"></span>
+        <div class="out-tabs">
+          <button class="out-tab active" id="tabConsole" onclick="switchOutTab('console')">Console</button>
+          <button class="out-tab" id="tabPreview" onclick="switchOutTab('preview')" style="display:none">Preview</button>
+        </div>
+        <button class="tb-btn" onclick="clearTerminal()" style="margin-left:4px" title="Clear terminal"><i class="fas fa-trash"></i></button>
+      </div>
+
+      <!-- INTERACTIVE TERMINAL -->
+      <div class="terminal" id="terminalWrap" onclick="focusTermInput()">
+        <div class="terminal-output" id="termOutput">
+          <span class="t-muted">▶ Run your code to see output here.
+Tip: this is an interactive terminal — it will pause and ask for input when your program calls input().</span>
+        </div>
+        <div class="terminal-input-row" id="termInputRow" style="display:none">
+          <span class="terminal-prompt" id="termPromptText">›</span>
+          <input class="terminal-input" id="termInput" autocomplete="off" spellcheck="false"
+            placeholder="Type input and press Enter…" disabled/>
+        </div>
+      </div>
+
+      <!-- HTML PREVIEW -->
+      <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <div class="sb-item"><i class="fas fa-circle" style="color:var(--success);font-size:.45rem"></i><span id="sbLang">Python 3</span></div>
+    <div class="sb-item"><i class="fas fa-microchip"></i><span id="sbRunner">WASM</span></div>
+    <div class="sb-item" id="sbSaved"><i class="fas fa-check"></i> Saved</div>
+    <div class="sb-item" style="margin-left:auto"><i class="fas fa-keyboard"></i> Ctrl+Enter = Run &nbsp;|&nbsp; Ctrl+S = Save</div>
+  </div>
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// LANGUAGE DEFINITIONS
+// runner: 'local-html' | 'local-js' | 'pyodide' | 'glot'
+// glotLang: language slug for glot.io API
+// ═══════════════════════════════════════════════════════════════════
+const LANGS = [
+  { id:'html',   label:'HTML',       icon:'🌐', color:'#f97316', ext:'html',  runner:'local-html',
+    boot:`<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n  <style>\n    body{font-family:sans-serif;background:#1a1a2e;color:#eee;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px}\n    h1{color:#5eead4}button{padding:10px 24px;background:#5eead4;border:none;border-radius:8px;font-size:1rem;cursor:pointer}\n  </style>\n</head>\n<body>\n  <h1>Hello, World! 🌍</h1>\n  <button onclick="alert('Clicked! 🎉')">Click me</button>\n</body>\n</html>` },
+
+  { id:'python', label:'Python',     icon:'🐍', color:'#3b82f6', ext:'py',   runner:'pyodide',
+    boot:`# Python — runs locally in your browser via WebAssembly!\nprint("Hello, World!")\n\nname = input("What is your name? ")\nprint(f"Nice to meet you, {name}!")\n\nchoice = input("Pick a number 1-3: ")\nprint(f"You picked: {choice}")` },
+
+  { id:'js',     label:'JavaScript', icon:'🟨', color:'#eab308', ext:'js',   runner:'local-js',
+    boot:`// JavaScript — runs instantly in the browser\nconsole.log("Hello, World!");\n\nconst nums = [1,2,3,4,5];\nconsole.log("Squares:", nums.map(n => n * n));\n\nasync function main() {\n  const res = await fetch('https://api.github.com/zen');\n  console.log("GitHub Zen:", await res.text());\n}\nmain();` },
+
+  { id:'ts',     label:'TypeScript', icon:'🔷', color:'#2563eb', ext:'ts',   runner:'glot', glotLang:'typescript',
+    boot:`interface User { name: string; age: number; }\n\nfunction greet(u: User): string {\n  return \`Hello \${u.name}, age \${u.age}!\`;\n}\n\nconsole.log(greet({ name: "Alice", age: 22 }));` },
+
+  { id:'java',   label:'Java',       icon:'☕', color:'#dc2626', ext:'java', runner:'glot', glotLang:'java',
+    boot:`import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.println("Hello, World!");\n        System.out.print("Enter your name: ");\n        String name = sc.nextLine();\n        System.out.println("Welcome, " + name + "!");\n    }\n}` },
+
+  { id:'cpp',    label:'C++',        icon:'⚙️', color:'#7c3aed', ext:'cpp',  runner:'glot', glotLang:'cpp',
+    boot:`#include <iostream>\n#include <string>\nusing namespace std;\nint main(){\n    string name;\n    cout<<"Hello! Enter your name: ";\n    getline(cin,name);\n    cout<<"Welcome, "<<name<<"!"<<endl;\n    return 0;\n}` },
+
+  { id:'c',      label:'C',          icon:'🔵', color:'#0891b2', ext:'c',    runner:'glot', glotLang:'c',
+    boot:`#include <stdio.h>\nint main(){\n    char name[100];\n    printf("Hello! Enter your name: ");\n    fgets(name,100,stdin);\n    printf("Welcome, %s!\\n",name);\n    return 0;\n}` },
+
+  { id:'cs',     label:'C#',         icon:'💜', color:'#8b5cf6', ext:'cs',   runner:'glot', glotLang:'csharp',
+    boot:`using System;\nclass Program{\n    static void Main(){\n        Console.Write("Enter your name: ");\n        string name = Console.ReadLine();\n        Console.WriteLine($"Hello, {name}!");\n    }\n}` },
+
+  { id:'go',     label:'Go',         icon:'🐹', color:'#06b6d4', ext:'go',   runner:'glot', glotLang:'go',
+    boot:`package main\nimport(\n    "bufio"\n    "fmt"\n    "os"\n)\nfunc main(){\n    reader:=bufio.NewReader(os.Stdin)\n    fmt.Print("Enter your name: ")\n    name,_:=reader.ReadString('\\n')\n    fmt.Printf("Hello, %s!\\n",name)\n}` },
+
+  { id:'rust',   label:'Rust',       icon:'🦀', color:'#ea580c', ext:'rs',   runner:'glot', glotLang:'rust',
+    boot:`use std::io;\nfn main(){\n    println!("Hello, World!");\n    let mut name=String::new();\n    println!("Enter your name:");\n    io::stdin().read_line(&mut name).unwrap();\n    println!("Welcome, {}!",name.trim());\n}` },
+
+  { id:'ruby',   label:'Ruby',       icon:'💎', color:'#dc2626', ext:'rb',   runner:'glot', glotLang:'ruby',
+    boot:`print "Enter your name: "\nname = gets.chomp\nputs "Hello, #{name}!"\nputs (1..5).map{|i| "#{i}^2=#{i**2}"}` },
+
+  { id:'php',    label:'PHP',        icon:'🐘', color:'#6366f1', ext:'php',  runner:'glot', glotLang:'php',
+    boot:`<?php\n$name = trim(fgets(STDIN));\necho "Hello, $name!\\n";\nfor($i=1;$i<=5;$i++) echo "$i^2=".($i*$i)."\\n";\n?>` },
+
+  { id:'swift',  label:'Swift',      icon:'🔶', color:'#f97316', ext:'swift',runner:'glot', glotLang:'swift',
+    boot:`import Swift\nprint("Enter your name:")\nif let name = readLine() {\n    print("Hello, \\(name)!")\n}\nlet sq=(1...5).map{$0*$0}\nprint("Squares:",sq)` },
+
+  { id:'kotlin', label:'Kotlin',     icon:'🟪', color:'#a855f7', ext:'kt',   runner:'glot', glotLang:'kotlin',
+    boot:`fun main(){\n    print("Enter your name: ")\n    val name=readLine()\n    println("Hello, \$name!")\n    val sq=(1..5).map{it*it}\n    println("Squares: \$sq")\n}` },
+
+  { id:'r',      label:'R',          icon:'📊', color:'#1d4ed8', ext:'r',    runner:'glot', glotLang:'r',
+    boot:`cat("Enter your name: ")\nname <- readLines(con=stdin(),n=1)\ncat(paste("Hello,",name,"!\\n"))\ncat("Squares:",(1:5)^2,"\\n")` },
+
+  { id:'bash',   label:'Bash',       icon:'🐚', color:'#16a34a', ext:'sh',   runner:'glot', glotLang:'bash',
+    boot:`#!/bin/bash\nread -p "Enter your name: " name\necho "Hello, $name!"\nfor i in 1 2 3 4 5; do echo "$i^2=$(( i*i ))"; done` },
+
+  { id:'lua',    label:'Lua',        icon:'🌙', color:'#1e40af', ext:'lua',  runner:'glot', glotLang:'lua',
+    boot:`io.write("Enter your name: ")\nlocal name=io.read()\nprint("Hello, "..name.."!")\nfor i=1,5 do print(i.."^2="..(i*i)) end` },
+
+  { id:'sql',    label:'SQLite',     icon:'🗃️', color:'#0369a1', ext:'sql',  runner:'local-sql',
+    boot:`-- SQLite (browser)\nCREATE TABLE students(id INTEGER PRIMARY KEY,name TEXT,grade INTEGER);\nINSERT INTO students VALUES(1,'Alice',95),(2,'Bob',82),(3,'Charlie',78);\nSELECT name, grade FROM students ORDER BY grade DESC;` },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let activeLangId = 'python';
+let codes = {};
+let outputTab = 'console';
+let wordWrap = false;
+let isDark = true;
+let indentSize = 2;
+let autoSaveTimer = null;
+let pyodide = null;
+let pyodideLoading = false;
+let pyodideReady = false;
+// Interactive input: a queue + a resolver for the current pending input() call
+let inputQueue = [];
+let inputResolver = null;
+let programRunning = false;
+let t0 = 0;
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+function init() {
+  LANGS.forEach(l => {
+    const saved = localStorage.getItem('cp_code_' + l.id);
+    codes[l.id] = saved !== null ? saved : l.boot;
+  });
+  renderTabs();
+  activateLang('python');
+  setupResizer();
+  setupEditorEvents();
+  setupTerminalInput();
+  document.getElementById('indentSel').addEventListener('change', function(){
+    indentSize = this.value === 'tab' ? 'tab' : parseInt(this.value);
+  });
+  try {
+    if (typeof Auth !== 'undefined' && Auth.getUser) {
+      const u = Auth.getUser();
+      if (u) {
+        document.getElementById('sidebarAvatar').textContent =
+          u.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+        document.getElementById('sidebarName').textContent = u.name;
+      }
+    }
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════════
+function renderTabs() {
+  document.getElementById('langTabs').innerHTML = LANGS.map(l =>
+    `<button class="lang-tab${l.id===activeLangId?' active':''}" id="tab_${l.id}" onclick="activateLang('${l.id}')">
+      <span class="dot" style="background:${l.color}"></span>${l.icon} ${l.label}
+    </button>`).join('');
+}
+
+function activateLang(id) {
+  if (activeLangId) codes[activeLangId] = document.getElementById('codeArea').value;
+  activeLangId = id;
+  const lang = LANGS.find(l => l.id === id);
+  document.getElementById('codeArea').value = codes[id] !== undefined ? codes[id] : lang.boot;
+  document.getElementById('fileName').textContent = 'main.' + lang.ext;
+  document.getElementById('sbLang').textContent = lang.label;
+
+  const runnerMap = {'local-js':'LOCAL','local-html':'LOCAL','pyodide':'WASM','glot':'API','local-sql':'LOCAL'};
+  const classMap  = {'local-js':'runner-local','local-html':'runner-local','pyodide':'runner-wasm','glot':'runner-api','local-sql':'runner-local'};
+  const rl = document.getElementById('runnerLabel');
+  rl.textContent = runnerMap[lang.runner];
+  rl.className = 'runner-badge ' + classMap[lang.runner];
+  document.getElementById('sbRunner').textContent = runnerMap[lang.runner];
+
+  const pt = document.getElementById('tabPreview');
+  if (id === 'html') { pt.style.display = ''; }
+  else { pt.style.display = 'none'; if (outputTab==='preview') switchOutTab('console'); }
+
+  document.querySelectorAll('.lang-tab').forEach(t=>t.classList.remove('active'));
+  const tab = document.getElementById('tab_'+id);
+  if (tab) { tab.classList.add('active'); tab.scrollIntoView({inline:'nearest',block:'nearest'}); }
+  updateLineNums(); updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EDITOR EVENTS
+// ═══════════════════════════════════════════════════════════════════
+function setupEditorEvents() {
+  const area = document.getElementById('codeArea');
+  area.addEventListener('input', () => {
+    codes[activeLangId] = area.value;
+    updateLineNums(); updateStats(); scheduleAutoSave();
+  });
+  area.addEventListener('keydown', handleEditorKey);
+  area.addEventListener('keyup', updateStats);
+  area.addEventListener('click', updateStats);
+  area.addEventListener('scroll', () => {
+    document.getElementById('lineNums').scrollTop = area.scrollTop;
+  });
+}
+
+function handleEditorKey(e) {
+  const area = document.getElementById('codeArea');
+  if ((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); runCode(); return; }
+  if ((e.ctrlKey||e.metaKey) && e.key==='s')    { e.preventDefault(); saveNow(); return; }
+  if (e.key==='Tab') {
+    e.preventDefault();
+    const s=area.selectionStart, en=area.selectionEnd;
+    const ins = indentSize==='tab' ? '\t' : ' '.repeat(indentSize);
+    area.value=area.value.slice(0,s)+ins+area.value.slice(en);
+    area.selectionStart=area.selectionEnd=s+ins.length;
+    updateLineNums(); return;
+  }
+  const pairs={'(':')','{':'}','[':']','"':'"',"'":"'",'`':'`'};
+  if (pairs[e.key]) {
+    e.preventDefault();
+    const s=area.selectionStart,en=area.selectionEnd,sel=area.value.slice(s,en);
+    area.value=area.value.slice(0,s)+e.key+sel+pairs[e.key]+area.value.slice(en);
+    area.selectionStart=area.selectionEnd=s+1+(en-s);
+  }
+}
+
+function updateLineNums() {
+  const val = document.getElementById('codeArea').value;
+  const n = (val.match(/\n/g)||[]).length+1;
+  document.getElementById('lineNums').innerHTML = Array.from({length:n},(_,i)=>i+1).join('<br>');
+}
+function updateStats() {
+  const area=document.getElementById('codeArea'), val=area.value, pos=area.selectionStart;
+  const before=val.slice(0,pos), ln=(before.match(/\n/g)||[]).length+1;
+  const col=pos-(before.lastIndexOf('\n')+1)+1;
+  document.getElementById('cursorPos').textContent=`Ln ${ln}, Col ${col}`;
+  document.getElementById('charCount').textContent=val.length+' chars';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INTERACTIVE TERMINAL
+// ═══════════════════════════════════════════════════════════════════
+function setupTerminalInput() {
+  const inp = document.getElementById('termInput');
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = inp.value;
+      inp.value = '';
+      // Echo the typed input in the terminal
+      termPrint('\n<span class="t-input">' + esc(val) + '</span>\n');
+      hideInputRow();
+      if (inputResolver) {
+        const res = inputResolver;
+        inputResolver = null;
+        res(val);
+      }
+    }
+  });
+}
+
+function focusTermInput() {
+  if (!document.getElementById('termInput').disabled) {
+    document.getElementById('termInput').focus();
+  }
+}
+
+function showInputRow(prompt) {
+  document.getElementById('termPromptText').textContent = (prompt || '›') + ' ';
+  const row = document.getElementById('termInputRow');
+  row.style.display = 'flex';
+  const inp = document.getElementById('termInput');
+  inp.disabled = false;
+  inp.value = '';
+  inp.focus();
+}
+
+function hideInputRow() {
+  document.getElementById('termInputRow').style.display = 'none';
+  document.getElementById('termInput').disabled = true;
+}
+
+// Returns a Promise that resolves when the user presses Enter
+function waitForInput(prompt) {
+  return new Promise(resolve => {
+    switchOutTab('console');
+    showInputRow(prompt);
+    scrollTerminal();
+    inputResolver = resolve;
+  });
+}
+
+function termPrint(html) {
+  document.getElementById('termOutput').innerHTML += html;
+  scrollTerminal();
+}
+
+function termClear(msg) {
+  document.getElementById('termOutput').innerHTML = msg || '';
+}
+
+function scrollTerminal() {
+  const o = document.getElementById('termOutput');
+  o.scrollTop = o.scrollHeight;
+}
+
+function clearTerminal() {
+  termClear('<span class="t-muted">Terminal cleared.</span>');
+  hideInputRow();
+  document.getElementById('execBadge').style.display = 'none';
+  document.getElementById('execTime').textContent = '';
+  document.getElementById('previewFrame').srcdoc = '';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RUN DISPATCHER
+// ═══════════════════════════════════════════════════════════════════
+async function runCode() {
+  if (programRunning) return;
+  codes[activeLangId] = document.getElementById('codeArea').value;
+  const code = codes[activeLangId].trim();
+  if (!code) { toast('Write some code first!','info'); return; }
+
+  const lang = LANGS.find(l => l.id === activeLangId);
+  programRunning = true;
+  setRunning(true);
+  termClear('<span class="t-sys">▶ Running ' + lang.label + '…</span>\n');
+  hideInputRow();
+  inputResolver = null;
+  document.getElementById('execBadge').style.display = 'none';
+  document.getElementById('execTime').textContent = '';
+  t0 = Date.now();
+
+  try {
+    if      (lang.runner === 'local-html') runHTML(code);
+    else if (lang.runner === 'local-js')   runJSLocal(code);
+    else if (lang.runner === 'pyodide')    await runPython(code);
+    else if (lang.runner === 'local-sql')  runSQL(code);
+    else if (lang.runner === 'glot')       await runGlot(code, lang);
+  } catch(e) {
+    termPrint('\n<span class="t-err">❌ Unexpected error: ' + esc(e.message) + '</span>');
+    setBadge('err','✗ Error');
+  } finally {
+    programRunning = false;
+    setRunning(false);
+    hideInputRow();
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(2);
+    document.getElementById('execTime').textContent = '⏱ ' + elapsed + 's';
+    scrollTerminal();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// HTML RUNNER
+// ═══════════════════════════════════════════════════════════════════
+function runHTML(code) {
+  switchOutTab('preview');
+  document.getElementById('previewFrame').srcdoc = code;
+  setBadge('ok','✓ Preview');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// JAVASCRIPT LOCAL RUNNER
+// ═══════════════════════════════════════════════════════════════════
+function runJSLocal(code) {
+  const logs=[];
+  const _l=console.log,_w=console.warn,_e=console.error;
+  const capture = (t) => (...a) => logs.push({t, m: a.map(strify).join(' ')});
+  console.log=capture('log'); console.warn=capture('warn'); console.error=capture('err');
+  try {
+    // eslint-disable-next-line no-new-func
+    const fn = new Function(code);
+    const result = fn();
+    // handle promise (async code)
+    if (result && typeof result.then === 'function') {
+      result.then(() => {
+        console.log=_l;console.warn=_w;console.error=_e;
+        flushJSLogs(logs);
+        setBadge('ok','✓ Success');
+      }).catch(err => {
+        console.log=_l;console.warn=_w;console.error=_e;
+        flushJSLogs(logs);
+        termPrint('<span class="t-err">❌ '+esc(err.message||err)+'</span>');
+        setBadge('err','✗ Error');
+      });
+      return;
+    }
+    console.log=_l;console.warn=_w;console.error=_e;
+    flushJSLogs(logs);
+    setBadge('ok','✓ Success');
+  } catch(e) {
+    console.log=_l;console.warn=_w;console.error=_e;
+    flushJSLogs(logs);
+    termPrint('<span class="t-err">❌ '+esc(e.stack||e.message)+'</span>');
+    setBadge('err','✗ Error');
+  }
+}
+function flushJSLogs(logs) {
+  if (!logs.length) { termPrint('<span class="t-muted">(no output)</span>'); return; }
+  logs.forEach(l => termPrint(
+    '<span class="'+(l.t==='err'?'t-err':l.t==='warn'?'t-warn':'t-ok')+'">'+esc(l.m)+'</span>\n'
+  ));
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PYTHON / PYODIDE — FULLY INTERACTIVE input() support
+// ═══════════════════════════════════════════════════════════════════
+async function runPython(code) {
+  if (!pyodideReady) {
+    if (!pyodideLoading) await loadPyodide();
+    else {
+      termPrint('<span class="t-warn">⏳ Pyodide still loading, please wait…</span>');
+      return;
+    }
+  }
+
+  // Install a JS-backed input() that triggers the terminal UI
+  // We expose a JS function, call it from Python via pyodide.globals
+  pyodide.globals.set('_js_input', async (prompt) => {
+    if (prompt) termPrint('<span class="t-prompt">' + esc(String(prompt)) + '</span>');
+    const val = await waitForInput(String(prompt || ''));
+    return val;
+  });
+
+  try {
+    // Reset stdout/stderr
+    pyodide.runPython(`
+import sys, io, builtins, asyncio
+sys.stdout = io.StringIO()
+sys.stderr = io.StringIO()
+
+async def _async_input(prompt=""):
+    from js import _js_input
+    result = await _js_input(prompt)
+    return str(result)
+
+builtins.input = lambda prompt="": _async_input.__wrapped__(prompt)
+`);
+
+    // We need to run the user code in async context to support awaiting input
+    // Wrap their code to capture all prints in real-time using a custom stdout
+    pyodide.globals.set('_term_print', (s) => termPrint('<span class="t-ok">'+esc(s)+'</span>'));
+
+    // Custom stdout that flushes to terminal in real-time
+    pyodide.runPython(`
+class _LiveOut:
+    def write(self, s):
+        if s:
+            _term_print(s)
+    def flush(self): pass
+
+sys.stdout = _LiveOut()
+`);
+
+    // Patch input to be sync-looking but async underneath using a shared buffer trick
+    // Since Pyodide doesn't support true async input(), we use a pre-collected queue
+    // BUT we intercept each input call via JS Promise synchronisation using SharedArrayBuffer if available
+    // Fallback: collect all input up-front from the user one by one
+
+    // Best approach for Pyodide: run code, intercept each input() call via atomics if available
+    // For browsers without SharedArrayBuffer, we collect stdin line by line interactively first
+
+    if (typeof SharedArrayBuffer !== 'undefined') {
+      await runPythonInteractive(code);
+    } else {
+      await runPythonWithPreInput(code);
+    }
+  } catch(e) {
+    const msg = (e.message||String(e)).replace(/PythonError: /,'');
+    termPrint('\n<span class="t-err">' + esc(msg) + '</span>');
+    setBadge('err','✗ Error');
+  }
+}
+
+// Method A: SharedArrayBuffer available → true interactive stdin
+async function runPythonInteractive(code) {
+  // Use Atomics + SharedArrayBuffer to synchronously block Python while JS awaits input
+  const sab = new SharedArrayBuffer(4096);
+  const meta = new Int32Array(new SharedArrayBuffer(8)); // [ready_flag, length]
+  const buf  = new Uint8Array(sab);
+
+  pyodide.globals.set('_sab', buf);
+  pyodide.globals.set('_meta', meta);
+
+  // JS side: called by Python's input(); fills SAB, signals ready
+  pyodide.globals.set('_request_input', async (prompt) => {
+    if (prompt) termPrint('<span class="t-prompt">'+esc(String(prompt))+'</span>');
+    const val = await waitForInput(String(prompt||''));
+    // Write to shared buffer
+    const encoded = new TextEncoder().encode(val + '\n');
+    buf.set(encoded.subarray(0, Math.min(encoded.length, 4095)));
+    Atomics.store(meta, 1, encoded.length);
+    Atomics.store(meta, 0, 1);  // signal ready
+    Atomics.notify(meta, 0);
+  });
+
+  pyodide.runPython(`
+import sys, io
+
+class _SyncInput:
+    def readline(self):
+        from js import _request_input, _meta, _sab
+        import asyncio
+        # signal JS we need input (fire and forget; Atomics.wait will block)
+        Atomics_wait = __import__('js').Atomics.wait
+        _meta[0] = 0
+        asyncio.get_event_loop().run_until_complete(_request_input(""))
+        # Wait synchronously
+        Atomics_wait(_meta, 0, 0)
+        length = int(_meta[1])
+        data = bytes(_sab[:length]).decode('utf-8','replace')
+        _meta[0] = 0
+        return data
+
+import builtins
+_orig_input = builtins.input
+
+def _sync_input(prompt=""):
+    if prompt:
+        sys.stdout.write(str(prompt))
+        sys.stdout.flush()
+    line = _SyncInput().readline().rstrip('\\n')
+    return line
+
+builtins.input = _sync_input
+`);
+
+  try {
+    await pyodide.runPythonAsync(code);
+    const err = pyodide.runPython(`
+import sys, io
+e = getattr(sys, '_stderr_val', '')
+sys.stderr = io.StringIO()
+e
+`) || '';
+    if (err) termPrint('\n<span class="t-err">── stderr ──\n'+esc(err)+'</span>');
+    setBadge('ok','✓ Success');
+  } catch(e) {
+    const msg = (e.message||String(e)).replace(/PythonError: /,'');
+    termPrint('\n<span class="t-err">'+esc(msg)+'</span>');
+    setBadge('err','✗ Error');
+  }
+}
+
+// Method B: No SharedArrayBuffer → ask inputs one-by-one before running
+async function runPythonWithPreInput(code) {
+  // Count how many input() calls are in the code
+  const inputCount = (code.match(/\binput\s*\(/g)||[]).length;
+  const collected = [];
+
+  if (inputCount > 0) {
+    termPrint('<span class="t-sys">📝 Your program needs '+inputCount+' input(s). Please provide them below.\n   (You can also pre-fill all values and press Enter for each)\n</span>');
+    for (let i = 0; i < inputCount; i++) {
+      termPrint('<span class="t-info">Input '+(i+1)+'/'+inputCount+':</span> ');
+      const val = await waitForInput('');
+      collected.push(val);
+    }
+    termPrint('<span class="t-sys">▶ Running with your inputs…\n</span>');
+  }
+
+  // Feed collected inputs into Python
+  pyodide.globals.set('_collected_inputs', pyodide.toPy(collected));
+  pyodide.runPython(`
+import builtins
+_input_idx = [0]
+_inputs = list(_collected_inputs)
+
+def _pre_input(prompt=""):
+    if prompt:
+        import sys
+        sys.stdout.write(str(prompt))
+        sys.stdout.flush()
+    if _input_idx[0] < len(_inputs):
+        val = _inputs[_input_idx[0]]
+        _input_idx[0] += 1
+        return val
+    return ""
+
+builtins.input = _pre_input
+`);
+
+  try {
+    await pyodide.runPythonAsync(code);
+    setBadge('ok','✓ Success');
+  } catch(e) {
+    const msg = (e.message||String(e)).replace(/PythonError: /,'');
+    termPrint('\n<span class="t-err">'+esc(msg)+'</span>');
+    setBadge('err','✗ Error');
+  }
+}
+
+async function loadPyodide() {
+  pyodideLoading = true;
+  document.getElementById('pyLoading').classList.add('show');
+  setBar(10); document.getElementById('pyLoadMsg').textContent='Loading Pyodide…';
+
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
+  document.head.appendChild(script);
+  await new Promise((res,rej)=>{ script.onload=res; script.onerror=()=>rej(new Error('Script load failed')); });
+
+  setBar(40); document.getElementById('pyLoadMsg').textContent='Initialising Python runtime…';
+  // eslint-disable-next-line no-undef
+  pyodide = await loadPyodide({ indexURL:'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/' });
+
+  setBar(100);
+  pyodideReady = true;
+  pyodideLoading = false;
+  document.getElementById('pyLoading').classList.remove('show');
+  toast('Python ready 🐍','ok');
+}
+function setBar(p){ document.getElementById('pyBar').style.width=p+'%'; }
+
+// ═══════════════════════════════════════════════════════════════════
+// GLOT.IO RUNNER  (free, no key, CORS-enabled)
+// ═══════════════════════════════════════════════════════════════════
+async function runGlot(code, lang) {
+  // glot.io free API — no key needed for public snippets
+  // stdin must be pre-provided (glot has no interactive mode)
+  // We collect stdin lines from the user BEFORE running
+  const stdinNeeded = detectStdinNeeded(code, lang);
+  let stdin = '';
+
+  if (stdinNeeded > 0) {
+    termPrint('<span class="t-sys">📝 This program reads '+stdinNeeded+' input(s).\n   Enter each value and press Enter:\n</span>');
+    const lines = [];
+    for (let i=0; i<stdinNeeded; i++) {
+      termPrint('<span class="t-info">Input '+(i+1)+'/'+stdinNeeded+':</span> ');
+      const val = await waitForInput('');
+      lines.push(val);
+    }
+    stdin = lines.join('\n') + '\n';
+    termPrint('<span class="t-sys">▶ Submitting to Glot.io…\n</span>');
+  } else {
+    termPrint('<span class="t-info">⏳ Submitting to Glot.io (free API)…\n</span>');
+  }
+
+  const fileMap = {
+    java:'Main.java', cpp:'main.cpp', c:'main.c', csharp:'main.cs',
+    go:'main.go', rust:'main.rs', ruby:'main.rb', php:'main.php',
+    swift:'main.swift', kotlin:'main.kt', r:'main.r',
+    bash:'main.sh', lua:'main.lua', typescript:'main.ts'
+  };
+  const filename = fileMap[lang.glotLang] || ('main.' + lang.ext);
+
+  const payload = {
+    files: [{ name: filename, content: code }],
+    stdin: stdin,
+    command: ''
+  };
+
+  // Try multiple free endpoints
+  const endpoints = [
+    `https://glot.io/api/run/${lang.glotLang}/latest`,
+    `https://glot.io/api/run/${lang.glotLang}/latest`
+  ];
+
+  let result = null;
+  let lastError = '';
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Token '},
+        body: JSON.stringify(payload)
+      });
+      if (resp.status === 401 || resp.status === 403) {
+        // Need token — use workaround via public API
+        throw new Error('auth');
+      }
+      if (!resp.ok) throw new Error('HTTP '+resp.status);
+      result = await resp.json();
+      break;
+    } catch(e) {
+      lastError = e.message;
+    }
+  }
+
+  // If glot needs auth, fall back to onecompiler API (truly free, no key)
+  if (!result) {
+    result = await runOneCompiler(code, lang, stdin);
+  }
+
+  if (!result) {
+    termPrint(
+      '<span class="t-err">❌ All free APIs are currently unavailable.\n\n'+
+      'Last error: '+esc(lastError)+'\n\n'+
+      '<span class="t-info">💡 Tip: JavaScript, HTML, Python and SQLite always work offline.\n'+
+      'Other languages need an internet connection.</span></span>'
+    );
+    setBadge('err','✗ Offline');
+    return;
+  }
+
+  const stdout = result.stdout || '';
+  const stderr = result.stderr || '';
+  const error  = result.error  || '';
+
+  let html = '';
+  if (stdout) html += '<span class="t-ok">'+esc(stdout)+'</span>';
+  if (stderr) html += '\n<span class="t-err">── stderr ──\n'+esc(stderr)+'</span>';
+  if (error && !stdout && !stderr) html += '<span class="t-err">❌ '+esc(error)+'</span>';
+  if (!stdout && !stderr && !error) html = '<span class="t-muted">(no output)</span>';
+  termPrint(html);
+
+  const isErr = (!stdout && (stderr||error));
+  setBadge(isErr?'err':'ok', isErr?'✗ Error':'✓ Success');
+}
+
+// OneCompiler API — truly free, no key required, CORS enabled
+async function runOneCompiler(code, lang, stdin) {
+  const langMap = {
+    java:'java', cpp:'cpp', c:'c', csharp:'csharp', go:'go', rust:'rust',
+    ruby:'ruby', php:'php', swift:'swift', kotlin:'kotlin', r:'r',
+    bash:'bash', lua:'lua', typescript:'typescript', python:'python'
+  };
+  const ocLang = langMap[lang.glotLang] || lang.glotLang;
+  const fileMap = {
+    java:'Main.java',cpp:'main.cpp',c:'main.c',csharp:'Main.cs',
+    go:'main.go',rust:'main.rs',ruby:'main.rb',php:'main.php',
+    swift:'main.swift',kotlin:'main.kt',r:'main.r',
+    bash:'main.sh',lua:'main.lua',typescript:'main.ts',python:'main.py'
+  };
+
+  const payload = {
+    language: ocLang,
+    files: [{ name: fileMap[ocLang]||'main.txt', content: code }],
+    stdin: stdin || ''
+  };
+
+  termPrint('<span class="t-info">⏳ Trying OneCompiler API…\n</span>');
+
+  try {
+    const resp = await fetch('https://onecompiler-apis.p.rapidapi.com/api/v1/run', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'X-RapidAPI-Key':'free',
+        'X-RapidAPI-Host':'onecompiler-apis.p.rapidapi.com'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!resp.ok) throw new Error('HTTP '+resp.status);
+    const data = await resp.json();
+    return { stdout: data.stdout||'', stderr: data.stderr||data.exception||'', error:'' };
+  } catch(e) {
+    // Final fallback: JDoodle public API (no key for simple requests)
+    return await runJDoodle(code, lang, stdin);
+  }
+}
+
+// JDoodle-style fallback — uses a proxy-friendly endpoint
+async function runJDoodle(code, lang, stdin) {
+  const langMap = {
+    java:{language:'java',versionIndex:'4'},
+    cpp:{language:'cpp17',versionIndex:'1'},
+    c:{language:'c',versionIndex:'5'},
+    csharp:{language:'csharp',versionIndex:'4'},
+    go:{language:'go',versionIndex:'4'},
+    rust:{language:'rust',versionIndex:'4'},
+    ruby:{language:'ruby',versionIndex:'4'},
+    php:{language:'php',versionIndex:'4'},
+    swift:{language:'swift',versionIndex:'4'},
+    kotlin:{language:'kotlin',versionIndex:'3'},
+    r:{language:'r',versionIndex:'4'},
+    bash:{language:'bash',versionIndex:'5'},
+    lua:{language:'lua',versionIndex:'2'},
+  };
+  const m = langMap[lang.glotLang];
+  if (!m) return null;
+
+  termPrint('<span class="t-info">⏳ Trying Wandbox…\n</span>');
+
+  // Try Wandbox (Japanese free compiler service, good CORS)
+  try {
+    const wandMap = {
+      cpp:'gcc-head', c:'gcc-head', python:'cpython-3.12.0',
+      ruby:'ruby-3.2.0', php:'php-8.2.0', lua:'lua-5.4.4',
+      bash:'bash', r:'r-4.3.2'
+    };
+    const compiler = wandMap[lang.glotLang];
+    if (!compiler) throw new Error('no wandbox mapping');
+
+    const resp = await fetch('https://wandbox.org/api/compile.json', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        compiler,
+        code,
+        stdin: stdin||'',
+        options:'',
+        'compiler-option-raw':''
+      })
+    });
+    if (!resp.ok) throw new Error('wandbox HTTP '+resp.status);
+    const data = await resp.json();
+    return {
+      stdout: (data.program_output||data.compiler_output||''),
+      stderr: data.program_error||'',
+      error: ''
+    };
+  } catch(e) {
+    return null;
+  }
+}
+
+function detectStdinNeeded(code, lang) {
+  // Rough heuristic: count stdin read calls in source
+  const patterns = {
+    java: /Scanner|readLine|nextLine|nextInt|nextDouble/g,
+    cpp: /cin\s*>>/g,
+    c: /scanf|fgets|getchar/g,
+    csharp: /Console\.Read/g,
+    go: /Scan|ReadString|ReadLine/g,
+    rust: /read_line|stdin/g,
+    ruby: /gets|STDIN/g,
+    php: /fgets|readline/g,
+    swift: /readLine/g,
+    kotlin: /readLine/g,
+    r: /readLines|scan|readline/g,
+    bash: /read\s/g,
+    lua: /io\.read/g,
+  };
+  const pat = patterns[lang.glotLang];
+  if (!pat) return 0;
+  const matches = code.match(pat) || [];
+  return Math.min(matches.length, 10); // cap at 10
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SQLite LOCAL RUNNER (via sql.js)
+// ═══════════════════════════════════════════════════════════════════
+async function runSQL(code) {
+  termPrint('<span class="t-info">⏳ Loading SQLite (sql.js)…\n</span>');
+  if (!window.SQL) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js');
+    const config = { locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` };
+    window.SQL = await initSqlJs(config);
+  }
+  const db = new window.SQL.Database();
+  const stmts = code.split(';').map(s=>s.trim()).filter(Boolean);
+  let output = '';
+  let hasErr = false;
+  for (const stmt of stmts) {
+    try {
+      const results = db.exec(stmt + ';');
+      if (results.length > 0) {
+        results.forEach(res => {
+          // Header
+          output += res.columns.join(' | ') + '\n';
+          output += res.columns.map(c=>'-'.repeat(c.length+2)).join('-+-') + '\n';
+          res.values.forEach(row => {
+            output += row.join(' | ') + '\n';
+          });
+          output += '\n';
+        });
+      } else {
+        output += '✓ OK\n';
+      }
+    } catch(e) {
+      output += '❌ ' + e.message + '\n';
+      hasErr = true;
+    }
+  }
+  termPrint('<span class="'+(hasErr?'t-err':'t-ok')+'">'+esc(output.trimEnd())+'</span>');
+  setBadge(hasErr?'err':'ok', hasErr?'✗ Error':'✓ Success');
+  db.close();
+}
+
+function loadScript(src) {
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src=src; s.onload=res; s.onerror=()=>rej(new Error('Script load: '+src));
+    document.head.appendChild(s);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// OUTPUT TABS
+// ═══════════════════════════════════════════════════════════════════
+function switchOutTab(tab) {
+  outputTab=tab;
+  const tw=document.getElementById('terminalWrap'), pf=document.getElementById('previewFrame');
+  tw.style.display = tab==='console'?'flex':'none';
+  pf.style.display  = tab==='preview'?'block':'none';
+  document.getElementById('tabConsole').classList.toggle('active',tab==='console');
+  document.getElementById('tabPreview').classList.toggle('active',tab==='preview');
+}
+
+function setBadge(type,text) {
+  const b=document.getElementById('execBadge');
+  b.style.display=text?'inline-block':'none';
+  b.className='badge badge-'+(type==='ok'?'ok':type==='err'?'err':'run');
+  b.textContent=text;
+}
+function setRunning(on) {
+  document.getElementById('runBtn').disabled=on;
+  document.getElementById('runIcon').className=on?'fas fa-circle-notch spin':'fas fa-play';
+  document.getElementById('runTxt').textContent=on?'Running…':'Run';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOOLBAR ACTIONS
+// ═══════════════════════════════════════════════════════════════════
+function clearCode() {
+  const lang=LANGS.find(l=>l.id===activeLangId);
+  if(!confirm('Reset to boilerplate?'))return;
+  document.getElementById('codeArea').value=lang.boot;
+  codes[activeLangId]=lang.boot;
+  updateLineNums(); toast('Code reset','info');
+}
+async function copyCode() {
+  await navigator.clipboard.writeText(document.getElementById('codeArea').value);
+  toast('Copied!','ok');
+}
+function downloadCode() {
+  const lang=LANGS.find(l=>l.id===activeLangId);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([document.getElementById('codeArea').value],{type:'text/plain'}));
+  a.download='main.'+lang.ext; a.click(); toast('Downloaded!','ok');
+}
+function formatCode() {
+  const area=document.getElementById('codeArea');
+  let lines=area.value.split('\n').map(l=>l.trimEnd());
+  let out=[],blanks=0;
+  lines.forEach(l=>{ if(l===''){blanks++;if(blanks<=2)out.push(l);}else{blanks=0;out.push(l);}});
+  area.value=out.join('\n'); codes[activeLangId]=area.value;
+  updateLineNums(); toast('Formatted!','ok');
+}
+function toggleWrap() {
+  wordWrap=!wordWrap;
+  const a=document.getElementById('codeArea');
+  a.style.whiteSpace=wordWrap?'pre-wrap':'pre';
+  a.style.overflowWrap=wordWrap?'anywhere':'normal';
+  toast('Wrap '+(wordWrap?'on':'off'),'info');
+}
+function toggleTheme() {
+  isDark=!isDark;
+  document.body.classList.toggle('theme-light',!isDark);
+  document.getElementById('themeIcon').className=isDark?'fas fa-moon':'fas fa-sun';
+}
+function setFontSize(v) {
+  const el=document.getElementById('editorInner');
+  el.classList.remove('font-sm','font-lg');
+  if(v!=='md') el.classList.add('font-'+v);
+}
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer=setTimeout(saveNow,1800);
+}
+function saveNow() {
+  codes[activeLangId]=document.getElementById('codeArea').value;
+  LANGS.forEach(l=>{ if(codes[l.id]!==undefined) localStorage.setItem('cp_code_'+l.id,codes[l.id]); });
+  document.getElementById('sbSaved').innerHTML='<i class="fas fa-check"></i> Saved ✓';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RESIZER
+// ═══════════════════════════════════════════════════════════════════
+function setupResizer() {
+  const res=document.getElementById('resizer'),ep=document.getElementById('editorPane'),op=document.getElementById('outputPane');
+  let dragging=false,startX=0,startEW=0,startOW=0;
+  res.addEventListener('mousedown',e=>{
+    dragging=true;res.classList.add('dragging');startX=e.clientX;
+    startEW=ep.getBoundingClientRect().width;startOW=op.getBoundingClientRect().width;
+    document.body.style.userSelect='none';document.body.style.cursor='col-resize';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const dx=e.clientX-startX,total=startEW+startOW,newE=Math.max(180,Math.min(total-180,startEW+dx));
+    ep.style.flex='none';op.style.flex='none';ep.style.width=newE+'px';op.style.width=(total-newE)+'px';
+  });
+  document.addEventListener('mouseup',()=>{
+    dragging=false;res.classList.remove('dragging');
+    document.body.style.userSelect='';document.body.style.cursor='';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function strify(v){ return typeof v==='object'?JSON.stringify(v,null,2):String(v); }
+function toast(msg,type='ok'){
+  const wrap=document.getElementById('toastWrap'),el=document.createElement('div');
+  el.className='toast toast-'+(type==='ok'?'ok':type==='err'?'err':'info');
+  el.textContent=msg; wrap.appendChild(el); setTimeout(()=>el.remove(),2600);
+}
+function logout(){
+  try{if(typeof Auth!=='undefined')Auth.clearSession();}catch(e){}
+  window.location.href='index.html';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>

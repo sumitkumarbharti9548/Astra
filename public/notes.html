@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Notes Hub — AI Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root{--bg:#07070a;--card:#0f1115;--muted:#9aa4b2;--accent:#7c5cff;--accent2:#00b4ff;--success:#00d9a6;--danger:#ff5c8d;--warning:#ffb84d;--border:rgba(255,255,255,0.06);--sidebar:220px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'Poppins',sans-serif;background:var(--bg);color:#e6eef8;display:flex}
+    /* Sidebar (same as dashboard) */
+    .sidebar{width:var(--sidebar);height:100vh;background:linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01));border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+    .sidebar-logo{padding:22px 20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+    .sidebar-logo i{color:var(--accent);font-size:1.2rem}
+    .sidebar-logo span{font-family:'Montserrat';font-weight:700;font-size:0.95rem}
+    .sidebar-nav{flex:1;padding:16px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+    .nav-section{font-size:0.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:10px 10px 5px;opacity:0.6}
+    .nav-link{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:#9aa4b2;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all .22s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+    .nav-link i{width:18px;text-align:center;font-size:0.9rem;flex-shrink:0}
+    .nav-link:hover{background:rgba(255,255,255,0.05);color:#e6eef8}
+    .nav-link.active{background:linear-gradient(90deg,rgba(124,92,255,0.18),rgba(124,92,255,0.06));color:#fff;border-left:2px solid var(--accent)}
+    .sidebar-user{padding:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .sidebar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;flex-shrink:0}
+    .sidebar-user-name{font-size:0.875rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Main */
+    .main{flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+    .topbar{height:60px;padding:0 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;background:rgba(7,7,10,0.9);backdrop-filter:blur(12px);z-index:40}
+    .topbar-title{font-family:'Montserrat';font-weight:700;font-size:1rem;color:#fff}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .btn-primary{padding:9px 18px;background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;border-radius:9px;color:#071022;font-family:'Montserrat';font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .22s}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(124,92,255,0.3)}
+    .btn-ghost{padding:9px 16px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;color:#e6eef8;font-family:'Poppins';font-size:0.85rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .22s}
+    .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+    .content{flex:1;padding:28px;display:grid;grid-template-columns:360px 1fr;gap:24px;height:calc(100vh - 60px);overflow:hidden}
+    /* Left panel */
+    .left-panel{display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-right:4px}
+    /* Generator card */
+    .gen-card{background:linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:14px;padding:22px}
+    .gen-card h3{font-family:'Montserrat';font-size:0.95rem;color:#fff;margin-bottom:16px}
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:0.8rem;font-weight:600;color:#9aa4b2;margin-bottom:6px}
+    .field input,.field select,.field textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;color:#e6eef8;font-family:'Poppins';font-size:0.9rem;transition:border .22s}
+    .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+    .field select option{background:#0f1115}
+    .field textarea{resize:vertical;min-height:70px}
+    .generate-btn{width:100%;padding:13px;background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#071022;font-family:'Montserrat';font-weight:700;font-size:0.95rem;cursor:pointer;transition:all .28s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .generate-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(124,92,255,0.3)}
+    .generate-btn:disabled{opacity:0.6;cursor:not-allowed}
+    .spinner-sm{width:16px;height:16px;border:2px solid rgba(7,16,34,0.3);border-top-color:#071022;border-radius:50%;animation:spin .7s linear infinite;display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Notes list */
+    .notes-list-card{background:linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:14px;padding:18px;flex:1;overflow:hidden;display:flex;flex-direction:column}
+    .notes-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .notes-list-title{font-family:'Montserrat';font-size:0.9rem;color:#fff}
+    .search-box{width:100%;padding:8px 12px 8px 34px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#e6eef8;font-family:'Poppins';font-size:0.85rem}
+    .search-box:focus{outline:none;border-color:var(--accent)}
+    .search-wrap{position:relative;margin-bottom:12px}
+    .search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.8rem}
+    .notes-list{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px}
+    .note-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .22s}
+    .note-item:hover,.note-item.selected{border-color:rgba(124,92,255,0.35);background:rgba(124,92,255,0.06)}
+    .note-item-title{font-size:0.875rem;font-weight:600;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .ai-badge{font-size:0.65rem;background:rgba(124,92,255,0.2);color:var(--accent);padding:2px 6px;border-radius:4px}
+    .fav-badge{font-size:0.65rem;color:var(--warning)}
+    .note-item-meta{font-size:0.75rem;color:var(--muted)}
+    /* Right panel - note viewer */
+    .right-panel{background:linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01));border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+    .viewer-toolbar{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .viewer-title{font-family:'Montserrat';font-size:0.95rem;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%}
+    .viewer-actions{display:flex;gap:8px}
+    .icon-btn{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9aa4b2;font-size:0.8rem;transition:all .22s}
+    .icon-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
+    .icon-btn.danger:hover{background:rgba(255,92,141,0.12);color:var(--danger);border-color:rgba(255,92,141,0.2)}
+    .viewer-content{flex:1;overflow-y:auto;padding:28px;line-height:1.8;font-size:0.92rem}
+    .viewer-content h1,.viewer-content h2,.viewer-content h3{font-family:'Montserrat';color:#fff;margin:20px 0 10px}
+    .viewer-content h1{font-size:1.4rem;border-bottom:1px solid var(--border);padding-bottom:10px}
+    .viewer-content h2{font-size:1.1rem;color:var(--accent)}
+    .viewer-content h3{font-size:0.95rem;color:var(--accent2)}
+    .viewer-content ul,.viewer-content ol{margin-left:22px;margin-bottom:12px}
+    .viewer-content li{margin-bottom:5px;color:#c8d4e8}
+    .viewer-content p{margin-bottom:12px;color:#c8d4e8}
+    .viewer-content strong{color:#fff}
+    .viewer-content code{background:rgba(124,92,255,0.12);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:0.85rem;color:var(--accent2)}
+    .viewer-content pre{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;margin:12px 0}
+    .viewer-content pre code{background:none;padding:0;color:#e6eef8}
+    .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;opacity:0.5}
+    .empty-state i{font-size:3rem;color:var(--accent)}
+    .empty-state p{font-size:0.9rem;color:var(--muted);text-align:center}
+    /* Loading */
+    .skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.06) 50%,rgba(255,255,255,0.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    /* AI generating animation */
+    .generating-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px}
+    .generating-overlay.show{display:flex}
+    .gen-pulse{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;animation:pulse 1.5s ease-in-out infinite;font-size:1.4rem}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(124,92,255,0.4)}50%{box-shadow:0 0 0 20px rgba(124,92,255,0)}}
+    .gen-text{font-size:0.9rem;color:var(--muted);text-align:center}
+    @media(max-width:900px){.content{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+    @media(max-width:700px){.sidebar{width:60px}.sidebar-logo span,.nav-link span,.nav-section{display:none}.nav-link{justify-content:center}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-book-open"></i><span>Student Notes Hub</span></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a class="nav-link active" href="notes.html"><i class="fas fa-sticky-note"></i><span>AI Notes</span></a>
+      <a class="nav-link" href="assistant.html"><i class="fas fa-robot"></i><span>AI Assistant</span></a>
+      <a class="nav-link" href="resume.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a>
+      <div class="nav-section">Tools</div>
+      <a class="nav-link" href="code.html"><i class="fas fa-code"></i><span>Code Playground</span></a>
+      <a class="nav-link" href="challenge.html"><i class="fas fa-trophy"></i><span>Daily Challenge</span></a>
+      <a class="nav-link" href="studymaterial.html"><i class="fas fa-graduation-cap"></i><span>Study Material</span></a>
+      <div class="nav-section">Account</div>
+      <button class="nav-link" onclick="logout()" style="color:#ff5c8d"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+      <div style="min-width:0"><div class="sidebar-user-name" id="sidebarName">...</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title"><i class="fas fa-sticky-note" style="color:var(--accent);margin-right:8px"></i>AI Notes Generator</div>
+      <div class="topbar-right">
+        <button class="btn-ghost" onclick="filterFavorites()"><i class="fas fa-star"></i> Favorites</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- LEFT: Generator + Notes List -->
+      <div class="left-panel">
+        <!-- AI Generator -->
+        <div class="gen-card">
+          <h3><i class="fas fa-magic" style="color:var(--accent);margin-right:6px"></i>Generate AI Notes</h3>
+          <div class="field">
+            <label>Topic *</label>
+            <input type="text" id="topicInput" placeholder="e.g., Newton's Laws of Motion" />
+          </div>
+          <div class="field">
+            <label>Subject</label>
+            <select id="subjectInput">
+              <option value="General">General</option>
+              <option value="Physics">Physics</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="Biology">Biology</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="History">History</option>
+              <option value="Economics">Economics</option>
+              <option value="Literature">Literature</option>
+              <option value="Psychology">Psychology</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Style</label>
+            <select id="styleInput">
+              <option value="detailed">Detailed (comprehensive)</option>
+              <option value="concise">Concise (key points only)</option>
+              <option value="exam">Exam Prep (with practice Q&A)</option>
+              <option value="beginner">Beginner Friendly</option>
+            </select>
+          </div>
+          <button class="generate-btn" id="generateBtn" onclick="generateNote()">
+            <i class="fas fa-magic"></i>
+            <span id="generateBtnText">Generate Notes</span>
+            <div class="spinner-sm" id="genSpinner"></div>
+          </button>
+        </div>
+
+        <!-- Notes List -->
+        <div class="notes-list-card">
+          <div class="notes-list-header">
+            <div class="notes-list-title">My Notes <span id="notesCount" style="color:var(--muted);font-size:0.8rem"></span></div>
+          </div>
+          <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input class="search-box" type="text" placeholder="Search notes..." oninput="searchNotes(this.value)">
+          </div>
+          <div class="notes-list" id="notesList">
+            <div class="skeleton" style="height:60px"></div>
+            <div class="skeleton" style="height:60px;margin-top:8px"></div>
+            <div class="skeleton" style="height:60px;margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Note Viewer -->
+      <div class="right-panel" id="rightPanel">
+        <!-- Generating state -->
+        <div class="generating-overlay" id="generatingOverlay">
+          <div class="gen-pulse">✨</div>
+          <div>
+            <div style="font-family:'Montserrat';color:#fff;font-size:1rem;text-align:center;margin-bottom:6px">Generating your notes...</div>
+            <div class="gen-text">AI is crafting comprehensive notes on your topic.<br>This takes about 10-15 seconds.</div>
+          </div>
+        </div>
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+          <i class="fas fa-sticky-note"></i>
+          <p>Generate a note or select one from the list<br>to view it here</p>
+        </div>
+        <!-- Note viewer (hidden until note selected) -->
+        <div id="noteViewer" style="display:none;flex-direction:column;height:100%">
+          <div class="viewer-toolbar">
+            <div class="viewer-title" id="viewerTitle">Note Title</div>
+            <div class="viewer-actions">
+              <div class="icon-btn" title="Toggle Favorite" onclick="toggleFavorite()" id="favBtn"><i class="fas fa-star"></i></div>
+              <div class="icon-btn" title="Copy content" onclick="copyNote()"><i class="fas fa-copy"></i></div>
+              <div class="icon-btn danger" title="Delete note" onclick="deleteCurrentNote()"><i class="fas fa-trash"></i></div>
+            </div>
+          </div>
+          <div class="viewer-content" id="viewerContent"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!Auth.requireAuth()) throw new Error();
+    const user = Auth.getUser();
+    if (user) {
+      const initials = user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('sidebarAvatar').textContent = initials;
+      document.getElementById('sidebarName').textContent = user.name;
+    }
+
+    let allNotes = [];
+    let currentNoteId = null;
+    let showFavOnly = false;
+
+    // ── Load Notes ─────────────────────────────────────────────
+    async function loadNotes(search = '') {
+      try {
+        const params = search ? `?search=${encodeURIComponent(search)}` : (showFavOnly ? '?favorite=true' : '');
+        const { notes } = await API.getNotes(params);
+        allNotes = notes;
+        renderNotesList(notes);
+      } catch(e) {
+        showToast('Could not load notes', 'error');
+      }
+    }
+
+    function renderNotesList(notes) {
+      document.getElementById('notesCount').textContent = `(${notes.length})`;
+      if (notes.length === 0) {
+        document.getElementById('notesList').innerHTML = `
+          <div style="text-align:center;padding:30px;color:var(--muted);font-size:0.85rem">
+            ${showFavOnly ? 'No favorite notes yet' : 'No notes yet. Generate your first!'}</div>`;
+        return;
+      }
+      document.getElementById('notesList').innerHTML = notes.map(n => `
+        <div class="note-item ${n._id === currentNoteId ? 'selected' : ''}" onclick="openNote('${n._id}')">
+          <div class="note-item-title">
+            ${n.title.slice(0, 35)}${n.title.length > 35 ? '...' : ''}
+            ${n.isAIGenerated ? '<span class="ai-badge">AI</span>' : ''}
+            ${n.isFavorite ? '<i class="fas fa-star fav-badge"></i>' : ''}
+          </div>
+          <div class="note-item-meta">${n.subject} • ${timeAgo(new Date(n.updatedAt))}</div>
+        </div>`).join('');
+    }
+
+    function searchNotes(val) { loadNotes(val); }
+
+    function filterFavorites() {
+      showFavOnly = !showFavOnly;
+      loadNotes();
+    }
+
+    // ── Open Note ──────────────────────────────────────────────
+    function openNote(id) {
+      currentNoteId = id;
+      const note = allNotes.find(n => n._id === id);
+      if (!note) return;
+
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('generatingOverlay').classList.remove('show');
+      const viewer = document.getElementById('noteViewer');
+      viewer.style.display = 'flex';
+      viewer.style.flexDirection = 'column';
+      viewer.style.height = '100%';
+
+      document.getElementById('viewerTitle').textContent = note.title;
+      document.getElementById('viewerContent').innerHTML = markdownToHtml(note.content);
+      document.getElementById('favBtn').style.color = note.isFavorite ? 'var(--warning)' : '';
+
+      // Mark selected
+      document.querySelectorAll('.note-item').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.note-item').forEach(el => {
+        if (el.onclick.toString().includes(id)) el.classList.add('selected');
+      });
+    }
+
+    // ── Generate Note ──────────────────────────────────────────
+    async function generateNote() {
+      const topic = document.getElementById('topicInput').value.trim();
+      if (!topic) { showToast('Please enter a topic!', 'warning'); return; }
+
+      const btn = document.getElementById('generateBtn');
+      const spinner = document.getElementById('genSpinner');
+      const btnText = document.getElementById('generateBtnText');
+
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      btnText.textContent = 'Generating...';
+
+      // Show generating animation
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('noteViewer').style.display = 'none';
+      document.getElementById('generatingOverlay').classList.add('show');
+
+      try {
+        const { note } = await API.generateNote({
+          topic,
+          subject: document.getElementById('subjectInput').value,
+          style:   document.getElementById('styleInput').value
+        });
+
+        allNotes.unshift(note);
+        renderNotesList(allNotes);
+        openNote(note._id);
+        showToast('Notes generated successfully! 🎉', 'success');
+        document.getElementById('topicInput').value = '';
+      } catch(e) {
+        showToast(e.message || 'Generation failed', 'error');
+        document.getElementById('emptyState').style.display = 'flex';
+        document.getElementById('generatingOverlay').classList.remove('show');
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Generate Notes';
+      }
+    }
+
+    // ── Toggle Favorite ────────────────────────────────────────
+    async function toggleFavorite() {
+      if (!currentNoteId) return;
+      const note = allNotes.find(n => n._id === currentNoteId);
+      if (!note) return;
+      try {
+        await API.updateNote(currentNoteId, { isFavorite: !note.isFavorite });
+        note.isFavorite = !note.isFavorite;
+        document.getElementById('favBtn').style.color = note.isFavorite ? 'var(--warning)' : '';
+        renderNotesList(allNotes);
+        showToast(note.isFavorite ? 'Added to favorites ⭐' : 'Removed from favorites', 'info');
+      } catch(e) { showToast('Error updating note', 'error'); }
+    }
+
+    // ── Delete Note ────────────────────────────────────────────
+    async function deleteCurrentNote() {
+      if (!currentNoteId) return;
+      if (!confirm('Delete this note? This cannot be undone.')) return;
+      try {
+        await API.deleteNote(currentNoteId);
+        allNotes = allNotes.filter(n => n._id !== currentNoteId);
+        currentNoteId = null;
+        renderNotesList(allNotes);
+        document.getElementById('noteViewer').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'flex';
+        showToast('Note deleted', 'info');
+      } catch(e) { showToast('Error deleting note', 'error'); }
+    }
+
+    // ── Copy Note ──────────────────────────────────────────────
+    async function copyNote() {
+      const note = allNotes.find(n => n._id === currentNoteId);
+      if (!note) return;
+      await navigator.clipboard.writeText(note.content);
+      showToast('Note copied to clipboard!', 'success');
+    }
+
+    // ── Simple Markdown → HTML ─────────────────────────────────
+    function markdownToHtml(md) {
+      return md
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/^- (.*$)/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(?!<[hul]|<\/)(.*)/gm, (m, p1) => p1 ? `<p>${p1}</p>` : '')
+        .replace(/<p><\/p>/g, '');
+    }
+
+    function timeAgo(date) {
+      const diff = Date.now() - date.getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      return `${Math.floor(hrs / 24)}d ago`;
+    }
+
+    function logout() { Auth.clearSession(); window.location.href = 'index.html'; }
+
+    loadNotes();
+
+    // Allow Enter key to generate
+    document.getElementById('topicInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') generateNote();
+    });
+  </script>
+</body>
+</html>

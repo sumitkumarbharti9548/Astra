@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Notes Hub — Code Playground</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root{--bg:#07070a;--card:#0f1115;--muted:#9aa4b2;--accent:#7c5cff;--accent2:#00b4ff;--success:#00d9a6;--danger:#ff5c8d;--warning:#ffb84d;--border:rgba(255,255,255,0.06);--sidebar:220px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'Poppins',sans-serif;background:var(--bg);color:#e6eef8;display:flex}
+    .sidebar{width:var(--sidebar);height:100vh;background:linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01));border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+    .sidebar-logo{padding:22px 20px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+    .sidebar-logo i{color:var(--accent);font-size:1.2rem}
+    .sidebar-logo span{font-family:'Montserrat';font-weight:700;font-size:0.95rem}
+    .sidebar-nav{flex:1;padding:16px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+    .nav-section{font-size:0.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:10px 10px 5px;opacity:0.6}
+    .nav-link{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:#9aa4b2;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all .22s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+    .nav-link i{width:18px;text-align:center;font-size:0.9rem;flex-shrink:0}
+    .nav-link:hover{background:rgba(255,255,255,0.05);color:#e6eef8}
+    .nav-link.active{background:linear-gradient(90deg,rgba(124,92,255,0.18),rgba(124,92,255,0.06));color:#fff;border-left:2px solid var(--accent)}
+    .sidebar-user{padding:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .sidebar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;flex-shrink:0}
+    .sidebar-user-name{font-size:0.875rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .main{flex:1;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    .topbar{height:60px;padding:0 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:rgba(7,7,10,0.9);backdrop-filter:blur(12px)}
+    .topbar-title{font-family:'Montserrat';font-weight:700;font-size:1rem;color:#fff;flex-shrink:0}
+    select.lang-select{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:#e6eef8;padding:7px 12px;font-family:'Poppins';font-size:0.85rem;cursor:pointer}
+    select.lang-select option{background:#0f1115}
+    .run-btn{padding:9px 20px;background:linear-gradient(90deg,var(--success),#00b4ff);border:none;border-radius:9px;color:#071022;font-family:'Montserrat';font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .22s;margin-left:auto}
+    .run-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,217,166,0.3)}
+    .run-btn:disabled{opacity:0.6;cursor:not-allowed}
+    .btn-ghost{padding:8px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:#e6eef8;font-family:'Poppins';font-size:0.8rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .22s}
+    .btn-ghost:hover{background:rgba(255,255,255,0.08)}
+    /* Editor layout */
+    .editor-layout{flex:1;display:grid;grid-template-rows:1fr 220px;overflow:hidden}
+    .editor-wrap{position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+    .editor-label{position:absolute;top:12px;right:16px;font-size:0.72rem;color:var(--muted);z-index:10;font-family:'Montserrat';text-transform:uppercase;letter-spacing:.06em}
+    #codeEditor{width:100%;height:100%;background:#08090d;border:none;color:#e6eef8;font-family:'Courier New',Courier,monospace;font-size:0.9rem;line-height:1.7;padding:20px;resize:none;tab-size:2;outline:none;overflow-y:auto}
+    /* Output panel */
+    .output-wrap{display:flex;flex-direction:column;background:#050608}
+    .output-toolbar{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .output-label{font-size:0.78rem;font-family:'Montserrat';text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    .output-status{font-size:0.78rem;padding:3px 10px;border-radius:6px;font-family:'Montserrat';font-weight:700}
+    .output-status.success{background:rgba(0,217,166,0.15);color:var(--success)}
+    .output-status.error{background:rgba(255,92,141,0.15);color:var(--danger)}
+    .output-status.running{background:rgba(255,184,77,0.15);color:var(--warning)}
+    #outputBox{flex:1;overflow-y:auto;padding:14px 20px;font-family:'Courier New',Courier,monospace;font-size:0.875rem;line-height:1.7;color:#c8d4e8;white-space:pre-wrap;word-break:break-all}
+    .output-placeholder{color:var(--muted);font-style:italic}
+    .output-error{color:var(--danger)}
+    .output-success{color:var(--success)}
+    /* Stdin input */
+    .stdin-wrap{padding:8px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .stdin-wrap label{font-size:0.75rem;color:var(--muted);flex-shrink:0;font-family:'Montserrat'}
+    #stdinInput{flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;color:#e6eef8;font-family:'Courier New',monospace;font-size:0.8rem;padding:6px 10px}
+    #stdinInput:focus{outline:none;border-color:var(--accent)}
+    .spinner-sm{width:14px;height:14px;border:2px solid rgba(7,16,34,0.3);border-top-color:#071022;border-radius:50%;animation:spin .7s linear infinite;display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Snippets */
+    .snippet-bar{padding:0 20px;display:flex;gap:8px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.01)}
+    .snippet-btn{padding:6px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;color:#9aa4b2;font-size:0.75rem;cursor:pointer;white-space:nowrap;transition:all .22s;margin:8px 0}
+    .snippet-btn:hover{background:rgba(124,92,255,0.1);border-color:rgba(124,92,255,0.3);color:#fff}
+    @media(max-width:700px){.sidebar{width:60px}.sidebar-logo span,.nav-link span,.nav-section{display:none}.nav-link{justify-content:center}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-book-open"></i><span>Student Notes Hub</span></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+      <a class="nav-link" href="notes.html"><i class="fas fa-sticky-note"></i><span>AI Notes</span></a>
+      <a class="nav-link" href="assistant.html"><i class="fas fa-robot"></i><span>AI Assistant</span></a>
+      <a class="nav-link" href="resume.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a>
+      <div class="nav-section">Tools</div>
+      <a class="nav-link active" href="code.html"><i class="fas fa-code"></i><span>Code Playground</span></a>
+      <a class="nav-link" href="challenge.html"><i class="fas fa-trophy"></i><span>Daily Challenge</span></a>
+      <a class="nav-link" href="studymaterial.html"><i class="fas fa-graduation-cap"></i><span>Study Material</span></a>
+      <div class="nav-section">Account</div>
+      <button class="nav-link" onclick="logout()" style="color:#ff5c8d"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatar">?</div>
+      <div style="min-width:0"><div class="sidebar-user-name" id="sidebarName">...</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title"><i class="fas fa-code" style="color:var(--accent);margin-right:8px"></i>Code Playground</div>
+      <select class="lang-select" id="langSelect" onchange="onLangChange()">
+        <option value="71">🐍 Python 3</option>
+        <option value="62">☕ Java</option>
+        <option value="54">⚙️ C++</option>
+        <option value="50">🔵 C</option>
+        <option value="63">🟨 JavaScript (Node.js)</option>
+        <option value="83">🔷 Swift</option>
+        <option value="73">🦀 Rust</option>
+        <option value="60">🐹 Go</option>
+      </select>
+      <button class="btn-ghost" onclick="clearCode()"><i class="fas fa-file"></i> New</button>
+      <button class="btn-ghost" onclick="copyCode()"><i class="fas fa-copy"></i> Copy</button>
+      <button class="run-btn" id="runBtn" onclick="runCode()">
+        <i class="fas fa-play"></i><span id="runBtnText">Run Code</span>
+        <div class="spinner-sm" id="runSpinner"></div>
+      </button>
+    </div>
+
+    <!-- Snippet shortcuts -->
+    <div class="snippet-bar" id="snippetBar"></div>
+
+    <div class="editor-layout">
+      <!-- Code Editor -->
+      <div class="editor-wrap">
+        <div class="editor-label" id="editorLabel">PYTHON 3</div>
+        <textarea id="codeEditor" spellcheck="false" placeholder="// Write your code here...
+// Press Ctrl+Enter to run"></textarea>
+      </div>
+
+      <!-- Output -->
+      <div class="output-wrap">
+        <div class="output-toolbar">
+          <div class="output-label"><i class="fas fa-terminal" style="margin-right:6px"></i>Output</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="execTime" style="font-size:0.75rem;color:var(--muted)"></div>
+            <div class="output-status" id="outputStatus" style="display:none"></div>
+            <button class="btn-ghost" onclick="clearOutput()" style="padding:5px 10px;font-size:0.75rem">Clear</button>
+          </div>
+        </div>
+        <div id="outputBox"><span class="output-placeholder">Output will appear here after running your code...</span></div>
+        <div class="stdin-wrap">
+          <label>STDIN (input)</label>
+          <input type="text" id="stdinInput" placeholder="Optional: provide input for your program (e.g. for input() calls)">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    if (!Auth.requireAuth()) throw new Error();
+    const user = Auth.getUser();
+    if (user) {
+      const i = user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('sidebarAvatar').textContent = i;
+      document.getElementById('sidebarName').textContent = user.name;
+    }
+
+    // Language snippets / boilerplate
+    const SNIPPETS = {
+      71: { // Python
+        label: 'Python 3',
+        boilerplate: `# Python 3 Playground\nprint("Hello, World!")\n\n# Try something:\nname = input("Enter your name: ")\nprint(f"Welcome, {name}!")`,
+        examples: [
+          { label: 'Fibonacci', code: `def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        print(a, end=' ')\n        a, b = b, a + b\nfib(10)` },
+          { label: 'List Comp', code: `squares = [x**2 for x in range(1, 11)]\nprint("Squares:", squares)\n\nevens = [x for x in range(20) if x % 2 == 0]\nprint("Evens:", evens)` },
+          { label: 'Class Demo', code: `class Student:\n    def __init__(self, name, grade):\n        self.name = name\n        self.grade = grade\n    def info(self):\n        return f"{self.name}: {self.grade}%"\n\ns = Student("Alice", 92)\nprint(s.info())` }
+        ]
+      },
+      63: { // JavaScript
+        label: 'JavaScript',
+        boilerplate: `// JavaScript (Node.js) Playground\nconsole.log("Hello, World!");\n\nconst name = "Student";\nconsole.log(\`Welcome, \${name}!\`);`,
+        examples: [
+          { label: 'Arrow Fn', code: `const greet = (name) => \`Hello, \${name}!\`;\nconsole.log(greet("World"));\n\nconst nums = [1,2,3,4,5];\nconst doubled = nums.map(n => n * 2);\nconsole.log(doubled);` },
+          { label: 'Promise', code: `const delay = (ms) => new Promise(r => setTimeout(r, ms));\n\nasync function main() {\n  console.log("Start");\n  await delay(100);\n  console.log("Done!");\n}\nmain();` }
+        ]
+      },
+      62: { // Java
+        label: 'Java',
+        boilerplate: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n        \n        // Variables\n        String name = "Student";\n        int age = 20;\n        System.out.printf("Name: %s, Age: %d%n", name, age);\n    }\n}`,
+        examples: [
+          { label: 'Loop', code: `public class Main {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 10; i++) {\n            System.out.println(i + " x " + i + " = " + (i*i));\n        }\n    }\n}` }
+        ]
+      },
+      54: { // C++
+        label: 'C++',
+        boilerplate: `#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    \n    string name;\n    cout << "Enter your name: ";\n    getline(cin, name);\n    cout << "Welcome, " << name << "!" << endl;\n    \n    return 0;\n}`,
+        examples: [
+          { label: 'Vector', code: `#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    vector<int> nums = {1,2,3,4,5};\n    for(auto n : nums) cout << n*n << " ";\n    cout << endl;\n    return 0;\n}` }
+        ]
+      }
+    };
+
+    let currentLangId = 71;
+
+    function onLangChange() {
+      currentLangId = parseInt(document.getElementById('langSelect').value);
+      const snap = SNIPPETS[currentLangId];
+      if (snap) {
+        document.getElementById('editorLabel').textContent = snap.label.toUpperCase();
+        document.getElementById('codeEditor').value = snap.boilerplate || '';
+        renderSnippets(snap.examples || []);
+      }
+    }
+
+    function renderSnippets(examples) {
+      document.getElementById('snippetBar').innerHTML =
+        '<span style="font-size:0.72rem;color:var(--muted);line-height:2;flex-shrink:0;font-family:Montserrat">Examples:</span>' +
+        examples.map(e => `<button class="snippet-btn" onclick='loadSnippet(${JSON.stringify(e.code)})'>${e.label}</button>`).join('');
+    }
+
+    function loadSnippet(code) {
+      document.getElementById('codeEditor').value = code;
+    }
+
+    async function runCode() {
+      const code = document.getElementById('codeEditor').value.trim();
+      if (!code) { showToast('Write some code first!', 'warning'); return; }
+
+      const btn = document.getElementById('runBtn');
+      const spinner = document.getElementById('runSpinner');
+      const btnText = document.getElementById('runBtnText');
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      btnText.textContent = 'Running...';
+
+      const status = document.getElementById('outputStatus');
+      status.style.display = 'block';
+      status.className = 'output-status running';
+      status.textContent = '⏳ Running';
+      document.getElementById('outputBox').innerHTML = '<span class="output-placeholder">Executing your code...</span>';
+      document.getElementById('execTime').textContent = '';
+
+      try {
+        const result = await API.runCode({
+          code,
+          language_id: currentLangId,
+          stdin: document.getElementById('stdinInput').value
+        });
+
+        const out = document.getElementById('outputBox');
+        if (result.error) {
+          out.innerHTML = `<span class="output-error">❌ Error:\n${escHtml(result.error)}</span>`;
+          status.className = 'output-status error';
+          status.textContent = '❌ Error';
+        } else {
+          out.innerHTML = `<span class="output-success">${escHtml(result.output || '(no output)')}</span>`;
+          status.className = 'output-status success';
+          status.textContent = '✅ ' + result.status;
+        }
+        if (result.executionTime) {
+          document.getElementById('execTime').textContent = `⏱ ${result.executionTime}s`;
+        }
+      } catch(e) {
+        // Fallback: run JS locally in browser if Judge0 not configured
+        if (currentLangId === 63) {
+          runJSLocally(code);
+        } else {
+          document.getElementById('outputBox').innerHTML = `<span class="output-error">❌ Code runner not configured.\n\nTo enable, add your Judge0 API key to .env\nGet a free key at: rapidapi.com (search Judge0)\n\n💡 JavaScript runs locally in your browser without an API key!</span>`;
+          status.className = 'output-status error';
+          status.textContent = '❌ Not configured';
+        }
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Run Code';
+      }
+    }
+
+    // Browser-side JS fallback
+    function runJSLocally(code) {
+      const out = document.getElementById('outputBox');
+      const logs = [];
+      const origLog = console.log;
+      console.log = (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '));
+      try {
+        // eslint-disable-next-line no-new-func
+        new Function(code)();
+        console.log = origLog;
+        out.innerHTML = `<span class="output-success">${escHtml(logs.join('\n') || '(no output)')}</span>`;
+        document.getElementById('outputStatus').className = 'output-status success';
+        document.getElementById('outputStatus').textContent = '✅ Success (Browser)';
+      } catch(e) {
+        console.log = origLog;
+        out.innerHTML = `<span class="output-error">❌ ${escHtml(e.message)}</span>`;
+        document.getElementById('outputStatus').className = 'output-status error';
+        document.getElementById('outputStatus').textContent = '❌ Error';
+      }
+    }
+
+    function clearCode() { document.getElementById('codeEditor').value = SNIPPETS[currentLangId]?.boilerplate || ''; }
+    function clearOutput() {
+      document.getElementById('outputBox').innerHTML = '<span class="output-placeholder">Output will appear here...</span>';
+      document.getElementById('outputStatus').style.display = 'none';
+      document.getElementById('execTime').textContent = '';
+    }
+    async function copyCode() {
+      await navigator.clipboard.writeText(document.getElementById('codeEditor').value);
+      showToast('Code copied!', 'success');
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Ctrl+Enter to run
+    document.getElementById('codeEditor').addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+      // Tab key inserts 2 spaces
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const el = e.target;
+        const s = el.selectionStart, end = el.selectionEnd;
+        el.value = el.value.substring(0, s) + '  ' + el.value.substring(end);
+        el.selectionStart = el.selectionEnd = s + 2;
+      }
+    });
+
+    function logout() { Auth.clearSession(); window.location.href = 'index.html'; }
+
+    // Init
+    onLangChange();
+  </script>
+</body>
+</html>

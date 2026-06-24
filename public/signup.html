@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Notes Hub — Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root{--bg:#07070a;--card:#0f1115;--muted:#9aa4b2;--accent:#7c5cff}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:'Poppins',sans-serif;background:radial-gradient(1000px 500px at 10% 12%,rgba(124,92,255,0.12),transparent),radial-gradient(800px 400px at 92% 88%,rgba(0,180,255,0.05),transparent),var(--bg);color:#e6eef8;overflow:hidden}
+    header{position:fixed;left:20px;top:18px;z-index:80;display:flex;align-items:center;gap:12px}
+    header .logo{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    header h1{font-family:'Montserrat';font-size:1rem;margin:0}
+    .blobs{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .blob{position:absolute;filter:blur(44px);opacity:0.85;border-radius:50%;mix-blend-mode:screen}
+    .blob.b1{width:420px;height:420px;left:-120px;top:-120px;background:linear-gradient(135deg,var(--accent),#2dd4bf)}
+    .blob.b2{width:380px;height:380px;right:-80px;bottom:-80px;background:linear-gradient(135deg,#00b4ff,#7c5cff)}
+    canvas#particles{position:fixed;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0.18}
+    .form-container{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);border-radius:16px;padding:32px;max-width:440px;width:100%;backdrop-filter:blur(10px);box-shadow:0 20px 40px rgba(0,0,0,0.4);position:relative;z-index:10;overflow-y:auto;max-height:90vh}
+    .form-title{font-family:'Montserrat';font-size:1.7rem;margin-bottom:6px;color:#fff;text-align:center}
+    .form-subtitle{color:var(--muted);margin-bottom:22px;text-align:center;font-size:0.875rem}
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;margin-bottom:7px;color:#e6eef8;font-size:0.875rem;font-weight:600}
+    .input-wrap{position:relative}
+    .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.85rem;pointer-events:none}
+    .form-input{width:100%;padding:11px 16px 11px 40px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#e6eef8;font-family:'Poppins';font-size:0.95rem;transition:all .28s}
+    .form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(124,92,255,0.2)}
+    .form-input.error{border-color:#ff5c8d}
+    .field-error{color:#ff5c8d;font-size:0.78rem;margin-top:4px}
+    .pw-strength{margin-top:6px;display:flex;gap:4px}
+    .pw-bar{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.1);transition:background .3s}
+    .pw-bar.weak{background:#ff5c8d}
+    .pw-bar.ok{background:#ffb84d}
+    .pw-bar.strong{background:#00d9a6}
+    .pw-label{font-size:0.75rem;color:var(--muted);margin-top:4px}
+    .form-submit{width:100%;padding:13px;background:linear-gradient(90deg,var(--accent),#00b4ff);border:none;border-radius:10px;color:#071022;font-family:'Montserrat';font-weight:700;font-size:1rem;cursor:pointer;transition:all .28s}
+    .form-submit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 20px rgba(124,92,255,0.3)}
+    .form-submit:disabled{opacity:0.7;cursor:not-allowed}
+    .spinner{display:none;width:18px;height:18px;border:2px solid rgba(7,16,34,0.3);border-top-color:#071022;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .form-footer{text-align:center;margin-top:16px;color:var(--muted);font-size:0.875rem}
+    .form-link{color:var(--accent);text-decoration:none;cursor:pointer}
+    .form-link:hover{text-decoration:underline}
+    .center-content{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:10}
+    .back-btn{position:fixed;right:20px;top:18px;z-index:80;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:8px 16px;border-radius:10px;color:#e6eef8;font-size:0.9rem;cursor:pointer;transition:all .28s;text-decoration:none;display:flex;align-items:center;gap:6px}
+    .back-btn:hover{background:rgba(124,92,255,0.1);transform:translateY(-2px)}
+    .terms{font-size:0.78rem;color:var(--muted);text-align:center;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div></div>
+  <canvas id="particles"></canvas>
+  <header><div class="logo"><i class="fas fa-book-open" style="color:var(--accent)"></i><h1>Student Notes Hub</h1></div></header>
+  <a class="back-btn" href="index.html"><i class="fas fa-arrow-left"></i> Home</a>
+
+  <div class="center-content">
+    <div class="form-container">
+      <h2 class="form-title">Create Account</h2>
+      <p class="form-subtitle">Join thousands of students learning smarter</p>
+
+      <form id="signupForm" novalidate>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="input-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" autocomplete="name">
+          </div>
+          <div class="field-error" id="nameErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="email" class="form-input" placeholder="your.email@example.com" autocomplete="email">
+          </div>
+          <div class="field-error" id="emailErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="password" class="form-input" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)">
+          </div>
+          <div class="pw-strength"><div class="pw-bar" id="bar1"></div><div class="pw-bar" id="bar2"></div><div class="pw-bar" id="bar3"></div></div>
+          <div class="pw-label" id="pwLabel">Enter a password</div>
+          <div class="field-error" id="passErr"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" autocomplete="new-password">
+          </div>
+          <div class="field-error" id="confirmErr"></div>
+        </div>
+        <button type="submit" class="form-submit" id="submitBtn">
+          <span class="btn-text">Create Account</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+      </form>
+
+      <div class="terms">By signing up you agree to our Terms of Service</div>
+      <div class="form-footer">
+        Already have an account? <a class="form-link" href="login.html">Sign in here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    Auth.redirectIfLoggedIn();
+
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+    addEventListener('resize',resize);resize();
+    const pts=Array.from({length:70},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.6+0.4,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25}));
+    function tick(){ctx.clearRect(0,0,canvas.width,canvas.height);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.fillStyle='rgba(180,200,255,0.04)';ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}requestAnimationFrame(tick)}tick();
+
+    function checkStrength(pw) {
+      const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+      const label = document.getElementById('pwLabel');
+      bars.forEach(b => { b.className = 'pw-bar'; });
+      if (!pw) { label.textContent = 'Enter a password'; return; }
+      let strength = 0;
+      if (pw.length >= 8) strength++;
+      if (/[A-Z]/.test(pw) && /[0-9]/.test(pw)) strength++;
+      if (/[^A-Za-z0-9]/.test(pw)) strength++;
+      const levels = ['weak','ok','strong'];
+      const labels = ['Weak password','Decent password','Strong password!'];
+      for (let i = 0; i < strength; i++) bars[i].classList.add(levels[strength-1]);
+      label.textContent = labels[strength-1] || 'Enter a password';
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = loading;
+      btn.querySelector('.btn-text').style.display = loading ? 'none' : 'block';
+      document.getElementById('spinner').style.display = loading ? 'block' : 'none';
+    }
+
+    function clearErrors() {
+      ['nameErr','emailErr','passErr','confirmErr'].forEach(id => document.getElementById(id).textContent = '');
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      clearErrors();
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      let valid = true;
+
+      if (!name || name.length < 2) { document.getElementById('nameErr').textContent = 'Enter your full name'; valid = false; }
+      if (!email || !/^\S+@\S+\.\S+$/.test(email)) { document.getElementById('emailErr').textContent = 'Enter a valid email'; valid = false; }
+      if (!password || password.length < 6) { document.getElementById('passErr').textContent = 'Password must be at least 6 characters'; valid = false; }
+      if (password !== confirm) { document.getElementById('confirmErr').textContent = 'Passwords do not match'; valid = false; }
+      if (!valid) return;
+
+      setLoading(true);
+      try {
+        const data = await API.signup({ name, email, password });
+        Auth.setSession(data.token, data.user);
+        showToast('Account created! Welcome to Student Notes Hub 🎉', 'success');
+        setTimeout(() => window.location.href = 'index.html', 900);
+      } catch (err) {
+        showToast(err.message || 'Sign up failed', 'error');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
