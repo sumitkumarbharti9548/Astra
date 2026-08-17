@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Career Twin — Astra AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  :root{--bg:#07070a;--card:#0f1115;--muted:#9aa4b2;--accent:#7c5cff;--accent2:#00b4ff;--success:#00d9a6;--danger:#ff5c8d;--warning:#ffb84d;--border:rgba(255,255,255,0.06);--sidebar-w:260px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins',system-ui,sans-serif;background:radial-gradient(1000px 500px at 10% 12%,rgba(124,92,255,0.10),transparent),radial-gradient(800px 400px at 92% 88%,rgba(0,180,255,0.05),transparent),var(--bg);color:#e6eef8;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+
+  /* ── App shell / Sidebar ─────────────────────────────────── */
+  .app-shell{display:flex;min-height:100vh}
+
+  .sidebar{width:var(--sidebar-w);flex-shrink:0;background:rgba(10,11,15,0.95);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto;z-index:300}
+  .sidebar-logo{display:flex;align-items:center;gap:10px;padding:22px 22px 18px}
+  .sidebar-logo i{color:var(--accent);font-size:1.3rem}
+  .sidebar-logo .lt{display:flex;flex-direction:column;line-height:1.25}
+  .sidebar-logo .lt strong{font-family:'Montserrat';font-weight:800;font-size:0.95rem;color:#fff}
+  .sidebar-logo .lt span{font-size:0.65rem;color:var(--accent);font-weight:600}
+
+  .sidebar-section{padding:6px 14px}
+  .sidebar-section .sec-label{font-size:0.68rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:600;padding:14px 12px 6px}
+
+  .side-link{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:0.86rem;font-weight:500;color:var(--muted);margin-bottom:2px;position:relative;transition:background .15s,color .15s}
+  .side-link i{width:18px;text-align:center;font-size:0.95rem}
+  .side-link:hover{background:rgba(255,255,255,0.04);color:#e6eef8}
+  .side-link.active{background:linear-gradient(90deg,rgba(124,92,255,0.22),rgba(124,92,255,0.06));color:#fff;box-shadow:inset 0 0 0 1px rgba(124,92,255,0.25)}
+  .side-link.danger:hover{background:rgba(255,92,141,0.1);color:var(--danger)}
+  .side-badge{margin-left:auto;font-size:0.6rem;font-family:'Montserrat';font-weight:700;background:var(--accent);color:#fff;padding:2px 8px;border-radius:999px;text-transform:uppercase}
+
+  .sidebar-footer{margin-top:auto;padding:16px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .sf-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Montserrat';font-weight:700;font-size:0.8rem;color:#071022;flex-shrink:0}
+  .sf-info{overflow:hidden}
+  .sf-info .name{font-size:0.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sf-info .email{font-size:0.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:400;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:#fff;align-items:center;justify-content:center;cursor:pointer}
+
+  .main-area{flex:1;min-width:0}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:36px 24px 60px}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,255,0.12);border:1px solid rgba(124,92,255,0.25);padding:5px 13px;border-radius:20px;font-size:0.75rem;color:var(--accent);font-weight:600;margin-bottom:14px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  h1{font-family:'Montserrat';font-size:1.7rem;font-weight:800;color:#fff;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:0.9rem;margin-bottom:28px}
+
+  .card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:16px;padding:26px}
+
+  /* ── Build form ─────────────────────────────────────────── */
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:0.8rem;font-weight:600;color:var(--muted);margin-bottom:7px}
+  .field input,.field select,.field textarea{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:#e6eef8;font-family:'Poppins';font-size:0.9rem}
+  .field textarea{resize:vertical;min-height:100px}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+
+  /* ── Resume source: tab switch (Upload vs Manual) ───────── */
+  .source-tabs{display:flex;gap:6px;padding:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:18px}
+  .source-tab-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-family:'Poppins';font-weight:600;font-size:0.85rem;cursor:pointer;transition:all .15s}
+  .source-tab-btn i{font-size:0.85rem}
+  .source-tab-btn:hover{color:#e6eef8}
+  .source-tab-btn.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071022;box-shadow:0 4px 14px rgba(124,92,255,0.3)}
+
+  .source-panel{display:none}
+  .source-panel.active{display:block}
+
+  /* ── Resume upload box ─────────────────────────────────── */
+  .upload-box{border:1.5px dashed var(--border);border-radius:12px;padding:30px 18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:rgba(255,255,255,0.015)}
+  .upload-box:hover,.upload-box.dragover{border-color:var(--accent);background:rgba(124,92,255,0.05)}
+  .upload-box i{font-size:1.5rem;color:var(--accent);margin-bottom:9px;display:block}
+  .upload-box p{font-size:0.87rem;color:#e6eef8;margin-bottom:3px}
+  .upload-box .upload-hint{font-size:0.72rem;color:var(--muted)}
+  .upload-status{margin-top:10px;font-size:0.8rem;padding:9px 12px;border-radius:9px;display:none;align-items:center;gap:8px;flex-wrap:wrap}
+  .upload-status.show{display:flex}
+  .upload-status.success{background:rgba(0,217,166,0.1);color:var(--success);border:1px solid rgba(0,217,166,0.25)}
+  .upload-status.error{background:rgba(255,92,141,0.1);color:var(--danger);border:1px solid rgba(255,92,141,0.25)}
+  .upload-status.loading{background:rgba(0,180,255,0.08);color:var(--accent2);border:1px solid rgba(0,180,255,0.2)}
+  .upload-status .fname{font-weight:600;color:#fff}
+
+  .extracted-banner{display:none;align-items:center;gap:8px;background:rgba(0,217,166,0.08);border:1px solid rgba(0,217,166,0.22);color:var(--success);padding:9px 12px;border-radius:9px;font-size:0.8rem;margin-bottom:10px;flex-wrap:wrap}
+  .extracted-banner.show{display:flex}
+  .extracted-banner .change-link{margin-left:auto;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline}
+
+  .btn-grad{padding:12px 26px;border-radius:11px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071022;font-family:'Montserrat';font-weight:700;font-size:0.9rem;cursor:pointer;transition:all .22s;display:inline-flex;align-items:center;gap:8px}
+  .btn-grad:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(124,92,255,0.35)}
+  .btn-grad:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+  .btn-out{padding:11px 22px;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:#e6eef8;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Poppins'}
+  .btn-out:hover{background:rgba(255,255,255,0.08)}
+  .btn-block{width:100%;justify-content:center}
+
+  .form-error{background:rgba(255,92,141,0.1);border:1px solid rgba(255,92,141,0.3);color:var(--danger);padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:16px;display:none}
+  .form-error.show{display:block}
+
+  .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.25);border-top-color:#071022;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+  .spinner.on-dark{border:2px solid rgba(255,255,255,0.25);border-top-color:var(--accent2)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .section-divider{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 14px;padding-top:18px;border-top:1px solid var(--border)}
+
+  /* ── Dashboard ──────────────────────────────────────────── */
+  .ai-summary{padding:20px 22px;border-radius:14px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(0,180,255,0.05));border:1px solid rgba(124,92,255,0.2);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
+
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+  .stat-card{padding:18px}
+  .stat-card .lbl{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .stat-card .val{font-family:'Montserrat';font-size:1.5rem;font-weight:800;color:#fff}
+  .val.good{color:var(--success)}.val.mid{color:var(--warning)}.val.low{color:var(--danger)}
+
+  .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+  .twin-panel h2{font-family:'Montserrat';font-size:1.05rem;color:#fff;margin-bottom:4px}
+  #constellation-canvas{width:100%;height:300px;display:block;margin:10px 0}
+
+  .skill-tag-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .skill-tag{font-family:'JetBrains Mono',monospace;font-size:0.72rem;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:inline-flex;align-items:center;gap:6px}
+  .skill-tag .dt{width:6px;height:6px;border-radius:50%}
+  .dt-rising{background:var(--success)}.dt-stable{background:var(--accent2)}.dt-declining{background:var(--danger)}
+
+  .side-panel{display:flex;flex-direction:column;gap:16px}
+  .mini-card{padding:18px}
+  .mini-card h3{font-family:'Montserrat';font-size:0.9rem;color:#fff;margin-bottom:12px}
+
+  .roadmap-item{padding:10px 0;border-bottom:1px solid var(--border)}
+  .roadmap-item:last-child{border-bottom:none}
+  .roadmap-item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+  .roadmap-item .name{font-weight:600;font-size:0.85rem;color:#fff}
+  .badge{font-size:0.62rem;font-family:'JetBrains Mono';padding:2px 8px;border-radius:999px;text-transform:uppercase}
+  .badge.high{background:rgba(255,92,141,0.15);color:var(--danger)}
+  .badge.medium{background:rgba(255,184,77,0.15);color:var(--warning)}
+  .badge.low{background:rgba(0,217,166,0.15);color:var(--success)}
+  .roadmap-item .reason{font-size:0.78rem;color:var(--muted)}
+
+  .gap-list li,.strength-list li{font-size:0.8rem;color:var(--muted);padding:5px 0;display:flex;gap:8px}
+  .gap-list li::before{content:'△';color:var(--warning)}
+  .strength-list li::before{content:'✓';color:var(--success)}
+
+  .empty-state{text-align:center;padding:60px 24px;max-width:460px;margin:40px auto}
+  .empty-state h2{font-family:'Montserrat';color:#fff;margin-bottom:10px}
+  .empty-state p{color:var(--muted);margin-bottom:22px;font-size:0.9rem}
+
+  @media(max-width:900px){.grid-2,.stat-row{grid-template-columns:1fr}}
+
+  @media(max-width:860px){
+    .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .22s;box-shadow:20px 0 40px rgba(0,0,0,0.4)}
+    .sidebar.open{transform:translateX(0)}
+    .sidebar-toggle{display:flex}
+    .wrap{padding-top:70px}
+    .source-tabs{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<div class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="sidebar-logo" href="index.html">
+      <i class="fas fa-book-open"></i>
+      <div class="lt"><strong>Astra AI</strong><span>Powered by Career Twin™</span></div>
+    </a>
+
+    <div class="sidebar-section">
+      <div class="sec-label">Main</div>
+      <a class="side-link" href="dashboard.html"><i class="fas fa-table-cells"></i>Dashboard</a>
+      <a class="side-link" href="notes.html"><i class="fas fa-note-sticky"></i>AI Notes</a>
+      <a class="side-link" href="assistant.html"><i class="fas fa-robot"></i>AI Assistant</a>
+      <a class="side-link" href="resume-builder.html"><i class="fas fa-file-lines"></i>Resume Builder</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sec-label">Tools</div>
+      <a class="side-link" href="playground.html"><i class="fas fa-code"></i>Code Playground</a>
+      <a class="side-link" href="daily-challenge.html"><i class="fas fa-trophy"></i>Daily Challenge</a>
+      <a class="side-link" href="study-material.html"><i class="fas fa-graduation-cap"></i>Study Material</a>
+      <a class="side-link active" href="career-twin.html"><i class="fas fa-hourglass-half"></i>Career Twin<span class="side-badge">New</span></a>
+      <a class="side-link" href="mock-interview.html"><i class="fas fa-comments"></i>Mock Interview</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sec-label">Account</div>
+      <a class="side-link" href="profile.html"><i class="fas fa-user"></i>Profile</a>
+      <a class="side-link danger" href="#" id="logout-link"><i class="fas fa-right-from-bracket"></i>Logout</a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sf-avatar" id="sf-avatar">?</div>
+      <div class="sf-info">
+        <div class="name" id="sf-name">—</div>
+        <div class="email" id="sf-email">—</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <div class="wrap" id="content">
+      <p class="sub">Loading your Career Twin...</p>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/constellation.js"></script>
+<script>
+  if (!Auth.requireAuth()) { /* redirected */ }
+
+  const content = document.getElementById('content');
+
+  // ── Sidebar: user footer + mobile toggle + logout ──────────
+  (function initSidebar() {
+    try {
+      const user = (Auth.getUser && Auth.getUser()) || JSON.parse(localStorage.getItem('user') || 'null');
+      if (user) {
+        const name = user.name || user.fullName || 'Student';
+        const initials = name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+        document.getElementById('sf-avatar').textContent = initials || 'U';
+        document.getElementById('sf-name').textContent = name;
+        document.getElementById('sf-email').textContent = user.email || '';
+      }
+    } catch (e) { /* fall back to placeholders */ }
+
+    document.getElementById('sidebar-toggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    document.getElementById('logout-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (Auth.logout) Auth.logout();
+    });
+  })();
+
+  function readinessClass(score){ if(score>=70) return 'good'; if(score>=40) return 'mid'; return 'low'; }
+
+  function renderBuildForm(existingTwin) {
+    content.innerHTML = `
+      <span class="eyebrow"><div class="dot"></div>Digital Career Twin</span>
+      <h1>${existingTwin ? 'Rebuild your Career Twin' : "Let's build your Career Twin"}</h1>
+      <p class="sub">The more real evidence you give it, the sharper your twin is. Takes about 3 minutes.</p>
+
+      <div class="form-error" id="error-box"></div>
+
+      <form id="build-form" class="card">
+        <div class="field">
+          <label for="targetRole">Target role</label>
+          <select id="targetRole" required><option value="">Loading roles...</option></select>
+        </div>
+
+        <div class="field">
+          <label>How would you like to add your resume?</label>
+
+          <div class="source-tabs">
+            <button type="button" class="source-tab-btn active" id="tab-btn-upload" data-tab="upload">
+              <i class="fas fa-file-arrow-up"></i> Upload Resume
+            </button>
+            <button type="button" class="source-tab-btn" id="tab-btn-manual" data-tab="manual">
+              <i class="fas fa-pen"></i> Enter Manually
+            </button>
+          </div>
+
+          <!-- Upload panel -->
+          <div class="source-panel active" id="panel-upload">
+            <div class="upload-box" id="upload-box">
+              <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" hidden />
+              <div id="upload-inner">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <p><strong>Click to upload</strong> or drag & drop your resume</p>
+                <span class="upload-hint">PDF or DOCX · max 5MB</span>
+              </div>
+            </div>
+            <div class="upload-status" id="upload-status"></div>
+          </div>
+
+          <!-- Manual panel -->
+          <div class="source-panel" id="panel-manual">
+            <div class="extracted-banner" id="extracted-banner">
+              <i class="fas fa-circle-check"></i>
+              <span id="extracted-banner-text"></span>
+              <span class="change-link" id="banner-change-link">Upload instead</span>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label for="resumeText">Resume text</label>
+              <textarea id="resumeText" placeholder="Paste the text content of your resume — education, experience, skills."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider">Additional details (optional, sharpens the analysis)</div>
+
+        <div class="field">
+          <label for="githubUsername">GitHub username (optional, recommended)</label>
+          <input type="text" id="githubUsername" placeholder="e.g. octocat" />
+        </div>
+        <div class="field">
+          <label for="manualSkills">Skills you know (comma-separated)</label>
+          <input type="text" id="manualSkills" placeholder="JavaScript, React, MongoDB, Java, SQL..." />
+        </div>
+        <div class="field">
+          <label for="certifications">Certifications (comma-separated)</label>
+          <input type="text" id="certifications" placeholder="AWS Cloud Practitioner, Google Cloud Fundamentals..." />
+        </div>
+        <div class="field">
+          <label for="projectsText">Key projects — one per line as "Title: short description"</label>
+          <textarea id="projectsText" placeholder="Student Notes Hub: Full-stack student productivity platform with AI chatbot, built with Node.js, Express, MongoDB"></textarea>
+        </div>
+        <button type="submit" class="btn-grad btn-block" id="submit-btn"><i class="fas fa-wand-magic-sparkles"></i> Build my Career Twin</button>
+      </form>
+    `;
+
+    (async function loadRoles() {
+      try {
+        const { roles } = await API.getTwinRoles();
+        const sel = document.getElementById('targetRole');
+        sel.innerHTML = roles.map(r => `<option value="${r}">${r}</option>`).join('');
+        if (existingTwin) sel.value = existingTwin.targetRole;
+      } catch (e) {
+        document.getElementById('targetRole').innerHTML = '<option value="">Could not load roles</option>';
+      }
+    })();
+
+    initSourceTabs();
+    initResumeUpload();
+
+    function parseProjects(text) {
+      return text.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+        const [title, ...rest] = line.split(':');
+        return { title: (title || '').trim(), description: rest.join(':').trim(), techStack: [] };
+      });
+    }
+
+    document.getElementById('build-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorBox = document.getElementById('error-box');
+      const btn = document.getElementById('submit-btn');
+      errorBox.classList.remove('show');
+
+      const resumeText = document.getElementById('resumeText').value.trim();
+      if (!resumeText) {
+        errorBox.textContent = 'Add your resume first — upload a file or switch to "Enter Manually" and paste your resume text.';
+        errorBox.classList.add('show');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Analyzing with AI... 15-30s';
+
+      try {
+        const { twin } = await API.buildTwin({
+          targetRole: document.getElementById('targetRole').value,
+          resumeText,
+          githubUsername: document.getElementById('githubUsername').value.trim(),
+          manualSkills: document.getElementById('manualSkills').value.split(',').map(s=>s.trim()).filter(Boolean),
+          certifications: document.getElementById('certifications').value.split(',').map(s=>s.trim()).filter(Boolean),
+          projects: parseProjects(document.getElementById('projectsText').value)
+        });
+        renderTwin(twin);
+        showToast('Career Twin built! ✅', 'success');
+      } catch (err) {
+        errorBox.textContent = err.message;
+        errorBox.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Build my Career Twin';
+      }
+    });
+  }
+
+  // ── Tab switch: Upload Resume vs Enter Manually ─────────────
+  function initSourceTabs() {
+    const uploadBtn = document.getElementById('tab-btn-upload');
+    const manualBtn = document.getElementById('tab-btn-manual');
+    const uploadPanel = document.getElementById('panel-upload');
+    const manualPanel = document.getElementById('panel-manual');
+
+    function activate(tab) {
+      const isUpload = tab === 'upload';
+      uploadBtn.classList.toggle('active', isUpload);
+      manualBtn.classList.toggle('active', !isUpload);
+      uploadPanel.classList.toggle('active', isUpload);
+      manualPanel.classList.toggle('active', !isUpload);
+    }
+
+    uploadBtn.addEventListener('click', () => activate('upload'));
+    manualBtn.addEventListener('click', () => activate('manual'));
+
+    document.getElementById('banner-change-link').addEventListener('click', () => activate('upload'));
+
+    window._activateSourceTab = activate; // used by upload success handler
+  }
+
+  // ── Resume upload → auto-extract text, then hand off to manual panel for review ──
+  function initResumeUpload() {
+    const box = document.getElementById('upload-box');
+    const fileInput = document.getElementById('resumeFile');
+    const status = document.getElementById('upload-status');
+    const resumeText = document.getElementById('resumeText');
+    const banner = document.getElementById('extracted-banner');
+    const bannerText = document.getElementById('extracted-banner-text');
+
+    const MAX_SIZE = 5 * 1024 * 1024;
+    const ALLOWED_EXT = ['.pdf', '.doc', '.docx'];
+
+    function setStatus(type, html) {
+      status.className = `upload-status show ${type}`;
+      status.innerHTML = html;
+    }
+    function clearStatus() {
+      status.className = 'upload-status';
+      status.innerHTML = '';
+    }
+
+    async function handleFile(file) {
+      if (!file) return;
+      const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+      if (!ALLOWED_EXT.includes(ext)) {
+        setStatus('error', `<i class="fas fa-circle-exclamation"></i> Unsupported file type. Please upload a PDF or Word document.`);
+        return;
+      }
+      if (file.size > MAX_SIZE) {
+        setStatus('error', `<i class="fas fa-circle-exclamation"></i> File is too large. Max size is 5MB.`);
+        return;
+      }
+
+      setStatus('loading', `<span class="spinner on-dark"></span> Extracting text from <span class="fname">${file.name}</span>...`);
+
+      try {
+        const { text } = await API.parseResume(file);
+        resumeText.value = text;
+        clearStatus();
+
+        // Hand off to the manual panel so they can review/edit the extracted text
+        bannerText.innerHTML = `Extracted from <span class="fname" style="color:#fff">${file.name}</span> — review it below before submitting.`;
+        banner.classList.add('show');
+        if (window._activateSourceTab) window._activateSourceTab('manual');
+      } catch (err) {
+        setStatus('error', `<i class="fas fa-circle-exclamation"></i> ${err.message || 'Could not read this file — try "Enter Manually" instead.'}`);
+      }
+    }
+
+    box.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+    ['dragover', 'dragenter'].forEach(evt =>
+      box.addEventListener(evt, (e) => { e.preventDefault(); box.classList.add('dragover'); })
+    );
+    ['dragleave', 'dragend'].forEach(evt =>
+      box.addEventListener(evt, () => box.classList.remove('dragover'))
+    );
+    box.addEventListener('drop', (e) => {
+      e.preventDefault();
+      box.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        fileInput.files = e.dataTransfer.files;
+        handleFile(file);
+      }
+    });
+  }
+
+  function renderTwin(twin) {
+    const salary = twin.predictedSalary || {};
+    const salaryStr = salary.min && salary.max
+      ? `₹${(salary.min/100000).toFixed(1)}L – ₹${(salary.max/100000).toFixed(1)}L`
+      : 'Not enough data';
+
+    content.innerHTML = `
+      <span class="eyebrow"><div class="dot"></div>Digital Career Twin</span>
+      <h1>Your Career Twin</h1>
+      <p class="sub">Target role: <strong style="color:#fff">${twin.targetRole}</strong> · Updated ${new Date(twin.lastAnalyzedAt).toLocaleDateString()}
+        &nbsp;·&nbsp; <a href="#" id="rebuild-link" style="color:var(--accent)">Rebuild twin</a>
+      </p>
+
+      <div class="ai-summary">${twin.aiSummary || ''}</div>
+
+      <div class="stat-row">
+        <div class="card stat-card"><div class="lbl">Readiness</div><div class="val ${readinessClass(twin.readinessScore)}">${twin.readinessScore}%</div></div>
+        <div class="card stat-card"><div class="lbl">Skills Mapped</div><div class="val">${twin.skills.length}</div></div>
+        <div class="card stat-card"><div class="lbl">Salary Band</div><div class="val" style="font-size:1.05rem">${salaryStr}</div></div>
+        <div class="card stat-card"><div class="lbl">Roadmap Items</div><div class="val">${twin.roadmap.length}</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card twin-panel">
+          <h2>Skill Constellation</h2>
+          <p class="sub" style="margin-bottom:0;font-size:0.75rem">Node size = proficiency · color = market trend</p>
+          <canvas id="constellation-canvas"></canvas>
+          <div class="skill-tag-list">
+            ${twin.skills.map(s => `<span class="skill-tag"><span class="dt dt-${s.trend}"></span>${s.name} · ${s.proficiency}%</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="side-panel">
+          <div class="card mini-card">
+            <h3>🎯 Learning Roadmap</h3>
+            ${twin.roadmap.map(r => `
+              <div class="roadmap-item">
+                <div class="top"><span class="name">${r.skill}</span><span class="badge ${r.priority}">${r.priority}</span></div>
+                <div class="reason">${r.reason} · ~${r.estimatedWeeks}w</div>
+              </div>`).join('') || '<p class="sub">No roadmap items.</p>'}
+          </div>
+          <div class="card mini-card">
+            <h3>✓ Strengths</h3>
+            <ul class="strength-list">${twin.strengths.map(s=>`<li>${s}</li>`).join('') || '<li>None identified yet.</li>'}</ul>
+          </div>
+          <div class="card mini-card">
+            <h3>△ Gaps vs. target role</h3>
+            <ul class="gap-list">${twin.gaps.map(g=>`<li>${g}</li>`).join('') || '<li>No major gaps found.</li>'}</ul>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('rebuild-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      renderBuildForm(twin);
+    });
+
+    renderConstellation(document.getElementById('constellation-canvas'), twin.skills, { showLabels: true });
+  }
+
+  function renderEmptyOrForm() {
+    renderBuildForm(null);
+  }
+
+  (async function load() {
+    try {
+      const { twin } = await API.getMyTwin();
+      renderTwin(twin);
+    } catch (err) {
+      renderEmptyOrForm();
+    }
+  })();
+</script>
+</body>
+</html>

@@ -102,10 +102,13 @@
 
   <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
   <aside class="sidebar">
-    <div class="sidebar-logo"><i class="fas fa-book-open"></i><span>Student Notes Hub</span></div>
+    <div class="sidebar-logo"><i class="fas fa-book-open"></i><span>Astra AI
+Powered by Career Twin™</span></div>
     <nav class="sidebar-nav">
       <div class="nav-section">Main</div>
       <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+       <a class="nav-link" href="career-twin.html"><i class="fas fa-file-alt"></i><span>Career twin</span></a>
+       <a class="nav-link" href="interview.html"><i class="fas fa-robot"></i><span>AI Mock Interview</span></a>
       <a class="nav-link" href="notes.html"><i class="fas fa-sticky-note"></i><span>AI Notes</span></a>
       <a class="nav-link" href="assistant.html"><i class="fas fa-robot"></i><span>AI Assistant</span></a>
       <a class="nav-link active" href="resume.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a>
@@ -232,8 +235,7 @@
   /* ═══════════════════════════════════════════════════════════
      🔑  PASTE YOUR GEMINI API KEY HERE (same key as assistant.html)
   ═══════════════════════════════════════════════════════════ */
-  const GEMINI_API_KEY = 'AIzaSyDvmP0LMti5rXDoF1klFhW58gCa3JPljn8';
-  const GEMINI_ENHANCE_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  
 
   /* ── AUTH ─────────────────────────────────────────────────── */
   if (typeof Auth !== 'undefined' && !Auth.requireAuth()) {

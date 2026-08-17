@@ -1,142 +1,557 @@
-// public/js/api.js — Shared API helper used by ALL pages
-// ─────────────────────────────────────────────────────────────
+// public/js/api.js
+// Shared API helper used by ALL pages
 
-const API_BASE = '/api';
+const API_BASE = "/api";
 
-// ── Token helpers ─────────────────────────────────────────────
+// ============================================================
+// Token / Authentication Helpers
+// ============================================================
+
 const Auth = {
-  getToken:    ()     => localStorage.getItem('snhToken'),
-  getUser:     ()     => JSON.parse(localStorage.getItem('snhUser') || 'null'),
-  setSession:  (token, user) => {
-    localStorage.setItem('snhToken', token);
-    localStorage.setItem('snhUser', JSON.stringify(user));
+  getToken: () => {
+    return localStorage.getItem("snhToken");
   },
+
+  getUser: () => {
+    return JSON.parse(localStorage.getItem("snhUser") || "null");
+  },
+
+  setSession: (token, user) => {
+    localStorage.setItem("snhToken", token);
+    localStorage.setItem("snhUser", JSON.stringify(user));
+  },
+
   clearSession: () => {
-    localStorage.removeItem('snhToken');
-    localStorage.removeItem('snhUser');
+    localStorage.removeItem("snhToken");
+    localStorage.removeItem("snhUser");
   },
-  isLoggedIn:  () => !!localStorage.getItem('snhToken'),
-  // Redirect to login if not authenticated
+
+  isLoggedIn: () => {
+    return !!localStorage.getItem("snhToken");
+  },
+
   requireAuth: () => {
     if (!Auth.isLoggedIn()) {
-      window.location.href = '/login.html';
+      window.location.href = "/login.html";
       return false;
     }
+
     return true;
   },
-  // Redirect away from login/signup if already authenticated
+
   redirectIfLoggedIn: () => {
     if (Auth.isLoggedIn()) {
-      window.location.href = '/index.html';
+      window.location.href = "/index.html";
     }
-  }
+  },
 };
 
-// ── Core fetch wrapper ────────────────────────────────────────
+
+// ============================================================
+// Core Fetch Wrapper
+// ============================================================
+
 async function apiFetch(endpoint, options = {}) {
   const token = Auth.getToken();
-  const headers = { 'Content-Type': 'application/json', ...options.headers };
 
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const headers = {
+    ...options.headers,
+  };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers
-  });
-
-  const data = await response.json();
-
-  // If token expired, clear session and redirect
-  if (response.status === 401) {
-    Auth.clearSession();
-    if (!window.location.pathname.includes('login')) {
-      window.location.href = '/login.html';
-    }
+  // Only set JSON content type when body is NOT FormData
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
   }
 
+  // Add JWT token
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch (error) {
+    console.error("API Network Error:", error);
+    throw new Error(
+      "Unable to connect to server. Please check your internet connection."
+    );
+  }
+
+  // Try to parse response
+  let data;
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    data = {};
+  }
+
+  // ==========================================================
+  // Unauthorized
+  // ==========================================================
+
+  if (response.status === 401) {
+    Auth.clearSession();
+
+    if (!window.location.pathname.includes("login")) {
+      window.location.href = "/login.html";
+    }
+
+    throw new Error("Session expired. Please login again.");
+  }
+
+  // ==========================================================
+  // Other Errors
+  // ==========================================================
+
   if (!response.ok) {
-    throw new Error(data.message || 'Something went wrong');
+    throw new Error(
+      data.message ||
+      data.error ||
+      "Something went wrong. Please try again."
+    );
   }
 
   return data;
 }
 
-// ── API functions ─────────────────────────────────────────────
+
+// ============================================================
+// API Object
+// ============================================================
+
 const API = {
-  // Auth
-  signup:  (data)   => apiFetch('/auth/signup',  { method: 'POST', body: JSON.stringify(data) }),
-  login:   (data)   => apiFetch('/auth/login',   { method: 'POST', body: JSON.stringify(data) }),
-  getMe:   ()       => apiFetch('/auth/me'),
-  updateProfile: (data) => apiFetch('/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
-  getNotifications: () => apiFetch('/auth/notifications'),
-  markNotifsRead:   () => apiFetch('/auth/notifications/read', { method: 'PUT' }),
 
-  // Dashboard
-  getDashboard: () => apiFetch('/dashboard'),
+  // ==========================================================
+  // Generic Methods
+  // ==========================================================
 
-  // Notes
-  getNotes:     (params = '') => apiFetch(`/notes${params}`),
-  createNote:   (data) => apiFetch('/notes',          { method: 'POST', body: JSON.stringify(data) }),
-  updateNote:   (id, data) => apiFetch(`/notes/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteNote:   (id) => apiFetch(`/notes/${id}`,      { method: 'DELETE' }),
-  generateNote: (data) => apiFetch('/notes/generate', { method: 'POST', body: JSON.stringify(data) }),
+  post: (url, data) =>
+    apiFetch(url, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
-  // Resume
-  getResumes:   () => apiFetch('/resume'),
-  saveResume:   (data) => apiFetch('/resume',          { method: 'POST', body: JSON.stringify(data) }),
-  updateResume: (id, data) => apiFetch(`/resume/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteResume: (id) => apiFetch(`/resume/${id}`,      { method: 'DELETE' }),
-  enhanceResume: (data) => apiFetch('/resume/enhance', { method: 'POST', body: JSON.stringify(data) }),
+  get: (url) =>
+    apiFetch(url),
 
+  put: (url, data) =>
+    apiFetch(url, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  delete: (url) =>
+    apiFetch(url, {
+      method: "DELETE",
+    }),
+
+
+  // ==========================================================
+  // AUTH
+  // ==========================================================
+
+  signup: (data) =>
+    apiFetch("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  login: (data) =>
+    apiFetch("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  getMe: () =>
+    apiFetch("/auth/me"),
+
+  updateProfile: (data) =>
+    apiFetch("/auth/profile", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  getNotifications: () =>
+    apiFetch("/auth/notifications"),
+
+  markNotifsRead: () =>
+    apiFetch("/auth/notifications/read", {
+      method: "PUT",
+    }),
+
+  forgotPassword: (data) =>
+    apiFetch("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  resetPassword: (data) =>
+    apiFetch("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+
+  // ==========================================================
+  // DASHBOARD
+  // ==========================================================
+
+  getDashboard: () =>
+    apiFetch("/dashboard"),
+
+
+  // ==========================================================
+  // NOTES
+  // ==========================================================
+
+  getNotes: (params = "") =>
+    apiFetch(`/notes${params}`),
+
+  createNote: (data) =>
+    apiFetch("/notes", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  updateNote: (id, data) =>
+    apiFetch(`/notes/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  deleteNote: (id) =>
+    apiFetch(`/notes/${id}`, {
+      method: "DELETE",
+    }),
+
+  generateNote: (data) =>
+    apiFetch("/notes/generate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+
+  // ==========================================================
+  // RESUME
+  // ==========================================================
+
+  getResumes: () =>
+    apiFetch("/resume"),
+
+  saveResume: (data) =>
+    apiFetch("/resume", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  updateResume: (id, data) =>
+    apiFetch(`/resume/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  deleteResume: (id) =>
+    apiFetch(`/resume/${id}`, {
+      method: "DELETE",
+    }),
+
+  enhanceResume: (data) =>
+    apiFetch("/resume/enhance", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+
+  // ==========================================================
   // AI
-  chat:    (data) => apiFetch('/ai/chat',     { method: 'POST', body: JSON.stringify(data) }),
-  runCode: (data) => apiFetch('/ai/run-code', { method: 'POST', body: JSON.stringify(data) }),
+  // ==========================================================
+
+  chat: (data) =>
+    apiFetch("/ai/chat", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  runCode: (data) =>
+    apiFetch("/ai/run-code", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+
+  // ==========================================================
+  // CAREER TWIN
+  // ==========================================================
+
+  getTwinRoles: () =>
+    apiFetch("/twin/roles"),
+
+  getMyTwin: () =>
+    apiFetch("/twin/me"),
+
+  buildTwin: (data) =>
+    apiFetch("/twin/build", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  getTwinHistory: () =>
+    apiFetch("/twin/history"),
+
+
+  // ==========================================================
+  // CAREER TWIN - PARSE RESUME
+  // ==========================================================
+
+  parseResume: async (file) => {
+
+    if (!file) {
+      throw new Error("Please select a resume file.");
+    }
+
+    const formData = new FormData();
+
+    formData.append("resume", file);
+
+    const token = Auth.getToken();
+
+    let response;
+
+    try {
+
+      response = await fetch(`${API_BASE}/twin/parse-resume`, {
+        method: "POST",
+
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {},
+
+        // IMPORTANT:
+        // Do NOT manually set Content-Type here.
+        // Browser automatically sets multipart/form-data boundary.
+        body: formData,
+      });
+
+    } catch (error) {
+
+      console.error("Resume Upload Error:", error);
+
+      throw new Error(
+        "Unable to connect to server. Please try again."
+      );
+    }
+
+
+    // ========================================================
+    // Parse Server Response
+    // ========================================================
+
+    let data;
+
+    try {
+
+      data = await response.json();
+
+    } catch (error) {
+
+      data = {};
+    }
+
+
+    // ========================================================
+    // Unauthorized
+    // ========================================================
+
+    if (response.status === 401) {
+
+      Auth.clearSession();
+
+      if (!window.location.pathname.includes("login")) {
+        window.location.href = "/login.html";
+      }
+
+      throw new Error(
+        "Session expired. Please login again."
+      );
+    }
+
+
+    // ========================================================
+    // API Error
+    // ========================================================
+
+    if (!response.ok || data.success === false) {
+
+      throw new Error(
+        data.message ||
+        data.error ||
+        "Failed to parse resume."
+      );
+    }
+
+
+    // ========================================================
+    // Success
+    // ========================================================
+
+    return data;
+  },
+
+
+  // ==========================================================
+  // MOCK INTERVIEW
+  // ==========================================================
+
+  getInterviewQuestion: () =>
+    apiFetch("/interview/question", {
+      method: "POST",
+    }),
+
+  scoreInterviewAnswer: (data) =>
+    apiFetch("/interview/score", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
 
-// ── Toast notification helper ─────────────────────────────────
-function showToast(message, type = 'info') {
-  const existing = document.getElementById('toast-container');
-  if (!existing) {
-    const container = document.createElement('div');
-    container.id = 'toast-container';
-    container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;';
+
+// ============================================================
+// Toast Helper
+// ============================================================
+
+function showToast(message, type = "info") {
+
+  // Create container if it doesn't exist
+  if (!document.getElementById("toast-container")) {
+
+    const container = document.createElement("div");
+
+    container.id = "toast-container";
+
+    container.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    `;
+
     document.body.appendChild(container);
   }
 
+
+  // ==========================================================
+  // Toast Colors
+  // ==========================================================
+
   const colors = {
-    success: '#00d9a6',
-    error:   '#ff5c8d',
-    info:    '#7c5cff',
-    warning: '#ffb84d'
+
+    success: "#00d9a6",
+
+    error: "#ff5c8d",
+
+    info: "#7c5cff",
+
+    warning: "#ffb84d",
+
   };
 
-  const toast = document.createElement('div');
+
+  // ==========================================================
+  // Create Toast
+  // ==========================================================
+
+  const toast = document.createElement("div");
+
+  const toastColor =
+    colors[type] || colors.info;
+
+
   toast.style.cssText = `
     background: #0f1115;
-    border: 1px solid ${colors[type] || colors.info};
+    border: 1px solid ${toastColor};
     color: #e6eef8;
     padding: 12px 18px;
     border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    animation: slideIn 0.3s ease;
-    max-width: 320px;
-    border-left: 3px solid ${colors[type] || colors.info};
+    font-family: Poppins, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    border-left: 4px solid ${toastColor};
+    animation: slideIn .3s ease;
+    max-width: 350px;
+    word-break: break-word;
   `;
-  toast.textContent = message;
 
-  const container = document.getElementById('toast-container');
-  container.appendChild(toast);
+
+  toast.innerText = message;
+
+
+  // Add toast
+  document
+    .getElementById("toast-container")
+    .appendChild(toast);
+
+
+  // ==========================================================
+  // Remove Toast
+  // ==========================================================
 
   setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
+
+    toast.style.opacity = "0";
+
+    toast.style.transform = "translateX(100%)";
+
+    toast.style.transition = ".3s";
+
+    setTimeout(() => {
+
+      toast.remove();
+
+    }, 300);
+
   }, 4000);
 }
 
-// Add toast animation CSS
-const toastStyle = document.createElement('style');
-toastStyle.textContent = `@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
+
+// ============================================================
+// Toast Animation
+// ============================================================
+
+const toastStyle = document.createElement("style");
+
+toastStyle.textContent = `
+
+@keyframes slideIn {
+
+  from {
+
+    transform: translateX(100%);
+
+    opacity: 0;
+
+  }
+
+  to {
+
+    transform: translateX(0);
+
+    opacity: 1;
+
+  }
+
+}
+
+`;
+
 document.head.appendChild(toastStyle);

@@ -189,11 +189,14 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <i class="fas fa-book-open"></i>
-      <span>Student Notes Hub</span>
+      <span>Astra AI
+Powered by Career Twin™</span>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Main</div>
       <a class="nav-link" href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+       <a class="nav-link" href="career-twin.html"><i class="fas fa-file-alt"></i><span>Career twin</span></a>
+       <a class="nav-link" href="interview.html"><i class="fas fa-robot"></i><span>AI Mock Interview</span></a>
       <a class="nav-link" href="notes.html"><i class="fas fa-sticky-note"></i><span>AI Notes</span></a>
       <a class="nav-link active" href="assistant.html"><i class="fas fa-robot"></i><span>AI Assistant</span></a>
       <a class="nav-link" href="resume.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a>
@@ -355,19 +358,7 @@
 
   <script src="js/api.js"></script>
   <script>
-    /* ═══════════════════════════════════════════════════════════
-       🔑  YOUR GEMINI API KEY — paste it here once, all users
-           get real AI responses for free when they log in.
-           Get a free key: https://aistudio.google.com/app/apikey
-    ═══════════════════════════════════════════════════════════ */
-    const GEMINI_API_KEY = 'AIzaSyDvmP0LMti5rXDoF1klFhW58gCa3JPljn8'; // ← Replace this
 
-    /* ── GEMINI MODEL AUTO-DISCOVERY ──────────────────────────
-       On startup we call ListModels to get ONLY the models that
-       actually exist on this API key. No more hardcoded names.
-       Preferred order: flash variants first (fastest/most quota),
-       then pro variants as fallback.
-    ──────────────────────────────────────────────────────────── */
     let GEMINI_MODELS    = [];   // filled by discoverModels()
     let activeModelIndex = 0;
     let lastRequestTime  = 0;

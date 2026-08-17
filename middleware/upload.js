@@ -40,4 +40,23 @@ const upload = multer({
   }
 });
 
+// ── Resume uploader — same disk storage, but also allows Word docs ──
+const resumeFileFilter = (req, file, cb) => {
+  const allowed = /\.(pdf|doc|docx)$/i;
+  if (allowed.test(path.extname(file.originalname))) {
+    cb(null, true);
+  } else {
+    cb(new Error('File type not allowed. Use a PDF or Word (.doc, .docx) file.'), false);
+  }
+};
+
+const resumeUpload = multer({
+  storage,
+  fileFilter: resumeFileFilter,
+  limits: {
+    fileSize: (parseInt(process.env.MAX_RESUME_SIZE_MB) || 5) * 1024 * 1024 // default 5 MB
+  }
+});
+
 module.exports = upload;
+module.exports.resumeUpload = resumeUpload; // usage: upload.resumeUpload.single('resume')

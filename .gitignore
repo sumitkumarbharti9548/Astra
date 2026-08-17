@@ -1,12 +1,16 @@
 # Dependencies
 node_modules/
 
-# Environment variables — NEVER commit this!
+# Environment variables — NEVER commit real secrets
 .env
+.env.*
+!.env.example
 
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
 # OS files
 .DS_Store
@@ -19,3 +23,15 @@ Thumbs.db
 # Build output
 dist/
 build/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Uploaded files
+public/uploads/*
+!public/uploads/.gitkeep
+
+
+# Temporary test files
+test-email.js

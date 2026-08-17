@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Student Notes Hub — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Poppins:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
@@ -34,7 +34,7 @@
     /* ── Main ── */
     .main{flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
     .topbar{height:60px;padding:0 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;background:rgba(7,7,10,0.9);backdrop-filter:blur(12px);z-index:40}
-    .topbar-title{font-family:'Montserrat';font-weight:700;font-size:1rem;color:#fff}
+    .topbar-title{font-family:'Montserrat';font-weight:700;font-size:1rem;color:#fff; margin-left:20px;}
     .topbar-right{display:flex;align-items:center;gap:14px}
     .icon-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .22s;position:relative;color:#9aa4b2;font-size:0.9rem}
     .icon-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
@@ -100,6 +100,54 @@
     /* Chart */
     .chart-wrap{height:180px;position:relative}
 
+    /* ── Career Twin Snapshot (NEW) ── */
+    .twin-section{margin-bottom:24px}
+    .twin-card{background:linear-gradient(120deg,rgba(124,92,255,0.08) 0%,rgba(0,180,255,0.04) 100%);border:1px solid rgba(124,92,255,0.18);border-radius:16px;padding:24px 26px}
+    .twin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+    .twin-title-wrap{display:flex;align-items:center;gap:10px}
+    .twin-icon{width:38px;height:38px;border-radius:10px;background:rgba(124,92,255,0.18);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .twin-title{font-family:'Montserrat';font-size:0.95rem;font-weight:700;color:#fff}
+    .twin-role{font-size:0.78rem;color:var(--muted)}
+    .twin-link{font-size:0.8rem;color:var(--accent);text-decoration:none}
+    .twin-link:hover{text-decoration:underline}
+
+    .twin-body{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+    .readiness-ring-wrap{position:relative;width:96px;height:96px;flex-shrink:0}
+    .readiness-ring-wrap svg{transform:rotate(-90deg)}
+    .readiness-ring-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:8}
+    .readiness-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dasharray 0.6s ease}
+    .readiness-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .readiness-ring-label .num{font-family:'Montserrat';font-size:1.3rem;font-weight:800;color:#fff}
+    .readiness-ring-label .lbl{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+
+    .twin-stats-row{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+    .twin-stat{display:flex;flex-direction:column;gap:2px}
+    .twin-stat .v{font-family:'Montserrat';font-size:1.1rem;font-weight:700;color:#fff}
+    .twin-stat .l{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+
+    .twin-skill-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+    .twin-skill-tag{font-family:'JetBrains Mono',monospace;font-size:0.68rem;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid var(--border);display:inline-flex;align-items:center;gap:5px}
+    .twin-skill-tag .dt{width:5px;height:5px;border-radius:50%}
+    .dt-rising{background:var(--success)}.dt-stable{background:var(--accent2)}.dt-declining{background:var(--danger)}
+
+    .twin-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .twin-btn{padding:9px 16px;border-radius:9px;font-size:0.8rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+    .twin-btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071022;border:none}
+    .twin-btn.primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(124,92,255,0.35)}
+    .twin-btn.ghost{background:rgba(255,255,255,0.04);color:#e6eef8;border:1px solid var(--border)}
+    .twin-btn.ghost:hover{background:rgba(255,255,255,0.08)}
+
+    /* Empty state (no twin built yet) */
+    .twin-empty{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .twin-empty-icon{width:56px;height:56px;border-radius:14px;background:rgba(124,92,255,0.15);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+    .twin-empty-text h3{font-family:'Montserrat';font-size:1rem;color:#fff;margin-bottom:4px}
+    .twin-empty-text p{font-size:0.82rem;color:var(--muted);max-width:420px}
+    .twin-empty-cta{margin-left:auto}
+
+    /* Loading skeleton */
+    .skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.06) 50%,rgba(255,255,255,0.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
     /* Notifications panel */
     .notif-panel{position:fixed;top:70px;right:20px;width:320px;background:#0f1115;border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 40px rgba(0,0,0,0.5);z-index:200;display:none;overflow:hidden}
     .notif-panel.open{display:block;animation:fadeDown .2s ease}
@@ -112,10 +160,6 @@
     .notif-dot-indicator{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
     .notif-msg{font-size:0.8rem;color:#e6eef8;line-height:1.5}
     .notif-time{font-size:0.72rem;color:var(--muted);margin-top:2px}
-
-    /* Loading skeleton */
-    .skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.06) 50%,rgba(255,255,255,0.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
     /* Profile modal */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -133,7 +177,7 @@
     .btn-ghost:hover{background:rgba(255,255,255,0.05)}
 
     /* Responsive */
-    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.bottom-grid{grid-template-columns:1fr}.sidebar{width:60px}.sidebar-logo span,.nav-link span,.nav-section,.sidebar-user-info,.streak-badge .streak-label{display:none}.nav-link{justify-content:center;padding:12px}.sidebar-logo{justify-content:center;padding:16px}}
+    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.bottom-grid{grid-template-columns:1fr}.sidebar{width:60px}.sidebar-logo span,.nav-link span,.nav-section,.sidebar-user-info,.streak-badge .streak-label{display:none}.nav-link{justify-content:center;padding:12px}.sidebar-logo{justify-content:center;padding:16px}.twin-body{grid-template-columns:1fr}.twin-empty{flex-direction:column;align-items:flex-start}.twin-empty-cta{margin-left:0}}
     @media(max-width:600px){.welcome-banner{flex-direction:column}.quick-actions{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -142,7 +186,10 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <i class="fas fa-book-open"></i>
-      <span>Student Notes Hub</span>
+<div class="logo-text">
+    <span>Astra AI</span>
+    <span class="tagline">Powered by Career Twin™</span>
+</div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Main</div>
@@ -154,6 +201,8 @@
       <a class="nav-link" href="code.html"><i class="fas fa-code"></i><span>Code Playground</span></a>
       <a class="nav-link" href="challenge.html"><i class="fas fa-trophy"></i><span>Daily Challenge</span></a>
       <a class="nav-link" href="studymaterial.html"><i class="fas fa-graduation-cap"></i><span>Study Material</span></a>
+      <a class="nav-link" href="career-twin.html"><i class="fas fa-dna"></i><span>Career Twin</span><span class="badge">New</span></a>
+      <a class="nav-link" href="interview.html"><i class="fas fa-comments"></i><span>Mock Interview</span></a>
       <div class="nav-section">Account</div>
       <button class="nav-link" onclick="openProfile()"><i class="fas fa-user-circle"></i><span>Profile</span></button>
       <button class="nav-link" onclick="logout()" style="color:#ff5c8d"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
@@ -171,7 +220,7 @@
   <main class="main">
     <!-- Topbar -->
     <div class="topbar">
-      <div class="topbar-title" id="pageGreeting">Good morning 👋</div>
+      <div class="topbar-title" id="pageGreeting"> &nbsp; &nbsp;&nbsp;  Good morning 👋</div>
       <div class="topbar-right">
         <div class="icon-btn" onclick="toggleNotifs()" title="Notifications">
           <i class="fas fa-bell"></i>
@@ -213,12 +262,20 @@
         </div>
       </div>
 
-      <!-- Stats Grid -->
+      <!-- Stats Grid (REAL data from API.getDashboard()) -->
       <div class="stats-grid" id="statsGrid">
         <div class="stat-card skeleton" style="height:110px"></div>
         <div class="stat-card skeleton" style="height:110px"></div>
         <div class="stat-card skeleton" style="height:110px"></div>
         <div class="stat-card skeleton" style="height:110px"></div>
+      </div>
+
+      <!-- Career Twin Snapshot (REAL data from API.getMyTwin()) -->
+      <div class="twin-section">
+        <div style="font-family:'Montserrat';font-size:0.85rem;font-weight:700;color:#fff;margin-bottom:12px;opacity:0.7;text-transform:uppercase;letter-spacing:.05em">Career Twin</div>
+        <div class="twin-card" id="twinCard">
+          <div class="skeleton" style="height:110px;border-radius:12px"></div>
+        </div>
       </div>
 
       <!-- Quick Actions -->
@@ -240,6 +297,14 @@
           <a class="qa-btn" href="code.html">
             <i class="fas fa-code" style="background:rgba(255,184,77,0.12);color:var(--warning)"></i>
             <div><div class="qa-label">Code Playground</div><div class="qa-sub">Run code in browser</div></div>
+          </a>
+          <a class="qa-btn" href="career-twin.html">
+            <i class="fas fa-dna" style="background:rgba(124,92,255,0.15);color:var(--accent)"></i>
+            <div><div class="qa-label">View Career Twin</div><div class="qa-sub">Skills, gaps &amp; roadmap</div></div>
+          </a>
+          <a class="qa-btn" href="interview.html">
+            <i class="fas fa-comments" style="background:rgba(0,180,255,0.12);color:var(--accent2)"></i>
+            <div><div class="qa-label">Mock Interview</div><div class="qa-sub">Practice with AI feedback</div></div>
           </a>
         </div>
       </div>
@@ -314,7 +379,7 @@
     const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
     document.getElementById('pageGreeting').textContent = greet + ' 👋';
 
-    // ── Load Dashboard ─────────────────────────────────────────
+    // ── Load Dashboard (REAL stats — unchanged from your original) ──
     async function loadDashboard() {
       try {
         const { dashboard } = await API.getDashboard();
@@ -338,7 +403,7 @@
           document.getElementById('notifDot').style.display = 'block';
         }
 
-        // Stats cards
+        // Stats cards — REAL counts, straight from your MongoDB User.stats
         document.getElementById('statsGrid').innerHTML = `
           <div class="stat-card">
             <div class="stat-icon purple"><i class="fas fa-sticky-note"></i></div>
@@ -454,6 +519,93 @@
       });
     }
 
+    // ── Career Twin Snapshot (NEW — REAL data via API.getMyTwin()) ──
+    const trendClass = { rising: 'dt-rising', stable: 'dt-stable', declining: 'dt-declining' };
+
+    function readinessColor(score) {
+      if (score >= 70) return '#00d9a6';
+      if (score >= 40) return '#ffb84d';
+      return '#ff5c8d';
+    }
+
+    function renderTwinCard(twin) {
+      const circumference = 2 * Math.PI * 40; // r=40
+      const score = twin.readinessScore || 0;
+      const dash = (score / 100) * circumference;
+      const color = readinessColor(score);
+
+      const salary = twin.predictedSalary || {};
+      const salaryStr = salary.min && salary.max
+        ? `₹${(salary.min/100000).toFixed(1)}L–₹${(salary.max/100000).toFixed(1)}L`
+        : '—';
+
+      const topSkills = (twin.skills || []).slice(0, 6);
+
+      document.getElementById('twinCard').innerHTML = `
+        <div class="twin-header">
+          <div class="twin-title-wrap">
+            <div class="twin-icon"><i class="fas fa-dna"></i></div>
+            <div>
+              <div class="twin-title">Your Career Twin</div>
+              <div class="twin-role">Target role: ${twin.targetRole || '—'} · Updated ${new Date(twin.lastAnalyzedAt).toLocaleDateString()}</div>
+            </div>
+          </div>
+          <a class="twin-link" href="career-twin.html">View full twin →</a>
+        </div>
+        <div class="twin-body">
+          <div class="readiness-ring-wrap">
+            <svg width="96" height="96" viewBox="0 0 96 96">
+              <circle class="readiness-ring-track" cx="48" cy="48" r="40"></circle>
+              <circle class="readiness-ring-fill" cx="48" cy="48" r="40"
+                stroke="${color}"
+                stroke-dasharray="${dash} ${circumference}"></circle>
+            </svg>
+            <div class="readiness-ring-label">
+              <div class="num">${score}%</div>
+              <div class="lbl">Ready</div>
+            </div>
+          </div>
+          <div>
+            <div class="twin-stats-row">
+              <div class="twin-stat"><div class="v">${(twin.skills||[]).length}</div><div class="l">Skills Mapped</div></div>
+              <div class="twin-stat"><div class="v">${(twin.roadmap||[]).length}</div><div class="l">Roadmap Items</div></div>
+              <div class="twin-stat"><div class="v">${salaryStr}</div><div class="l">Predicted Salary</div></div>
+            </div>
+            <div class="twin-skill-tags">
+              ${topSkills.map(s => `<span class="twin-skill-tag"><span class="dt ${trendClass[s.trend]||'dt-stable'}"></span>${s.name} · ${s.proficiency}%</span>`).join('')}
+            </div>
+            <div class="twin-actions">
+              <a class="twin-btn primary" href="career-twin.html"><i class="fas fa-chart-line"></i> View Roadmap</a>
+              <a class="twin-btn ghost" href="interview.html"><i class="fas fa-comments"></i> Practice Interview</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTwinEmptyState() {
+      document.getElementById('twinCard').innerHTML = `
+        <div class="twin-empty">
+          <div class="twin-empty-icon"><i class="fas fa-dna"></i></div>
+          <div class="twin-empty-text">
+            <h3>Build your Career Twin</h3>
+            <p>Turn your resume, GitHub activity and projects into a live skill map — with a real readiness score and roadmap for your target role.</p>
+          </div>
+          <a href="career-twin.html" class="twin-btn primary twin-empty-cta"><i class="fas fa-wand-magic-sparkles"></i> Build now</a>
+        </div>
+      `;
+    }
+
+    async function loadCareerTwin() {
+      try {
+        const { twin } = await API.getMyTwin();
+        renderTwinCard(twin);
+      } catch (err) {
+        // 404 = no twin built yet, which is a normal state, not an error to surface
+        renderTwinEmptyState();
+      }
+    }
+
     // ── Notifications ──────────────────────────────────────────
     async function toggleNotifs() {
       const panel = document.getElementById('notifPanel');
@@ -530,6 +682,7 @@
 
     // ── Init ───────────────────────────────────────────────────
     loadDashboard();
+    loadCareerTwin();
   </script>
 </body>
 </html>

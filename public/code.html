@@ -18,13 +18,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);dis
 .logo{padding:18px 16px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
 .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-icon i{color:#0b0c10;font-size:.9rem}
-.logo-text{font-family:'Syne';font-weight:800;font-size:.9rem;color:var(--text)}
+.logo-text{font-family:'Syne';font-weight:800;font-size:.9rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
 .nav-head{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:8px 8px 4px;opacity:.7}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--text2);font-size:.82rem;font-weight:500;cursor:pointer;transition:.18s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
 .nav-item i{width:16px;text-align:center;font-size:.82rem;flex-shrink:0}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
 .nav-item.active{background:rgba(94,234,212,.1);color:var(--accent);font-weight:600}
+.nav-badge{margin-left:auto;background:var(--accent2);color:#0b0c10;font-size:.6rem;padding:2px 7px;border-radius:20px;font-weight:700;flex-shrink:0}
 .sidebar-foot{padding:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent3));display:flex;align-items:center;justify-content:center;font-family:'Syne';font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
 .uname{font-size:.82rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -128,7 +129,7 @@ select.styled option{background:var(--surface)}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
 
-@media(max-width:640px){.sidebar{width:52px}.logo-text,.nav-item span,.nav-head,.uname{display:none}.nav-item{justify-content:center}.sidebar-foot{justify-content:center}}
+@media(max-width:640px){.sidebar{width:52px}.logo-text,.nav-item span,.nav-head,.uname,.nav-badge{display:none}.nav-item{justify-content:center}.sidebar-foot{justify-content:center}}
 </style>
 </head>
 <body>
@@ -136,7 +137,7 @@ select.styled option{background:var(--surface)}
 <aside class="sidebar">
   <div class="logo">
     <div class="logo-icon"><i class="fas fa-book-open"></i></div>
-    <div class="logo-text">Notes Hub</div>
+    <div class="logo-text">Student Notes Hub</div>
   </div>
   <nav class="nav">
     <div class="nav-head">Main</div>
@@ -148,6 +149,8 @@ select.styled option{background:var(--surface)}
     <a class="nav-item active" href="code.html"><i class="fas fa-code"></i><span>Playground</span></a>
     <a class="nav-item" href="challenge.html"><i class="fas fa-trophy"></i><span>Daily Challenge</span></a>
     <a class="nav-item" href="studymaterial.html"><i class="fas fa-graduation-cap"></i><span>Study Material</span></a>
+    <a class="nav-item" href="career-twin.html"><i class="fas fa-dna"></i><span>Career Twin</span><span class="nav-badge">New</span></a>
+    <a class="nav-item" href="interview.html"><i class="fas fa-comments"></i><span>Mock Interview</span></a>
     <div class="nav-head">Account</div>
     <button class="nav-item" onclick="logout()" style="color:#f87171"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
   </nav>
@@ -249,11 +252,12 @@ Tip: this is an interactive terminal — it will pause and ask for input when yo
 
 <div class="toast-wrap" id="toastWrap"></div>
 
+<script src="js/api.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════════
 // LANGUAGE DEFINITIONS
-// runner: 'local-html' | 'local-js' | 'pyodide' | 'glot'
-// glotLang: language slug for glot.io API
+// runner: 'local-html' | 'local-js' | 'pyodide' | 'local-sql' | 'backend'
+// glotLang: language slug used for file naming + stdin-detection patterns
 // ═══════════════════════════════════════════════════════════════════
 const LANGS = [
   { id:'html',   label:'HTML',       icon:'🌐', color:'#f97316', ext:'html',  runner:'local-html',
@@ -265,46 +269,46 @@ const LANGS = [
   { id:'js',     label:'JavaScript', icon:'🟨', color:'#eab308', ext:'js',   runner:'local-js',
     boot:`// JavaScript — runs instantly in the browser\nconsole.log("Hello, World!");\n\nconst nums = [1,2,3,4,5];\nconsole.log("Squares:", nums.map(n => n * n));\n\nasync function main() {\n  const res = await fetch('https://api.github.com/zen');\n  console.log("GitHub Zen:", await res.text());\n}\nmain();` },
 
-  { id:'ts',     label:'TypeScript', icon:'🔷', color:'#2563eb', ext:'ts',   runner:'glot', glotLang:'typescript',
+  { id:'ts',     label:'TypeScript', icon:'🔷', color:'#2563eb', ext:'ts',   runner:'backend', glotLang:'typescript',
     boot:`interface User { name: string; age: number; }\n\nfunction greet(u: User): string {\n  return \`Hello \${u.name}, age \${u.age}!\`;\n}\n\nconsole.log(greet({ name: "Alice", age: 22 }));` },
 
-  { id:'java',   label:'Java',       icon:'☕', color:'#dc2626', ext:'java', runner:'glot', glotLang:'java',
+  { id:'java',   label:'Java',       icon:'☕', color:'#dc2626', ext:'java', runner:'backend', glotLang:'java',
     boot:`import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.println("Hello, World!");\n        System.out.print("Enter your name: ");\n        String name = sc.nextLine();\n        System.out.println("Welcome, " + name + "!");\n    }\n}` },
 
-  { id:'cpp',    label:'C++',        icon:'⚙️', color:'#7c3aed', ext:'cpp',  runner:'glot', glotLang:'cpp',
+  { id:'cpp',    label:'C++',        icon:'⚙️', color:'#7c3aed', ext:'cpp',  runner:'backend', glotLang:'cpp',
     boot:`#include <iostream>\n#include <string>\nusing namespace std;\nint main(){\n    string name;\n    cout<<"Hello! Enter your name: ";\n    getline(cin,name);\n    cout<<"Welcome, "<<name<<"!"<<endl;\n    return 0;\n}` },
 
-  { id:'c',      label:'C',          icon:'🔵', color:'#0891b2', ext:'c',    runner:'glot', glotLang:'c',
+  { id:'c',      label:'C',          icon:'🔵', color:'#0891b2', ext:'c',    runner:'backend', glotLang:'c',
     boot:`#include <stdio.h>\nint main(){\n    char name[100];\n    printf("Hello! Enter your name: ");\n    fgets(name,100,stdin);\n    printf("Welcome, %s!\\n",name);\n    return 0;\n}` },
 
-  { id:'cs',     label:'C#',         icon:'💜', color:'#8b5cf6', ext:'cs',   runner:'glot', glotLang:'csharp',
+  { id:'cs',     label:'C#',         icon:'💜', color:'#8b5cf6', ext:'cs',   runner:'backend', glotLang:'csharp',
     boot:`using System;\nclass Program{\n    static void Main(){\n        Console.Write("Enter your name: ");\n        string name = Console.ReadLine();\n        Console.WriteLine($"Hello, {name}!");\n    }\n}` },
 
-  { id:'go',     label:'Go',         icon:'🐹', color:'#06b6d4', ext:'go',   runner:'glot', glotLang:'go',
+  { id:'go',     label:'Go',         icon:'🐹', color:'#06b6d4', ext:'go',   runner:'backend', glotLang:'go',
     boot:`package main\nimport(\n    "bufio"\n    "fmt"\n    "os"\n)\nfunc main(){\n    reader:=bufio.NewReader(os.Stdin)\n    fmt.Print("Enter your name: ")\n    name,_:=reader.ReadString('\\n')\n    fmt.Printf("Hello, %s!\\n",name)\n}` },
 
-  { id:'rust',   label:'Rust',       icon:'🦀', color:'#ea580c', ext:'rs',   runner:'glot', glotLang:'rust',
+  { id:'rust',   label:'Rust',       icon:'🦀', color:'#ea580c', ext:'rs',   runner:'backend', glotLang:'rust',
     boot:`use std::io;\nfn main(){\n    println!("Hello, World!");\n    let mut name=String::new();\n    println!("Enter your name:");\n    io::stdin().read_line(&mut name).unwrap();\n    println!("Welcome, {}!",name.trim());\n}` },
 
-  { id:'ruby',   label:'Ruby',       icon:'💎', color:'#dc2626', ext:'rb',   runner:'glot', glotLang:'ruby',
+  { id:'ruby',   label:'Ruby',       icon:'💎', color:'#dc2626', ext:'rb',   runner:'backend', glotLang:'ruby',
     boot:`print "Enter your name: "\nname = gets.chomp\nputs "Hello, #{name}!"\nputs (1..5).map{|i| "#{i}^2=#{i**2}"}` },
 
-  { id:'php',    label:'PHP',        icon:'🐘', color:'#6366f1', ext:'php',  runner:'glot', glotLang:'php',
+  { id:'php',    label:'PHP',        icon:'🐘', color:'#6366f1', ext:'php',  runner:'backend', glotLang:'php',
     boot:`<?php\n$name = trim(fgets(STDIN));\necho "Hello, $name!\\n";\nfor($i=1;$i<=5;$i++) echo "$i^2=".($i*$i)."\\n";\n?>` },
 
-  { id:'swift',  label:'Swift',      icon:'🔶', color:'#f97316', ext:'swift',runner:'glot', glotLang:'swift',
+  { id:'swift',  label:'Swift',      icon:'🔶', color:'#f97316', ext:'swift',runner:'backend', glotLang:'swift',
     boot:`import Swift\nprint("Enter your name:")\nif let name = readLine() {\n    print("Hello, \\(name)!")\n}\nlet sq=(1...5).map{$0*$0}\nprint("Squares:",sq)` },
 
-  { id:'kotlin', label:'Kotlin',     icon:'🟪', color:'#a855f7', ext:'kt',   runner:'glot', glotLang:'kotlin',
+  { id:'kotlin', label:'Kotlin',     icon:'🟪', color:'#a855f7', ext:'kt',   runner:'backend', glotLang:'kotlin',
     boot:`fun main(){\n    print("Enter your name: ")\n    val name=readLine()\n    println("Hello, \$name!")\n    val sq=(1..5).map{it*it}\n    println("Squares: \$sq")\n}` },
 
-  { id:'r',      label:'R',          icon:'📊', color:'#1d4ed8', ext:'r',    runner:'glot', glotLang:'r',
+  { id:'r',      label:'R',          icon:'📊', color:'#1d4ed8', ext:'r',    runner:'backend', glotLang:'r',
     boot:`cat("Enter your name: ")\nname <- readLines(con=stdin(),n=1)\ncat(paste("Hello,",name,"!\\n"))\ncat("Squares:",(1:5)^2,"\\n")` },
 
-  { id:'bash',   label:'Bash',       icon:'🐚', color:'#16a34a', ext:'sh',   runner:'glot', glotLang:'bash',
+  { id:'bash',   label:'Bash',       icon:'🐚', color:'#16a34a', ext:'sh',   runner:'backend', glotLang:'bash',
     boot:`#!/bin/bash\nread -p "Enter your name: " name\necho "Hello, $name!"\nfor i in 1 2 3 4 5; do echo "$i^2=$(( i*i ))"; done` },
 
-  { id:'lua',    label:'Lua',        icon:'🌙', color:'#1e40af', ext:'lua',  runner:'glot', glotLang:'lua',
+  { id:'lua',    label:'Lua',        icon:'🌙', color:'#1e40af', ext:'lua',  runner:'backend', glotLang:'lua',
     boot:`io.write("Enter your name: ")\nlocal name=io.read()\nprint("Hello, "..name.."!")\nfor i=1,5 do print(i.."^2="..(i*i)) end` },
 
   { id:'sql',    label:'SQLite',     icon:'🗃️', color:'#0369a1', ext:'sql',  runner:'local-sql',
@@ -376,8 +380,8 @@ function activateLang(id) {
   document.getElementById('fileName').textContent = 'main.' + lang.ext;
   document.getElementById('sbLang').textContent = lang.label;
 
-  const runnerMap = {'local-js':'LOCAL','local-html':'LOCAL','pyodide':'WASM','glot':'API','local-sql':'LOCAL'};
-  const classMap  = {'local-js':'runner-local','local-html':'runner-local','pyodide':'runner-wasm','glot':'runner-api','local-sql':'runner-local'};
+  const runnerMap = {'local-js':'LOCAL','local-html':'LOCAL','pyodide':'WASM','backend':'SERVER','local-sql':'LOCAL'};
+  const classMap  = {'local-js':'runner-local','local-html':'runner-local','pyodide':'runner-wasm','backend':'runner-api','local-sql':'runner-local'};
   const rl = document.getElementById('runnerLabel');
   rl.textContent = runnerMap[lang.runner];
   rl.className = 'runner-badge ' + classMap[lang.runner];
@@ -543,7 +547,7 @@ async function runCode() {
     else if (lang.runner === 'local-js')   runJSLocal(code);
     else if (lang.runner === 'pyodide')    await runPython(code);
     else if (lang.runner === 'local-sql')  runSQL(code);
-    else if (lang.runner === 'glot')       await runGlot(code, lang);
+    else if (lang.runner === 'backend')    await runViaBackend(code, lang);
   } catch(e) {
     termPrint('\n<span class="t-err">❌ Unexpected error: ' + esc(e.message) + '</span>');
     setBadge('err','✗ Error');
@@ -659,14 +663,6 @@ class _LiveOut:
 sys.stdout = _LiveOut()
 `);
 
-    // Patch input to be sync-looking but async underneath using a shared buffer trick
-    // Since Pyodide doesn't support true async input(), we use a pre-collected queue
-    // BUT we intercept each input call via JS Promise synchronisation using SharedArrayBuffer if available
-    // Fallback: collect all input up-front from the user one by one
-
-    // Best approach for Pyodide: run code, intercept each input() call via atomics if available
-    // For browsers without SharedArrayBuffer, we collect stdin line by line interactively first
-
     if (typeof SharedArrayBuffer !== 'undefined') {
       await runPythonInteractive(code);
     } else {
@@ -681,7 +677,6 @@ sys.stdout = _LiveOut()
 
 // Method A: SharedArrayBuffer available → true interactive stdin
 async function runPythonInteractive(code) {
-  // Use Atomics + SharedArrayBuffer to synchronously block Python while JS awaits input
   const sab = new SharedArrayBuffer(4096);
   const meta = new Int32Array(new SharedArrayBuffer(8)); // [ready_flag, length]
   const buf  = new Uint8Array(sab);
@@ -689,15 +684,13 @@ async function runPythonInteractive(code) {
   pyodide.globals.set('_sab', buf);
   pyodide.globals.set('_meta', meta);
 
-  // JS side: called by Python's input(); fills SAB, signals ready
   pyodide.globals.set('_request_input', async (prompt) => {
     if (prompt) termPrint('<span class="t-prompt">'+esc(String(prompt))+'</span>');
     const val = await waitForInput(String(prompt||''));
-    // Write to shared buffer
     const encoded = new TextEncoder().encode(val + '\n');
     buf.set(encoded.subarray(0, Math.min(encoded.length, 4095)));
     Atomics.store(meta, 1, encoded.length);
-    Atomics.store(meta, 0, 1);  // signal ready
+    Atomics.store(meta, 0, 1);
     Atomics.notify(meta, 0);
   });
 
@@ -708,11 +701,9 @@ class _SyncInput:
     def readline(self):
         from js import _request_input, _meta, _sab
         import asyncio
-        # signal JS we need input (fire and forget; Atomics.wait will block)
         Atomics_wait = __import__('js').Atomics.wait
         _meta[0] = 0
         asyncio.get_event_loop().run_until_complete(_request_input(""))
-        # Wait synchronously
         Atomics_wait(_meta, 0, 0)
         length = int(_meta[1])
         data = bytes(_sab[:length]).decode('utf-8','replace')
@@ -751,7 +742,6 @@ e
 
 // Method B: No SharedArrayBuffer → ask inputs one-by-one before running
 async function runPythonWithPreInput(code) {
-  // Count how many input() calls are in the code
   const inputCount = (code.match(/\binput\s*\(/g)||[]).length;
   const collected = [];
 
@@ -765,7 +755,6 @@ async function runPythonWithPreInput(code) {
     termPrint('<span class="t-sys">▶ Running with your inputs…\n</span>');
   }
 
-  // Feed collected inputs into Python
   pyodide.globals.set('_collected_inputs', pyodide.toPy(collected));
   pyodide.runPython(`
 import builtins
@@ -819,12 +808,25 @@ async function loadPyodide() {
 function setBar(p){ document.getElementById('pyBar').style.width=p+'%'; }
 
 // ═══════════════════════════════════════════════════════════════════
-// GLOT.IO RUNNER  (free, no key, CORS-enabled)
+// BACKEND RUNNER — routes compiled/interpreted-language execution
+// through YOUR OWN server (/api/ai/run-code), which wraps Judge0 via
+// a private, server-side RapidAPI key (see .env: JUDGE0_API_KEY).
+//
+// Why not a public no-key API? Every free public code-execution API
+// (glot.io, Piston, etc.) either requires an auth token or has very
+// limited language coverage — Piston itself started requiring an
+// authorization token as of Feb 2026. Routing through your backend
+// keeps the key private server-side and doesn't depend on a third
+// party's rate limits or policy changes.
+//
+// NOTE: this calls API.runCode({ language, code, stdin }) from your
+// api.js, which POSTs to /api/ai/run-code. Response parsing below is
+// intentionally flexible (checks several common field names) since
+// the exact shape depends on your aiController.js implementation —
+// if output doesn't show up correctly, share that controller file so
+// the field names here can be locked in exactly.
 // ═══════════════════════════════════════════════════════════════════
-async function runGlot(code, lang) {
-  // glot.io free API — no key needed for public snippets
-  // stdin must be pre-provided (glot has no interactive mode)
-  // We collect stdin lines from the user BEFORE running
+async function runViaBackend(code, lang) {
   const stdinNeeded = detectStdinNeeded(code, lang);
   let stdin = '';
 
@@ -837,182 +839,73 @@ async function runGlot(code, lang) {
       lines.push(val);
     }
     stdin = lines.join('\n') + '\n';
-    termPrint('<span class="t-sys">▶ Submitting to Glot.io…\n</span>');
+    termPrint('<span class="t-sys">▶ Compiling &amp; running on the server…\n</span>');
   } else {
-    termPrint('<span class="t-info">⏳ Submitting to Glot.io (free API)…\n</span>');
+    termPrint('<span class="t-info">⏳ Compiling &amp; running on the server…\n</span>');
   }
 
-  const fileMap = {
-    java:'Main.java', cpp:'main.cpp', c:'main.c', csharp:'main.cs',
-    go:'main.go', rust:'main.rs', ruby:'main.rb', php:'main.php',
-    swift:'main.swift', kotlin:'main.kt', r:'main.r',
-    bash:'main.sh', lua:'main.lua', typescript:'main.ts'
-  };
-  const filename = fileMap[lang.glotLang] || ('main.' + lang.ext);
-
-  const payload = {
-    files: [{ name: filename, content: code }],
-    stdin: stdin,
-    command: ''
-  };
-
-  // Try multiple free endpoints
-  const endpoints = [
-    `https://glot.io/api/run/${lang.glotLang}/latest`,
-    `https://glot.io/api/run/${lang.glotLang}/latest`
-  ];
-
-  let result = null;
-  let lastError = '';
-  for (const url of endpoints) {
-    try {
-      const resp = await fetch(url, {
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Token '},
-        body: JSON.stringify(payload)
-      });
-      if (resp.status === 401 || resp.status === 403) {
-        // Need token — use workaround via public API
-        throw new Error('auth');
-      }
-      if (!resp.ok) throw new Error('HTTP '+resp.status);
-      result = await resp.json();
-      break;
-    } catch(e) {
-      lastError = e.message;
-    }
-  }
-
-  // If glot needs auth, fall back to onecompiler API (truly free, no key)
-  if (!result) {
-    result = await runOneCompiler(code, lang, stdin);
-  }
-
-  if (!result) {
-    termPrint(
-      '<span class="t-err">❌ All free APIs are currently unavailable.\n\n'+
-      'Last error: '+esc(lastError)+'\n\n'+
-      '<span class="t-info">💡 Tip: JavaScript, HTML, Python and SQLite always work offline.\n'+
-      'Other languages need an internet connection.</span></span>'
-    );
-    setBadge('err','✗ Offline');
+  if (typeof API === 'undefined' || !API.runCode) {
+    termPrint('<span class="t-err">❌ API helper not loaded — make sure js/api.js is included on this page.</span>');
+    setBadge('err','✗ Error');
     return;
   }
 
-  const stdout = result.stdout || '';
-  const stderr = result.stderr || '';
-  const error  = result.error  || '';
-
-  let html = '';
-  if (stdout) html += '<span class="t-ok">'+esc(stdout)+'</span>';
-  if (stderr) html += '\n<span class="t-err">── stderr ──\n'+esc(stderr)+'</span>';
-  if (error && !stdout && !stderr) html += '<span class="t-err">❌ '+esc(error)+'</span>';
-  if (!stdout && !stderr && !error) html = '<span class="t-muted">(no output)</span>';
-  termPrint(html);
-
-  const isErr = (!stdout && (stderr||error));
-  setBadge(isErr?'err':'ok', isErr?'✗ Error':'✓ Success');
-}
-
-// OneCompiler API — truly free, no key required, CORS enabled
-async function runOneCompiler(code, lang, stdin) {
-  const langMap = {
-    java:'java', cpp:'cpp', c:'c', csharp:'csharp', go:'go', rust:'rust',
-    ruby:'ruby', php:'php', swift:'swift', kotlin:'kotlin', r:'r',
-    bash:'bash', lua:'lua', typescript:'typescript', python:'python'
-  };
-  const ocLang = langMap[lang.glotLang] || lang.glotLang;
-  const fileMap = {
-    java:'Main.java',cpp:'main.cpp',c:'main.c',csharp:'Main.cs',
-    go:'main.go',rust:'main.rs',ruby:'main.rb',php:'main.php',
-    swift:'main.swift',kotlin:'main.kt',r:'main.r',
-    bash:'main.sh',lua:'main.lua',typescript:'main.ts',python:'main.py'
-  };
-
-  const payload = {
-    language: ocLang,
-    files: [{ name: fileMap[ocLang]||'main.txt', content: code }],
-    stdin: stdin || ''
-  };
-
-  termPrint('<span class="t-info">⏳ Trying OneCompiler API…\n</span>');
-
   try {
-    const resp = await fetch('https://onecompiler-apis.p.rapidapi.com/api/v1/run', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'X-RapidAPI-Key':'free',
-        'X-RapidAPI-Host':'onecompiler-apis.p.rapidapi.com'
-      },
-      body: JSON.stringify(payload)
+    const result = await API.runCode({
+      language: lang.glotLang,
+      code: code,
+      stdin: stdin
     });
-    if (!resp.ok) throw new Error('HTTP '+resp.status);
-    const data = await resp.json();
-    return { stdout: data.stdout||'', stderr: data.stderr||data.exception||'', error:'' };
-  } catch(e) {
-    // Final fallback: JDoodle public API (no key for simple requests)
-    return await runJDoodle(code, lang, stdin);
+
+    const parsed = extractRunResult(result);
+
+    let html = '';
+    if (parsed.compileError) html += '<span class="t-warn">── compile ──\n'+esc(parsed.compileError)+'</span>\n';
+    if (parsed.stdout) html += '<span class="t-ok">'+esc(parsed.stdout)+'</span>';
+    if (parsed.stderr) html += '\n<span class="t-err">── stderr ──\n'+esc(parsed.stderr)+'</span>';
+    if (!parsed.stdout && !parsed.stderr && !parsed.compileError) {
+      html = '<span class="t-muted">(no output)</span>\n<span class="t-warn">Raw response: '+esc(JSON.stringify(result))+'</span>';
+    }
+    termPrint(html);
+
+    const isErr = !!(parsed.compileError || (!parsed.stdout && parsed.stderr));
+    setBadge(isErr?'err':'ok', isErr?'✗ Error':'✓ Success');
+  } catch (e) {
+    termPrint(
+      '<span class="t-err">❌ '+esc(e.message || 'Could not run code on the server.')+'\n\n</span>'+
+      '<span class="t-info">💡 JavaScript, HTML, Python and SQLite always run locally and never need the server.\n'+
+      'This language runs via your backend\'s /api/ai/run-code endpoint — check that it\'s reachable and that JUDGE0_API_KEY is set in your .env.</span>'
+    );
+    setBadge('err','✗ Error');
   }
 }
 
-// JDoodle-style fallback — uses a proxy-friendly endpoint
-async function runJDoodle(code, lang, stdin) {
-  const langMap = {
-    java:{language:'java',versionIndex:'4'},
-    cpp:{language:'cpp17',versionIndex:'1'},
-    c:{language:'c',versionIndex:'5'},
-    csharp:{language:'csharp',versionIndex:'4'},
-    go:{language:'go',versionIndex:'4'},
-    rust:{language:'rust',versionIndex:'4'},
-    ruby:{language:'ruby',versionIndex:'4'},
-    php:{language:'php',versionIndex:'4'},
-    swift:{language:'swift',versionIndex:'4'},
-    kotlin:{language:'kotlin',versionIndex:'3'},
-    r:{language:'r',versionIndex:'4'},
-    bash:{language:'bash',versionIndex:'5'},
-    lua:{language:'lua',versionIndex:'2'},
+// Defensively pulls stdout/stderr/compile-error out of whatever shape
+// the backend returns, since the exact controller response format
+// wasn't available when this was written.
+function extractRunResult(result) {
+  if (!result || typeof result !== 'object') return { stdout:'', stderr:'', compileError:'' };
+
+  // Common wrapper shapes, checked in order of likelihood
+  const stdout =
+    result.stdout ?? result.output ?? result.data?.stdout ??
+    result.run?.stdout ?? result.result?.stdout ?? '';
+
+  const stderr =
+    result.stderr ?? result.error ?? result.data?.stderr ??
+    result.run?.stderr ?? result.result?.stderr ?? '';
+
+  const compileError =
+    result.compile_output ?? result.compileError ?? result.compile?.stderr ?? '';
+
+  return {
+    stdout: String(stdout || ''),
+    stderr: String(stderr || ''),
+    compileError: String(compileError || '')
   };
-  const m = langMap[lang.glotLang];
-  if (!m) return null;
-
-  termPrint('<span class="t-info">⏳ Trying Wandbox…\n</span>');
-
-  // Try Wandbox (Japanese free compiler service, good CORS)
-  try {
-    const wandMap = {
-      cpp:'gcc-head', c:'gcc-head', python:'cpython-3.12.0',
-      ruby:'ruby-3.2.0', php:'php-8.2.0', lua:'lua-5.4.4',
-      bash:'bash', r:'r-4.3.2'
-    };
-    const compiler = wandMap[lang.glotLang];
-    if (!compiler) throw new Error('no wandbox mapping');
-
-    const resp = await fetch('https://wandbox.org/api/compile.json', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        compiler,
-        code,
-        stdin: stdin||'',
-        options:'',
-        'compiler-option-raw':''
-      })
-    });
-    if (!resp.ok) throw new Error('wandbox HTTP '+resp.status);
-    const data = await resp.json();
-    return {
-      stdout: (data.program_output||data.compiler_output||''),
-      stderr: data.program_error||'',
-      error: ''
-    };
-  } catch(e) {
-    return null;
-  }
 }
 
 function detectStdinNeeded(code, lang) {
-  // Rough heuristic: count stdin read calls in source
   const patterns = {
     java: /Scanner|readLine|nextLine|nextInt|nextDouble/g,
     cpp: /cin\s*>>/g,
@@ -1027,6 +920,7 @@ function detectStdinNeeded(code, lang) {
     r: /readLines|scan|readline/g,
     bash: /read\s/g,
     lua: /io\.read/g,
+    typescript: /prompt\s*\(|readline/g
   };
   const pat = patterns[lang.glotLang];
   if (!pat) return 0;
@@ -1053,7 +947,6 @@ async function runSQL(code) {
       const results = db.exec(stmt + ';');
       if (results.length > 0) {
         results.forEach(res => {
-          // Header
           output += res.columns.join(' | ') + '\n';
           output += res.columns.map(c=>'-'.repeat(c.length+2)).join('-+-') + '\n';
           res.values.forEach(row => {

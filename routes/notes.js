@@ -1,7 +1,7 @@
 // routes/notes.js
 const express = require('express');
 const router = express.Router();
-const { getNotes, createNote, updateNote, deleteNote, generateNote } = require('../controllers/notesController');
+const { getNotes, createNote, updateNote, deleteNote, generateNote, generateFlashcards } = require('../controllers/notesController');
 const { protect } = require('../middleware/auth');
 
 // All routes require authentication
@@ -16,5 +16,9 @@ router.route('/:id')
   .delete(deleteNote);
 
 router.post('/generate', generateNote);
+router.post('/flashcards', generateFlashcards);
 
 module.exports = router;
+
+
+

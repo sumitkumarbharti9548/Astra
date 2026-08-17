@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mock Interview — Student Notes Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  :root{--bg:#07070a;--card:#0f1115;--muted:#9aa4b2;--accent:#7c5cff;--accent2:#00b4ff;--success:#00d9a6;--danger:#ff5c8d;--warning:#ffb84d;--border:rgba(255,255,255,0.06)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Poppins',system-ui,sans-serif;background:radial-gradient(1000px 500px at 10% 12%,rgba(124,92,255,0.10),transparent),var(--bg);color:#e6eef8;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  nav{position:sticky;top:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(7,7,10,0.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+  .nav-logo{display:flex;align-items:center;gap:10px}
+  .nav-logo i{color:var(--accent);font-size:1.2rem}
+  .nav-logo span{font-family:'Montserrat';font-weight:700;font-size:1rem;color:#fff}
+  .back-link{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:0.875rem;font-weight:500}
+  .back-link:hover{color:#fff}
+  .wrap{max-width:640px;margin:0 auto;padding:48px 24px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,255,0.12);border:1px solid rgba(124,92,255,0.25);padding:5px 13px;border-radius:20px;font-size:0.75rem;color:var(--accent);font-weight:600;margin-bottom:14px}
+  h1{font-family:'Montserrat';font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:0.9rem;margin-bottom:26px}
+  .card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:16px;padding:28px}
+  .btn-grad{padding:12px 26px;border-radius:11px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#071022;font-family:'Montserrat';font-weight:700;font-size:0.9rem;cursor:pointer;transition:all .22s}
+  .btn-grad:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(124,92,255,0.35)}
+  .btn-grad:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+  .btn-out{padding:11px 20px;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:#e6eef8;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Poppins';margin-left:10px}
+  .btn-out:hover{background:rgba(255,255,255,0.08)}
+  .q-badge{font-family:'Poppins';font-size:0.7rem;padding:4px 11px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid var(--border);text-transform:uppercase;display:inline-block;margin-bottom:14px}
+  textarea{width:100%;min-height:140px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:#e6eef8;font-family:'Poppins';font-size:0.9rem;resize:vertical;margin-bottom:14px}
+  textarea:focus{outline:none;border-color:var(--accent)}
+  .feedback-box{margin-top:18px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border)}
+  .feedback-score{font-family:'Montserrat';font-size:1.9rem;font-weight:800;color:#fff}
+  .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.25);border-top-color:#071022;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .form-error{background:rgba(255,92,141,0.1);border:1px solid rgba(255,92,141,0.3);color:var(--danger);padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html"><i class="fas fa-book-open"></i><span>Astra AI
+Powered by Career Twin™</span></a>
+  <a class="back-link" href="career-twin.html"><i class="fas fa-arrow-left"></i> Back to Career Twin</a>
+</nav>
+
+<div class="wrap">
+  <span class="eyebrow">AI Mock Interview</span>
+  <h1>Practice with Astra</h1>
+  <p class="sub">Questions calibrated to your Career Twin's target role and current level.</p>
+
+  <div class="card" id="interview-content">
+    <button class="btn-grad" id="start-btn">Start a question</button>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+  if (!Auth.requireAuth()) { /* redirected */ }
+
+  const wrap = document.getElementById('interview-content');
+  let currentQuestion = null;
+
+  async function startQuestion() {
+    wrap.innerHTML = '<p class="sub"><span class="spinner"></span> Generating a question for you...</p>';
+    try {
+      const q = await API.getInterviewQuestion();
+      currentQuestion = q.question;
+      wrap.innerHTML = `
+        <span class="q-badge">${q.type} · ${q.difficulty}</span>
+        <h3 style="font-size:1.05rem;color:#fff;margin-bottom:16px">${q.question}</h3>
+        <textarea id="answer" placeholder="Type your answer as you'd say it out loud..."></textarea>
+        <button class="btn-grad" id="submit-answer-btn">Submit answer</button>
+        <button class="btn-out" id="skip-btn">Skip / new question</button>
+        <div id="feedback-slot"></div>
+      `;
+      document.getElementById('submit-answer-btn').addEventListener('click', submitAnswer);
+      document.getElementById('skip-btn').addEventListener('click', startQuestion);
+    } catch (err) {
+      wrap.innerHTML = `<div class="form-error">${err.message}</div><button class="btn-grad" id="retry-btn">Try again</button>`;
+      document.getElementById('retry-btn').addEventListener('click', startQuestion);
+    }
+  }
+
+  async function submitAnswer() {
+    const answer = document.getElementById('answer').value.trim();
+    if (!answer) return;
+    const btn = document.getElementById('submit-answer-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Scoring...';
+
+    try {
+      const result = await API.scoreInterviewAnswer({ question: currentQuestion, answer });
+      document.getElementById('feedback-slot').innerHTML = `
+        <div class="feedback-box">
+          <div class="feedback-score">${result.score}<span style="font-size:1rem;color:var(--muted)">/100</span></div>
+          <p style="margin:10px 0;font-size:0.9rem">${result.feedback}</p>
+          <p class="sub" style="font-size:0.8rem;margin-bottom:4px"><strong style="color:#fff">Strengths:</strong> ${result.strengths.join(', ')}</p>
+          <p class="sub" style="font-size:0.8rem;margin-bottom:14px"><strong style="color:#fff">Improve:</strong> ${result.improvements.join(', ')}</p>
+          <button class="btn-grad" id="next-q-btn">Next question</button>
+        </div>
+      `;
+      document.getElementById('next-q-btn').addEventListener('click', startQuestion);
+    } catch (err) {
+      alert(err.message);
+      btn.disabled = false;
+      btn.textContent = 'Submit answer';
+    }
+  }
+
+  document.getElementById('start-btn').addEventListener('click', startQuestion);
+</script>
+</body>
+</html>

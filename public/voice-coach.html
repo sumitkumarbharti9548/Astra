@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voice Coach | Astra AI</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-primary: #0b0d14;
+    --bg-secondary: #10131c;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent: #7c5cff;
+    --accent-soft: rgba(124, 92, 255, 0.15);
+    --accent-2: #22d3c9;
+    --text-primary: #f2f3f7;
+    --text-secondary: #9ca0b3;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --radius: 16px;
+    --font-display: 'Poppins', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: radial-gradient(circle at 20% 0%, #161a2c 0%, var(--bg-primary) 55%);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ---------- Sidebar (matches existing nav pattern) ---------- */
+  .sidebar {
+    width: 240px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--glass-border);
+    padding: 28px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .sidebar .logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sidebar .logo i { color: var(--accent); }
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+  }
+  .sidebar a:hover { background: var(--glass); color: var(--text-primary); }
+  .sidebar a.active { background: var(--accent-soft); color: var(--accent); }
+
+  /* ---------- Main layout ---------- */
+  .main { flex: 1; padding: 32px 40px; max-width: 1100px; margin: 0 auto; }
+  .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+  .page-header h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; }
+  .page-header p { color: var(--text-secondary); font-size: 0.88rem; margin-top: 4px; }
+
+  .glass-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(16px);
+  }
+
+  /* ---------- Mode selector ---------- */
+  .mode-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .mode-card {
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+    text-align: left;
+  }
+  .mode-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .mode-card.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .mode-card i { font-size: 1.3rem; color: var(--accent-2); margin-bottom: 10px; display: block; }
+  .mode-card h3 { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+  .mode-card p { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.35; }
+
+  /* ---------- Setup panel (interview details) ---------- */
+  .setup-panel { padding: 20px; margin-bottom: 20px; display: none; }
+  .setup-panel.visible { display: block; }
+  .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .field label { font-size: 0.76rem; color: var(--text-secondary); display: block; margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border-radius: 10px;
+    background: var(--bg-primary); border: 1px solid var(--glass-border);
+    color: var(--text-primary); font-family: var(--font-body); font-size: 0.85rem;
+  }
+
+  .start-btn {
+    margin-top: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: none; color: #0b0d14; font-weight: 700; font-family: var(--font-display);
+    padding: 12px 22px; border-radius: 12px; cursor: pointer; font-size: 0.9rem;
+  }
+  .start-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ---------- Conversation stage ---------- */
+  .stage { display: none; }
+  .stage.visible { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 20px; }
+
+  .transcript-panel { padding: 20px; height: 520px; display: flex; flex-direction: column; }
+  .transcript-scroll { flex: 1; overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 14px; }
+  .bubble { max-width: 82%; padding: 12px 15px; border-radius: 14px; font-size: 0.88rem; line-height: 1.45; }
+  .bubble.coach { align-self: flex-start; background: var(--accent-soft); border: 1px solid var(--glass-border); border-bottom-left-radius: 4px; }
+  .bubble.user { align-self: flex-end; background: rgba(34, 211, 201, 0.12); border: 1px solid var(--glass-border); border-bottom-right-radius: 4px; }
+  .bubble .role-tag { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 4px; display: block; }
+
+  .mic-row { display: flex; align-items: center; gap: 14px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--glass-border); }
+  .mic-btn {
+    width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--accent); color: #fff; font-size: 1.2rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .mic-btn.listening { background: var(--danger); animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(248,113,113,0.5);} 70% { box-shadow: 0 0 0 14px rgba(248,113,113,0);} 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0);} }
+  .mic-status { flex: 1; font-size: 0.82rem; color: var(--text-secondary); }
+  .live-text { font-style: italic; color: var(--text-primary); }
+  .end-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text-secondary); padding: 9px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+  .end-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ---------- Feedback panel ---------- */
+  .feedback-panel { padding: 20px; height: 520px; overflow-y: auto; }
+  .feedback-panel h3 { font-family: var(--font-display); font-size: 1rem; margin-bottom: 14px; }
+  .feedback-empty { color: var(--text-secondary); font-size: 0.82rem; }
+  .feedback-item { margin-bottom: 16px; }
+  .feedback-item .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-2); margin-bottom: 4px; }
+  .feedback-item .value { font-size: 0.85rem; line-height: 1.4; }
+  .rating-ring { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .rating-ring .num { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--accent-2); }
+  .rating-ring .num small { font-size: 0.9rem; color: var(--text-secondary); font-weight: 400; }
+
+  .summary-card { padding: 20px; margin-top: 20px; display: none; }
+  .summary-card.visible { display: block; }
+  .summary-card h3 { font-family: var(--font-display); margin-bottom: 12px; }
+  .summary-score { font-size: 2.4rem; font-weight: 800; font-family: var(--font-display); color: var(--accent-2); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .mode-grid { grid-template-columns: 1fr 1fr; }
+    .stage.visible { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo"><i class="fa-solid fa-atom"></i> Astra AI</div>
+  <a href="dashboard.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+  <a href="career-twin.html"><i class="fa-solid fa-user-astronaut"></i> Career Twin</a>
+  <a href="studymaterial.html"><i class="fa-solid fa-book"></i> Study Materials</a>
+  <a href="voice-coach.html" class="active"><i class="fa-solid fa-microphone"></i> Voice Coach</a>
+  <a href="resume.html"><i class="fa-solid fa-file-lines"></i> Resume Builder</a>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div>
+      <h1>Voice Coach</h1>
+      <p>Practice speaking, ace mock interviews, and get instant feedback — in English, Hindi, or Hinglish.</p>
+    </div>
+    <div id="micSupportBadge" style="font-size:0.75rem;color:var(--text-secondary);"></div>
+  </div>
+
+  <!-- Mode selection -->
+  <div id="modeSelectSection">
+    <div class="mode-grid">
+      <div class="glass-card mode-card" data-mode="practice">
+        <i class="fa-solid fa-comments"></i>
+        <h3>Communication Practice</h3>
+        <p>Casual conversation practice with live grammar &amp; vocab feedback.</p>
+      </div>
+      <div class="glass-card mode-card" data-mode="interview">
+        <i class="fa-solid fa-briefcase"></i>
+        <h3>Mock Interview</h3>
+        <p>HR, technical &amp; behavioral questions tailored to a role.</p>
+      </div>
+      <div class="glass-card mode-card" data-mode="gd">
+        <i class="fa-solid fa-people-group"></i>
+        <h3>Group Discussion</h3>
+        <p>Debate a topic with an AI moderator that challenges your views.</p>
+      </div>
+      <div class="glass-card mode-card" data-mode="rapidfire">
+        <i class="fa-solid fa-bolt"></i>
+        <h3>Rapid Fire</h3>
+        <p>20 quick-fire questions, scored back-to-back.</p>
+      </div>
+    </div>
+
+    <div class="glass-card setup-panel" id="interviewSetupPanel">
+      <strong style="font-family:var(--font-display); font-size:0.9rem;">Interview details</strong>
+      <div class="setup-grid">
+        <div class="field"><label>Company name</label><input type="text" id="companyName" placeholder="e.g. TCS, Zoho, Amazon" /></div>
+        <div class="field"><label>Job role</label><input type="text" id="jobRole" placeholder="e.g. Full Stack Developer Intern" /></div>
+        <div class="field"><label>Experience</label><input type="text" id="experience" placeholder="e.g. Fresher / 2027 batch student" /></div>
+        <div class="field">
+          <label>Difficulty</label>
+          <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn" disabled>Select a mode to begin</button>
+  </div>
+
+  <!-- Conversation stage -->
+  <div class="stage" id="stage">
+    <div class="glass-card transcript-panel">
+      <div class="transcript-scroll" id="transcriptScroll"></div>
+      <div class="mic-row">
+        <button class="mic-btn" id="micBtn" title="Tap to speak">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <div class="mic-status">
+          <div id="micStatusText">Tap the mic and start speaking</div>
+          <div class="live-text" id="liveText"></div>
+        </div>
+        <button class="end-btn" id="endBtn">End session</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="glass-card feedback-panel" id="feedbackPanel">
+        <h3>Live Feedback</h3>
+        <div class="feedback-empty" id="feedbackEmpty">Feedback on your last spoken turn will appear here.</div>
+        <div id="feedbackContent" style="display:none;"></div>
+      </div>
+
+      <div class="glass-card summary-card" id="summaryCard">
+        <h3>Session Summary</h3>
+        <div class="summary-score" id="summaryScore">-</div>
+        <div class="feedback-item">
+          <div class="label">Strengths</div>
+          <div class="value" id="summaryStrengths"></div>
+        </div>
+        <div class="feedback-item">
+          <div class="label">Areas to improve</div>
+          <div class="value" id="summaryAreas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------
+  // Web Speech API setup (STT + TTS). Chrome / Edge only for STT.
+  // ---------------------------------------------------------------
+  const SpeechRecognitionImpl = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const synth = window.speechSynthesis;
+  let recognition = null;
+  let isListening = false;
+  let currentSessionId = null;
+  let currentMode = null;
+
+  const micSupportBadge = document.getElementById('micSupportBadge');
+  if (!SpeechRecognitionImpl) {
+    micSupportBadge.textContent = 'Voice input needs Chrome or Edge';
+    micSupportBadge.style.color = 'var(--warning)';
+  } else {
+    micSupportBadge.textContent = 'Mic ready';
+  }
+
+  function detectSpeechLang(text) {
+    // Devanagari range => Hindi voice, else default to Indian English.
+    return /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-IN';
+  }
+
+  function speak(text) {
+    if (!synth || !text) return;
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = detectSpeechLang(text);
+    utter.rate = 1;
+    utter.pitch = 1;
+    synth.speak(utter);
+  }
+
+  function initRecognition() {
+    if (!SpeechRecognitionImpl) return null;
+    const rec = new SpeechRecognitionImpl();
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = 'en-IN'; // Chrome's recognizer auto-adapts fairly well to Hinglish/Hindi speech even under an en-IN hint.
+    return rec;
+  }
+
+  // ---------------------------------------------------------------
+  // Mode selection UI
+  // ---------------------------------------------------------------
+  const modeCards = document.querySelectorAll('.mode-card');
+  const interviewSetupPanel = document.getElementById('interviewSetupPanel');
+  const startBtn = document.getElementById('startBtn');
+
+  modeCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      modeCards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentMode = card.dataset.mode;
+      interviewSetupPanel.classList.toggle('visible', currentMode === 'interview');
+      startBtn.disabled = false;
+      startBtn.textContent = `Start ${card.querySelector('h3').textContent}`;
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Session lifecycle
+  // ---------------------------------------------------------------
+  const modeSelectSection = document.getElementById('modeSelectSection');
+  const stage = document.getElementById('stage');
+  const transcriptScroll = document.getElementById('transcriptScroll');
+  const micBtn = document.getElementById('micBtn');
+  const micStatusText = document.getElementById('micStatusText');
+  const liveText = document.getElementById('liveText');
+  const endBtn = document.getElementById('endBtn');
+  const feedbackEmpty = document.getElementById('feedbackEmpty');
+  const feedbackContent = document.getElementById('feedbackContent');
+  const summaryCard = document.getElementById('summaryCard');
+
+  function addBubble(role, text) {
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${role}`;
+    bubble.innerHTML = `<span class="role-tag">${role === 'coach' ? 'Coach' : 'You'}</span>${escapeHtml(text)}`;
+    transcriptScroll.appendChild(bubble);
+    transcriptScroll.scrollTop = transcriptScroll.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderFeedback(feedback, interviewFeedback) {
+    const hasFeedback = feedback || interviewFeedback;
+    feedbackEmpty.style.display = hasFeedback ? 'none' : 'block';
+    feedbackContent.style.display = hasFeedback ? 'block' : 'none';
+    if (!hasFeedback) return;
+
+    let html = '';
+    const rating = (feedback && feedback.confidenceRating) || (interviewFeedback && interviewFeedback.score);
+    if (rating) {
+      html += `<div class="rating-ring"><div class="num">${rating}<small>/10</small></div><div style="font-size:0.78rem;color:var(--text-secondary);">Confidence / Answer score</div></div>`;
+    }
+    if (feedback) {
+      if (feedback.grammarFeedback) html += feedbackRow('Grammar', feedback.grammarFeedback);
+      if (feedback.betterSentence) html += feedbackRow('A more natural way to say it', feedback.betterSentence);
+      if (feedback.vocabSuggestion) html += feedbackRow('Vocabulary suggestion', feedback.vocabSuggestion);
+    }
+    if (interviewFeedback) {
+      if (interviewFeedback.strengths) html += feedbackRow('Strengths', interviewFeedback.strengths);
+      if (interviewFeedback.weaknesses) html += feedbackRow('Weaknesses', interviewFeedback.weaknesses);
+      if (interviewFeedback.eyeContactTip) html += feedbackRow('Delivery tip', interviewFeedback.eyeContactTip);
+      if (interviewFeedback.improvedAnswer) html += feedbackRow('Improved answer', interviewFeedback.improvedAnswer);
+    }
+    feedbackContent.innerHTML = html;
+  }
+
+  function feedbackRow(label, value) {
+    return `<div class="feedback-item"><div class="label">${label}</div><div class="value">${escapeHtml(value)}</div></div>`;
+  }
+
+  async function startSession() {
+    startBtn.disabled = true;
+    startBtn.textContent = 'Starting...';
+
+    const payload = { mode: currentMode };
+    if (currentMode === 'interview') {
+      payload.companyName = document.getElementById('companyName').value;
+      payload.jobRole = document.getElementById('jobRole').value;
+      payload.experience = document.getElementById('experience').value;
+      payload.difficulty = document.getElementById('difficulty').value;
+    }
+
+    try {
+      // Expects api.js to expose API.post (adjust to match your existing api.js helper names).
+      const res = await API.post('/voice-coach/start', payload);
+      if (!res.success) throw new Error(res.message);
+
+      currentSessionId = res.data.sessionId;
+      modeSelectSection.style.display = 'none';
+      stage.classList.add('visible');
+      addBubble('coach', res.data.reply);
+      speak(res.data.reply);
+    } catch (err) {
+      alert(err.message || 'Could not start the session. Please try again.');
+      startBtn.disabled = false;
+      startBtn.textContent = 'Try again';
+    }
+  }
+
+  async function sendTurn(text) {
+    addBubble('user', text);
+    micStatusText.textContent = 'Coach is thinking...';
+    try {
+    const res = await API.post(
+    `/voice-coach/${currentSessionId}/message`,
+    { text }
+);
+
+if (!res.success) {
+    throw new Error(res.message);
+}
+
+      renderFeedback(res.data.feedback, res.data.interviewFeedback);
+      addBubble('coach', res.data.reply);
+      speak(res.data.reply);
+      micStatusText.textContent = 'Tap the mic and start speaking';
+
+      if (res.data.sessionComplete) {
+        showSummary(res.data.summary);
+      }
+    } catch (err) {
+      micStatusText.textContent = 'Something went wrong. Tap the mic to try again.';
+      console.error(err);
+    }
+  }
+
+  function showSummary(summary) {
+    if (!summary) return;
+    micBtn.disabled = true;
+    summaryCard.classList.add('visible');
+    document.getElementById('summaryScore').textContent = summary.overallScore != null ? `${summary.overallScore}/10` : '—';
+    document.getElementById('summaryStrengths').textContent = summary.strengths || '—';
+    document.getElementById('summaryAreas').textContent = summary.areasToImprove || '—';
+  }
+
+  async function endSessionManually() {
+    if (!currentSessionId) return;
+    try {
+    const res = await API.post(
+    `/voice-coach/${currentSessionId}/end`,
+    {}
+);
+
+if (res.success) {
+    showSummary(res.data.summary);
+}
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // Mic button
+  // ---------------------------------------------------------------
+  micBtn.addEventListener('click', () => {
+    if (!SpeechRecognitionImpl) {
+      alert('Voice input needs Chrome or Edge. Please switch browsers to use Voice Coach.');
+      return;
+    }
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+
+    recognition = initRecognition();
+    isListening = true;
+    micBtn.classList.add('listening');
+    micStatusText.textContent = 'Listening...';
+    liveText.textContent = '';
+
+    recognition.onresult = (event) => {
+      let interim = '';
+      let final = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) final += transcript;
+        else interim += transcript;
+      }
+      liveText.textContent = interim;
+      if (final.trim()) {
+        liveText.textContent = '';
+        sendTurn(final.trim());
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      micStatusText.textContent = event.error === 'not-allowed'
+        ? 'Microphone access was blocked. Enable it in browser settings.'
+        : 'Mic error - tap to try again.';
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+    };
+
+    recognition.start();
+  });
+
+  startBtn.addEventListener('click', startSession);
+  endBtn.addEventListener('click', endSessionManually);
+})();
+</script>
+</body>
+</html>

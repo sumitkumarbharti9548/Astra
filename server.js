@@ -1,20 +1,30 @@
 // server.js — Main Express server entry point
 require('dotenv').config(); // Load .env variables first
 
-const express  = require('express');
-const cors     = require('cors');
+
+if (
+  process.env.NODE_ENV === 'production' &&
+  !process.env.FRONTEND_URL
+) {
+  throw new Error('FRONTEND_URL is required in production');
+}
+
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+app.set('trust proxy', 1);
+
+
 const helmet   = require('helmet');
 const morgan   = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path     = require('path');
-
 const connectDB    = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
 // ── Connect to MongoDB ────────────────────────────────────────
 connectDB();
-
-const app = express();
 
 // ── Security & Performance Middleware ────────────────────────
 app.use(helmet({
@@ -22,9 +32,19 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin:
+    process.env.NODE_ENV === 'production'
+      ? process.env.FRONTEND_URL
+      : 'http://localhost:5000',
+
+  credentials: true,
+
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization'
+  ]
 }));
 
 // Rate limiting — prevent abuse (100 requests per 15 minutes)
@@ -64,6 +84,9 @@ app.use('/api/resume',    require('./routes/resume'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/ai',        require('./routes/ai'));
 app.use('/api/study',     require('./routes/studymaterial'));
+app.use('/api/twin',      require('./routes/twin'));
+app.use('/api/interview', require('./routes/interview'));
+app.use('/api/voice-coach', require('./routes/voiceCoach'));
 
 // ── Health Check ─────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -72,6 +95,14 @@ app.get('/api/health', (req, res) => {
     message: 'Student Notes Hub API is running 🚀',
     timestamp: new Date().toISOString()
   });
+});
+
+// ── Explicit page routes (must be before catch-all) ───────────
+app.get('/reset-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+});
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // ── Catch-all: Serve frontend for any non-API route ──────────
@@ -84,8 +115,8 @@ app.use(errorHandler);
 
 // ── Start Server ──────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🚀 Server running on port ${PORT}`);
   console.log(`📁 Serving frontend from /public`);
   console.log(`🔌 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });

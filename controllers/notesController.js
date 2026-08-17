@@ -169,3 +169,44 @@ Make the notes clear, concise, and student-friendly. Use simple language where p
     next(error);
   }
 };
+
+// ── POST /api/notes/flashcards — AI flashcards from a note ────
+// Does NOT save anything to the DB — it's a lightweight, on-demand
+// study aid generated from a note's content (or a raw topic).
+exports.generateFlashcards = async (req, res, next) => {
+  try {
+    const { topic, content } = req.body;
+
+    if (!content && !topic) {
+      return res.status(400).json({ success: false, message: 'Note content or topic is required' });
+    }
+
+    const prompt = `Based on the following study material, generate exactly 8 flashcards for active-recall practice.
+Return ONLY a valid JSON array, no markdown formatting, no explanation, in this exact shape:
+[{"q":"question text","a":"answer text"}, ...]
+
+Topic: ${topic || 'General'}
+
+Study material:
+${(content || '').slice(0, 4000)}`;
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.6, maxOutputTokens: 1024 }
+      }
+    );
+
+    const generatedContent = response.data.candidates[0].content.parts[0].text;
+    res.status(200).json({ success: true, content: generatedContent });
+  } catch (error) {
+    if (error.response?.status === 400) {
+      return res.status(400).json({ success: false, message: 'Invalid request to AI.' });
+    }
+    if (error.response?.status === 429) {
+      return res.status(429).json({ success: false, message: 'AI rate limit reached. Please wait a moment.' });
+    }
+    next(error);
+  }
+};

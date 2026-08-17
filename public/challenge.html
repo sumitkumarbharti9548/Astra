@@ -18,500 +18,364 @@
       --danger: #ff5c8d;
       --warning: #ffb84d;
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    html, body {
-      height: 100%;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
     body {
       font-family: 'Poppins', system-ui, Segoe UI, Roboto, Arial;
-      background: radial-gradient(900px 400px at 8% 12%, rgba(124, 92, 255, 0.12), transparent),
-                  radial-gradient(700px 350px at 92% 88%, rgba(0, 180, 255, 0.05), transparent),
+      background: radial-gradient(900px 400px at 8% 12%, rgba(124,92,255,0.12), transparent),
+                  radial-gradient(700px 350px at 92% 88%, rgba(0,180,255,0.05), transparent),
                   var(--bg);
       color: #e6eef8;
       overflow-x: hidden;
     }
 
-    /* Layout */
-    .container {
-      max-width: 1400px;
-      margin: 28px auto;
-      padding: 28px;
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      gap: 28px;
-      align-items: start;
-    }
     header {
-      position: fixed;
-      left: 20px;
-      top: 18px;
-      z-index: 90;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      position: fixed; left: 20px; top: 18px; z-index: 90;
+      display: flex; align-items: center; gap: 12px;
     }
     header .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04);
     }
-    header h1 {
-      font-family: 'Montserrat';
-      font-size: 1rem;
-      margin: 0;
+    header h1 { font-family: 'Montserrat'; font-size: 1rem; margin: 0; }
+
+    /* 3-column layout */
+    .container {
+      max-width: 1500px;
+      margin: 68px auto 28px;
+      padding: 0 28px 28px;
+      display: grid;
+      grid-template-columns: 300px 1fr 310px;
+      gap: 22px;
+      align-items: start;
     }
 
-    /* Left: 3D-style floating robot */
-    .robot-panel {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
+    /* ═══ ROBOT PANEL (left) ═══ */
+    .robot-panel { display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .robot-card {
       width: 100%;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      padding: 18px;
-      border-radius: 16px;
-      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 16px; border-radius: 16px; backdrop-filter: blur(6px);
     }
-    .robot-stage {
-      height: 340px;
-      display: grid;
-      place-items: center;
-      position: relative;
-    }
+    .robot-stage { height: 280px; display: grid; place-items: center; position: relative; }
     .robot-3d {
-      width: 220px;
-      height: 260px;
-      position: relative;
-      transform-style: preserve-3d;
-      transform: translateZ(0);
+      width: 180px; height: 220px; position: relative;
+      transform-style: preserve-3d; transform: translateZ(0);
       animation: robotRotate 8s ease-in-out infinite;
     }
     @keyframes robotRotate {
-      0% { transform: rotateY(0) translateY(0); }
-      50% { transform: rotateY(12deg) translateY(-8px); }
+      0%   { transform: rotateY(0) translateY(0); }
+      50%  { transform: rotateY(12deg) translateY(-8px); }
       100% { transform: rotateY(0) translateY(0); }
     }
     .robot-shell {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 220px;
-      border-radius: 20px;
+      position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+      width: 170px; height: 195px; border-radius: 20px;
       background: linear-gradient(180deg, var(--accent), #00b4ff);
-      box-shadow: 0 20px 60px rgba(124, 92, 255, 0.14);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      transition: all 0.3s ease;
-    }
-    .robot-shell.listening {
-      box-shadow: 0 0 30px var(--accent-glow);
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 10px var(--accent-glow); }
-      50% { box-shadow: 0 0 30px var(--accent-glow); }
-      100% { box-shadow: 0 0 10px var(--accent-glow); }
+      box-shadow: 0 20px 60px rgba(124,92,255,0.14);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px;
     }
     .robot-shell .visor {
-      width: 120px;
-      height: 34px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
+      width: 110px; height: 30px; border-radius: 18px;
+      background: rgba(255,255,255,0.95);
+      display: flex; align-items: center; justify-content: center;
     }
     .robot-shell .visor .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #071022;
-      box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #071022; box-shadow: 0 0 14px rgba(255,255,255,0.25);
     }
     .robot-shell .chest {
-      width: 140px;
-      height: 60px;
-      margin-top: 12px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      width: 120px; height: 50px; margin-top: 12px;
+      background: rgba(255,255,255,0.03); border-radius: 12px;
+      display: flex; align-items: center; justify-content: space-around;
+      border: 1px solid rgba(255,255,255,0.03);
     }
     .robot-shadow {
-      width: 160px;
-      height: 18px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(2, 6, 23, 0.5), transparent);
-      filter: blur(6px);
-      margin-top: 8px;
-      opacity: 0.9;
+      width: 130px; height: 16px; border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(2,6,23,0.5), transparent);
+      filter: blur(6px); margin-top: 6px; opacity: 0.9;
     }
 
-    /* Challenge Panel */
+    /* ═══ CHALLENGE PANEL (center) ═══ */
     .challenge-panel {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      height: 600px;
-      position: relative;
-      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 16px; padding: 24px;
+      display: flex; flex-direction: column;
+      min-height: 640px;
     }
     .challenge-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
     }
-    .challenge-header h2 {
-      font-family: 'Montserrat';
-      margin: 0;
-      font-size: 1.4rem;
-    }
-    .challenge-controls {
-      display: flex;
-      gap: 10px;
-    }
+    .challenge-header h2 { font-family: 'Montserrat'; margin: 0; font-size: 1.3rem; }
+    .challenge-controls { display: flex; gap: 8px; }
     .challenge-controls button {
-      padding: 8px 14px;
-      border-radius: 10px;
-      border: none;
+      padding: 7px 13px; border-radius: 10px; border: none;
       background: linear-gradient(90deg, var(--accent), #00b4ff);
-      color: #071022;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #071022; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+      display: flex; align-items: center; gap: 6px; font-size: 0.82rem;
     }
-    .challenge-controls button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
-    .challenge-controls button:active {
-      transform: translateY(0);
-    }
+    .challenge-controls button:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
     .challenge-controls button.secondary {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--muted);
+      background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--muted);
     }
     .back {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      padding: 8px 10px;
-      border-radius: 10px;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.3s ease;
+      background: transparent; border: 1px solid rgba(255,255,255,0.04);
+      padding: 7px 10px; border-radius: 10px; color: var(--muted); cursor: pointer; transition: all 0.3s;
     }
-    .back:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
+    .back:hover { background: rgba(255,255,255,0.05); }
 
-    /* Challenge Content */
-    .challenge-content {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      height: 100%;
-      overflow-y: auto;
-      padding-right: 8px;
+    /* Level Filter Tabs */
+    .level-tabs {
+      display: flex; gap: 8px; margin-bottom: 18px;
     }
-    .streak-section {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
+    .level-tab {
+      padding: 6px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+      background: transparent; color: var(--muted); font-size: 0.82rem;
+      cursor: pointer; transition: all 0.25s; font-family: 'Poppins'; font-weight: 600;
     }
-    .streak-display {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      margin: 15px 0;
-    }
-    .streak-count {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-shadow: 0 0 10px var(--accent-glow);
-    }
-    .streak-label {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-    .question-section {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .question-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .question-category {
-      background: var(--accent);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .question-difficulty {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    .question-text {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .options-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .option {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .option:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--accent);
-    }
-    .option.selected {
-      background: rgba(124, 92, 255, 0.1);
-      border-color: var(--accent);
-    }
-    .option.correct {
-      background: rgba(0, 217, 166, 0.1);
-      border-color: var(--success);
-    }
-    .option.incorrect {
-      background: rgba(255, 92, 141, 0.1);
-      border-color: var(--danger);
-    }
-    .option-letter {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .option.selected .option-letter {
-      background: var(--accent);
-      color: white;
-    }
-    .option.correct .option-letter {
-      background: var(--success);
-      color: white;
-    }
-    .option.incorrect .option-letter {
-      background: var(--danger);
-      color: white;
-    }
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-    .action-buttons button {
-      padding: 10px 20px;
-      border-radius: 10px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .submit-btn {
-      background: linear-gradient(90deg, var(--accent), #00b4ff);
-      color: #071022;
-    }
-    .next-btn {
-      background: var(--success);
-      color: white;
-    }
-    .explanation-section {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-      padding: 20px;
-      display: none;
-    }
-    .explanation-section.show {
-      display: block;
-      animation: fadeIn 0.5s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .explanation-header {
-      color: var(--accent);
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-    .explanation-text {
-      line-height: 1.6;
-    }
+    .level-tab:hover { border-color: var(--accent); color: #e6eef8; }
+    .level-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .level-tab.easy.active  { background: var(--success); border-color: var(--success); }
+    .level-tab.medium.active { background: var(--warning); border-color: var(--warning); color: #071022; }
+    .level-tab.hard.active  { background: var(--danger); border-color: var(--danger); }
 
-    /* Progress Section */
+    .challenge-content { display: flex; flex-direction: column; gap: 16px; }
+
+    /* Streak + Stats row */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .streak-count { font-size: 2rem; font-weight: 700; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--success); }
+
+    /* Progress bar */
     .progress-section {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-      padding: 16px;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px; padding: 14px;
     }
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.88rem; }
+    .progress-bar { height: 7px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #00b4ff); border-radius: 4px; transition: width 0.5s ease; }
+    .progress-stats { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); }
+
+    /* Active Topic Badge */
+    .active-topic-badge {
+      display: none; align-items: center; gap: 10px;
+      background: rgba(124,92,255,0.12); border: 1px solid rgba(124,92,255,0.3);
+      border-radius: 10px; padding: 10px 14px; font-size: 0.85rem;
     }
-    .progress-bar {
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 10px;
+    .active-topic-badge.show { display: flex; }
+    .active-topic-badge .topic-icon { font-size: 1.3rem; }
+    .active-topic-badge strong { color: var(--accent); }
+    .active-topic-badge .clear-btn {
+      margin-left: auto; background: transparent; border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted); font-size: 0.76rem; padding: 3px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
     }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), #00b4ff);
-      border-radius: 4px;
-      transition: width 0.5s ease;
+    .active-topic-badge .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Question */
+    .question-section {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 12px; padding: 20px;
     }
-    .progress-stats {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: var(--muted);
+    .question-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .question-category {
+      background: var(--accent); color: white;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+    }
+    .difficulty-badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+    }
+    .difficulty-badge.Easy   { background: rgba(0,217,166,0.15); color: var(--success); border: 1px solid rgba(0,217,166,0.3); }
+    .difficulty-badge.Medium { background: rgba(255,184,77,0.15); color: var(--warning); border: 1px solid rgba(255,184,77,0.3); }
+    .difficulty-badge.Hard   { background: rgba(255,92,141,0.15); color: var(--danger);  border: 1px solid rgba(255,92,141,0.3); }
+
+    .question-text { font-size: 1rem; line-height: 1.65; margin-bottom: 18px; }
+    .question-text code {
+      background: rgba(124,92,255,0.15); padding: 2px 7px; border-radius: 5px;
+      font-family: 'Courier New', monospace; font-size: 0.9rem; color: #a8d8ff;
+    }
+    .code-block {
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px; padding: 14px; margin: 10px 0;
+      font-family: 'Courier New', monospace; font-size: 0.88rem; color: #a8d8ff;
+      white-space: pre; overflow-x: auto; line-height: 1.6;
     }
 
-    /* Toast Notification */
+    .options-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .option {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.25s;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .option:hover { background: rgba(255,255,255,0.05); border-color: var(--accent); }
+    .option.selected { background: rgba(124,92,255,0.1); border-color: var(--accent); }
+    .option.correct  { background: rgba(0,217,166,0.1);  border-color: var(--success); }
+    .option.incorrect{ background: rgba(255,92,141,0.1);  border-color: var(--danger); }
+    .option-letter {
+      width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .option.selected .option-letter { background: var(--accent); color: #fff; }
+    .option.correct  .option-letter { background: var(--success); color: #fff; }
+    .option.incorrect .option-letter { background: var(--danger);  color: #fff; }
+
+    .action-buttons { display: flex; gap: 10px; justify-content: flex-end; }
+    .action-buttons button {
+      padding: 10px 22px; border-radius: 10px; border: none;
+      font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.9rem;
+    }
+    .submit-btn { background: linear-gradient(90deg, var(--accent), #00b4ff); color: #071022; }
+    .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .next-btn { background: var(--success); color: #fff; }
+
+    .explanation-section {
+      background: rgba(124,92,255,0.07); border: 1px solid rgba(124,92,255,0.2);
+      border-radius: 12px; padding: 18px; display: none;
+    }
+    .explanation-section.show { display: block; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .explanation-header { color: var(--accent); margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+    .explanation-text { line-height: 1.65; font-size: 0.9rem; color: #c9d6e8; }
+
+    /* ═══ TOPIC PANEL (right) ═══ */
+    .topic-panel {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .topic-panel-header {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 14px; padding: 16px;
+    }
+    .topic-panel-header h3 { font-family: 'Montserrat'; font-size: 0.95rem; margin-bottom: 4px; }
+    .topic-panel-header p { font-size: 0.78rem; color: var(--muted); }
+    .topic-count-badge {
+      display: inline-block; background: rgba(124,92,255,0.2); color: var(--accent);
+      padding: 2px 10px; border-radius: 12px; font-size: 0.74rem; font-weight: 600; margin-top: 8px;
+    }
+
+    .topics-grid {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .topic-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 14px;
+      cursor: pointer; transition: all 0.3s ease;
+      display: flex; align-items: center; gap: 12px;
+      position: relative; overflow: hidden;
+    }
+    .topic-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--tc-from, rgba(124,92,255,0.06)), var(--tc-to, transparent));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .topic-card:hover::before { opacity: 1; }
+    .topic-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .topic-card.active {
+      border-color: var(--accent) !important;
+      background: rgba(124,92,255,0.1);
+      box-shadow: 0 0 18px rgba(124,92,255,0.18);
+    }
+    .topic-icon-wrap {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: grid; place-items: center; font-size: 1.3rem;
+    }
+    .topic-info { flex: 1; min-width: 0; }
+    .topic-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 2px; }
+    .topic-sub  { font-size: 0.72rem; color: var(--muted); }
+    .topic-count {
+      font-size: 0.72rem; font-weight: 600;
+      background: rgba(255,255,255,0.06); padding: 3px 9px;
+      border-radius: 10px; color: var(--muted); white-space: nowrap;
+    }
+    .topic-card.active .topic-count { background: rgba(124,92,255,0.25); color: var(--accent); }
+
+    /* Toast */
     .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--success);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 1000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transform: translateX(150%);
-      transition: transform 0.3s ease;
+      position: fixed; top: 20px; right: 20px;
+      background: var(--success); color: white; padding: 12px 20px;
+      border-radius: 10px; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      display: flex; align-items: center; gap: 8px;
+      transform: translateX(170%); transition: transform 0.35s ease;
     }
-    .toast.show {
-      transform: translateX(0);
+    .toast.show { transform: translateX(0); }
+    .toast.error { background: var(--danger); }
+    .toast.warn  { background: var(--warning); color: #071022; }
+
+    /* Blobs */
+    .blobs { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
+    .blob { position: absolute; filter: blur(44px); opacity: 0.85; border-radius: 50%; mix-blend-mode: screen; }
+    .blob.b1 { width: 420px; height: 420px; left: -120px; top: -120px; background: linear-gradient(135deg, var(--accent), #2dd4bf); }
+    .blob.b2 { width: 380px; height: 380px; right: -80px; bottom: -80px; background: linear-gradient(135deg, #00b4ff, #7c5cff); }
+    canvas#particles { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; opacity: 0.12; }
+
+    /* AI Loading State */
+    .ai-loading {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; padding: 40px 20px; text-align: center;
     }
-    .toast.error {
-      background: var(--danger);
+    .ai-loading.show { display: flex; }
+    .ai-spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 3px solid rgba(124,92,255,0.2);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ai-loading-text { color: var(--muted); font-size: 0.88rem; }
+    .ai-loading-text strong { color: var(--accent); display: block; font-size: 1rem; margin-bottom: 4px; }
+
+    /* AI badge on question */
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: linear-gradient(90deg, rgba(124,92,255,0.2), rgba(0,180,255,0.15));
+      border: 1px solid rgba(124,92,255,0.35); color: #c4b5fd;
+      padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 600;
+      animation: fadeIn 0.4s ease;
     }
 
-    /* Blobs + particles behind */
-    .blobs {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -1;
+    /* Completion screen */
+    .completion-screen {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; gap: 18px; padding: 30px; text-align: center;
     }
-    .blob {
-      position: absolute;
-      filter: blur(44px);
-      opacity: 0.85;
-      border-radius: 50%;
-      mix-blend-mode: screen;
+    .completion-screen.show { display: flex; }
+    .completion-emoji { font-size: 3.5rem; animation: bounce 0.6s ease; }
+    @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
+    .completion-title { font-family:'Montserrat'; font-size:1.4rem; font-weight:700; }
+    .completion-sub { color:var(--muted); font-size:0.88rem; line-height:1.6; }
+    .ai-gen-btn {
+      padding:12px 28px; border-radius:12px; border:none; cursor:pointer;
+      background:linear-gradient(90deg,var(--accent),#00b4ff);
+      color:#071022; font-weight:700; font-size:0.95rem;
+      transition:all 0.3s; display:flex; align-items:center; gap:8px;
     }
-    .blob.b1 {
-      width: 420px;
-      height: 420px;
-      left: -120px;
-      top: -120px;
-      background: linear-gradient(135deg, var(--accent), #2dd4bf);
-    }
-    .blob.b2 {
-      width: 380px;
-      height: 380px;
-      right: -80px;
-      bottom: -80px;
-      background: linear-gradient(135deg, #00b4ff, #7c5cff);
-    }
-    canvas#particles {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      pointer-events: none;
-      opacity: 0.12;
-    }
+    .ai-gen-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(124,92,255,0.35); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
 
     /* Responsive */
-    @media (max-width: 980px) {
-      .container {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-      .robot-stage {
-        height: 240px;
-      }
-      .challenge-panel {
-        height: 520px;
-      }
+    @media (max-width: 1100px) {
+      .container { grid-template-columns: 260px 1fr 270px; gap: 16px; padding: 0 16px 24px; }
+    }
+    @media (max-width: 820px) {
+      .container { grid-template-columns: 1fr; }
+      .robot-stage { height: 200px; }
     }
   </style>
 </head>
 <body>
   <div class="blobs" aria-hidden>
-    <div class="blob b1"></div>
-    <div class="blob b2"></div>
+    <div class="blob b1"></div><div class="blob b2"></div>
   </div>
   <canvas id="particles"></canvas>
 
@@ -520,463 +384,733 @@
   </header>
 
   <div class="container">
+
+    <!-- ═══ LEFT: Robot ═══ -->
     <aside class="robot-panel">
       <div class="robot-card">
         <div class="robot-stage">
           <div class="robot-3d" aria-hidden>
-            <div class="robot-shell">
+            <div class="robot-shell" id="robotShell">
               <div class="visor"><div class="dot"></div></div>
-              <div class="chest"><div style="width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.08)"></div><div style="width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.06)"></div></div>
+              <div class="chest">
+                <div style="width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.08)"></div>
+                <div style="width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.06)"></div>
+              </div>
             </div>
           </div>
         </div>
         <div class="robot-shadow" aria-hidden></div>
       </div>
-      <div style="width:100%;text-align:center;margin-top:8px">
-        <strong style="color:#fff">Astra — Challenge Assistant</strong>
-        <div style="color:var(--muted);font-size:0.9rem;margin-top:6px">Daily tech challenges to boost your skills</div>
+      <div style="width:100%;text-align:center;margin-top:6px">
+        <strong style="color:#fff">Astra — Challenge Bot</strong>
+        <div style="color:var(--muted);font-size:0.82rem;margin-top:5px">AI-powered daily tech quizzes to level up your skills</div>
+      </div>
+
+      <!-- Quick stats box -->
+      <div style="width:100%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:14px;">
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Session Stats</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-size:0.83rem">
+            <span style="color:var(--muted)">Attempted</span>
+            <span id="stat-attempted" style="font-weight:600">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.83rem">
+            <span style="color:var(--muted)">Correct</span>
+            <span id="stat-correct" style="font-weight:600;color:var(--success)">0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.83rem">
+            <span style="color:var(--muted)">Accuracy</span>
+            <span id="stat-accuracy" style="font-weight:600;color:var(--warning)">—</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.83rem">
+            <span style="color:var(--muted)">AI Generated</span>
+            <span id="stat-ai" style="font-weight:600;color:#a78bfa">0 ✨</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.83rem">
+            <span style="color:var(--muted)">Active Topic</span>
+            <span id="stat-topic" style="font-weight:600;color:var(--accent)">All</span>
+          </div>
+        </div>
       </div>
     </aside>
 
+    <!-- ═══ CENTER: Challenge ═══ -->
     <main class="challenge-panel" role="main">
       <div class="challenge-header">
         <h2>Daily Tech Challenge</h2>
         <div class="challenge-controls">
           <button class="back" onclick="go('index.html')"><i class="fas fa-arrow-left"></i> Home</button>
-          <button class="secondary" id="new-challenge-btn"><i class="fas fa-sync-alt"></i> New Challenge</button>
+          <button class="secondary" id="new-challenge-btn"><i class="fas fa-sync-alt"></i> New</button>
         </div>
+      </div>
+
+      <!-- Level Filter -->
+      <div class="level-tabs">
+        <button class="level-tab active" data-level="All">All Levels</button>
+        <button class="level-tab easy"   data-level="Easy">🟢 Easy</button>
+        <button class="level-tab medium" data-level="Medium">🟡 Medium</button>
+        <button class="level-tab hard"   data-level="Hard">🔴 Hard</button>
       </div>
 
       <div class="challenge-content">
-        <!-- Streak Section -->
-        <div class="streak-section">
-          <h3>Your Challenge Streak</h3>
-          <div class="streak-display">
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
             <div class="streak-count" id="streak-count">0</div>
-            <div class="streak-label">Days<br>Streak</div>
+            <div class="stat-label">🔥 Day Streak</div>
           </div>
-          <p style="color:var(--muted); font-size:0.9rem;">Solve challenges to build your streak!</p>
+          <div class="stat-card">
+            <div class="stat-value" id="today-correct">0</div>
+            <div class="stat-label">✅ Correct Today</div>
+          </div>
         </div>
 
-        <!-- Progress Section -->
+        <!-- Progress -->
         <div class="progress-section">
           <div class="progress-header">
-            <h3>Today's Progress</h3>
-            <span id="progress-text">0/∞ Completed</span>
+            <span style="font-weight:600;font-size:0.88rem">Today's Accuracy</span>
+            <span id="progress-text" style="font-size:0.82rem;color:var(--muted)">0 questions done</span>
           </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
           <div class="progress-stats">
-            <span>Daily Goal: Keep learning!</span>
-            <span id="completion-rate">0 Questions</span>
+            <span>Keep going — every question counts!</span>
+            <span id="accuracy-text">0%</span>
           </div>
         </div>
 
-        <!-- Question Section -->
+        <!-- Active Topic Badge -->
+        <div class="active-topic-badge" id="active-topic-badge">
+          <span class="topic-icon" id="badge-icon">📚</span>
+          <div>
+            <div style="font-size:0.75rem;color:var(--muted)">Topic selected</div>
+            <strong id="badge-name">JavaScript</strong>
+          </div>
+          <button class="clear-btn" onclick="clearTopic()">✕ Clear</button>
+        </div>
+
+        <!-- Question -->
         <div class="question-section">
-          <div class="question-header">
-            <div class="question-category" id="question-category">JavaScript</div>
-            <div class="question-difficulty" id="question-difficulty">Medium</div>
+
+          <!-- AI Loading State -->
+          <div class="ai-loading" id="ai-loading">
+            <div class="ai-spinner"></div>
+            <div class="ai-loading-text">
+              <strong>🤖 Astra AI is generating a question…</strong>
+              Creating a fresh <span id="ai-loading-topic">question</span> just for you
+            </div>
           </div>
-          <div class="question-text" id="question-text">
-            What is the output of the following code?<br>
-            <code>console.log(typeof null);</code>
+
+          <!-- Completion Screen -->
+          <div class="completion-screen" id="completion-screen">
+            <div class="completion-emoji">🏆</div>
+            <div class="completion-title">All Questions Done!</div>
+            <div class="completion-sub">You've completed all <span id="completed-count">0</span> static questions.<br>Let Astra AI generate unlimited fresh ones!</div>
+            <button class="ai-gen-btn" id="ai-gen-start-btn">
+              <i class="fas fa-robot"></i> Generate AI Question
+            </button>
           </div>
-          <div class="options-container" id="options-container">
-            <!-- Options will be populated by JavaScript -->
-          </div>
-          <div class="action-buttons">
-            <button class="submit-btn" id="submit-btn" disabled>Submit Answer</button>
-            <button class="next-btn" id="next-btn" style="display:none;">Next Challenge</button>
+
+          <!-- Normal Question UI -->
+          <div id="question-ui">
+            <div class="question-meta">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="question-category" id="question-category">JavaScript</div>
+                <span class="ai-badge" id="ai-badge" style="display:none">✨ AI Generated</span>
+              </div>
+              <div class="difficulty-badge Medium" id="question-difficulty">Medium</div>
+            </div>
+            <div class="question-text" id="question-text">Loading question…</div>
+            <div class="options-container" id="options-container"></div>
+            <div class="action-buttons">
+              <button class="submit-btn" id="submit-btn" disabled>Submit Answer</button>
+              <button class="next-btn" id="next-btn" style="display:none">Next Challenge →</button>
+            </div>
           </div>
         </div>
 
-        <!-- Explanation Section -->
+        <!-- Explanation -->
         <div class="explanation-section" id="explanation-section">
-          <div class="explanation-header">Explanation</div>
-          <div class="explanation-text" id="explanation-text">
-            <!-- Explanation will be populated by JavaScript -->
-          </div>
+          <div class="explanation-header"><i class="fas fa-lightbulb"></i> Explanation</div>
+          <div class="explanation-text" id="explanation-text"></div>
         </div>
+
       </div>
     </main>
+
+    <!-- ═══ RIGHT: Topic Selection ═══ -->
+    <aside class="topic-panel">
+      <div class="topic-panel-header">
+        <h3>📚 Choose a Topic</h3>
+        <p>Pick any topic to practice focused questions</p>
+        <span class="topic-count-badge" id="topic-total-badge">120+ Questions</span>
+      </div>
+
+      <div class="topics-grid" id="topics-grid">
+        <!-- Topic cards injected by JS -->
+      </div>
+    </aside>
+
   </div>
 
   <script>
-    // Particles background
+    // ─── Particles ───────────────────────────────────────────
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
-    
-    function resize() {
-      canvas.width = innerWidth;
-      canvas.height = innerHeight;
-    }
-    
-    addEventListener('resize', resize);
-    resize();
-    
-    const particles = [];
-    for (let i = 0; i < 90; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.6 + 0.4,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25
-      });
-    }
-    
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+    const particles = Array.from({ length: 90 }, () => ({
+      x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+      r: Math.random()*1.6+0.4, vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25
+    }));
     function tick() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
       for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(180, 200, 255, 0.03)';
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        if (p.x<0) p.x=canvas.width; if (p.x>canvas.width) p.x=0;
+        if (p.y<0) p.y=canvas.height; if (p.y>canvas.height) p.y=0;
+        ctx.beginPath(); ctx.fillStyle='rgba(180,200,255,0.03)';
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
       }
       requestAnimationFrame(tick);
     }
     tick();
 
-    // Daily Challenge Functionality
-    const newChallengeBtn = document.getElementById('new-challenge-btn');
-    const submitBtn = document.getElementById('submit-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const optionsContainer = document.getElementById('options-container');
-    const explanationSection = document.getElementById('explanation-section');
-    const explanationText = document.getElementById('explanation-text');
-    const questionText = document.getElementById('question-text');
-    const questionCategory = document.getElementById('question-category');
-    const questionDifficulty = document.getElementById('question-difficulty');
-    const streakCount = document.getElementById('streak-count');
-    const progressFill = document.getElementById('progress-fill');
-    const progressText = document.getElementById('progress-text');
-    const completionRate = document.getElementById('completion-rate');
-    const robotShell = document.querySelector('.robot-shell');
-
-    // Question database
-    const questions = [
-      {
-        id: 1,
-        category: "JavaScript",
-        difficulty: "Easy",
-        question: "What is the output of: console.log(typeof null);",
-        options: ["null", "object", "undefined", "string"],
-        correctAnswer: 1,
-        explanation: "In JavaScript, typeof null returns 'object'. This is a known quirk in the language dating back to its early days."
-      },
-      {
-        id: 2,
-        category: "HTML",
-        difficulty: "Easy",
-        question: "Which HTML tag is used to define an internal style sheet?",
-        options: ["<css>", "<script>", "<style>", "<link>"],
-        correctAnswer: 2,
-        explanation: "The <style> tag is used to define internal CSS styles directly within an HTML document."
-      },
-      {
-        id: 3,
-        category: "CSS",
-        difficulty: "Medium",
-        question: "Which CSS property is used to change the text color of an element?",
-        options: ["text-color", "font-color", "color", "text-style"],
-        correctAnswer: 2,
-        explanation: "The 'color' property in CSS is used to set the color of text content for an element."
-      },
-      {
-        id: 4,
-        category: "JavaScript",
-        difficulty: "Medium",
-        question: "What will be logged: let x = 5; console.log(x++ + ++x);",
-        options: ["10", "11", "12", "13"],
-        correctAnswer: 2,
-        explanation: "x++ returns 5 (then x becomes 6), ++x returns 7 (x becomes 7), so 5 + 7 = 12."
-      },
-      {
-        id: 5,
-        category: "React",
-        difficulty: "Medium",
-        question: "In React, which hook is used to perform side effects in function components?",
-        options: ["useState", "useEffect", "useContext", "useReducer"],
-        correctAnswer: 1,
-        explanation: "The useEffect hook lets you perform side effects in function components, similar to lifecycle methods in class components."
-      },
-      {
-        id: 6,
-        category: "Python",
-        difficulty: "Easy",
-        question: "Which of the following is used to define a function in Python?",
-        options: ["function", "def", "define", "func"],
-        correctAnswer: 1,
-        explanation: "In Python, the 'def' keyword is used to define a function."
-      },
-      {
-        id: 7,
-        category: "Git",
-        difficulty: "Medium",
-        question: "Which command is used to download objects and refs from another repository?",
-        options: ["git pull", "git fetch", "git clone", "git merge"],
-        correctAnswer: 1,
-        explanation: "git fetch downloads objects and refs from another repository without merging them into your current branch."
-      },
-      {
-        id: 8,
-        category: "SQL",
-        difficulty: "Medium",
-        question: "Which SQL clause is used to filter rows returned by a query?",
-        options: ["FILTER", "WHERE", "HAVING", "LIMIT"],
-        correctAnswer: 1,
-        explanation: "The WHERE clause is used to filter records and extract only those that fulfill a specified condition."
-      },
-      {
-        id: 9,
-        category: "Node.js",
-        difficulty: "Hard",
-        question: "In Node.js, which method is used to read environment variables?",
-        options: ["process.env", "process.getEnv()", "env.get()", "System.getEnv()"],
-        correctAnswer: 0,
-        explanation: "In Node.js, process.env is an object that contains the user environment, including environment variables."
-      },
-      {
-        id: 10,
-        category: "Data Structures",
-        difficulty: "Hard",
-        question: "What is the time complexity of accessing an element in an array by index?",
-        options: ["O(1)", "O(n)", "O(log n)", "O(n²)"],
-        correctAnswer: 0,
-        explanation: "Accessing an element in an array by index has a constant time complexity O(1) because it uses direct memory addressing."
-      }
+    // ─── Topic Definitions ──────────────────────────────────
+    const TOPICS = [
+      { id:'javascript', name:'JavaScript',      icon:'🟨', sub:'ES6+, Closures, Async',   color:'#f7df1e', from:'rgba(247,223,30,0.08)', to:'transparent' },
+      { id:'python',     name:'Python',           icon:'🐍', sub:'OOP, Decorators, Lists',  color:'#3776ab', from:'rgba(55,118,171,0.08)',  to:'transparent' },
+      { id:'dsa',        name:'Data Structures',  icon:'🧩', sub:'Arrays, Trees, Graphs',   color:'#00d9a6', from:'rgba(0,217,166,0.08)',   to:'transparent' },
+      { id:'dbms',       name:'DBMS & SQL',       icon:'🗄️', sub:'Queries, Joins, Indexes', color:'#ff9800', from:'rgba(255,152,0,0.08)',   to:'transparent' },
+      { id:'os',         name:'Operating Systems',icon:'⚙️', sub:'Processes, Memory, FS',   color:'#9aa4b2', from:'rgba(154,164,178,0.08)', to:'transparent' },
+      { id:'networking', name:'Networking',        icon:'🌐', sub:'TCP/IP, HTTP, DNS',       color:'#00b4ff', from:'rgba(0,180,255,0.08)',   to:'transparent' },
+      { id:'react',      name:'React.js',          icon:'⚛️', sub:'Hooks, State, Lifecycle', color:'#61dafb', from:'rgba(97,218,251,0.08)',  to:'transparent' },
+      { id:'git',        name:'Git & DevOps',      icon:'🔧', sub:'Branches, CI/CD, Docker', color:'#f05032', from:'rgba(240,80,50,0.08)',   to:'transparent' },
+      { id:'algorithms', name:'Algorithms',        icon:'📊', sub:'Sorting, DP, Complexity', color:'#7c5cff', from:'rgba(124,92,255,0.08)',  to:'transparent' },
+      { id:'security',   name:'Web Security',      icon:'🔐', sub:'XSS, CSRF, Auth flows',   color:'#ff5c8d', from:'rgba(255,92,141,0.08)',  to:'transparent' },
     ];
 
-    // State management
-    let currentQuestion = null;
-    let selectedOption = null;
-    let streak = parseInt(localStorage.getItem('challengeStreak')) || 0;
-    let questionsAnsweredToday = parseInt(localStorage.getItem('questionsAnsweredToday')) || 0;
-    let correctAnswersToday = parseInt(localStorage.getItem('correctAnswersToday')) || 0;
-    let usedQuestionIds = JSON.parse(localStorage.getItem('usedQuestionIds')) || [];
+    // ─── Full Question Bank ──────────────────────────────────
+    const QUESTIONS = [
+      // ── JAVASCRIPT ──
+      { topic:'javascript', cat:'JavaScript', lvl:'Easy', q:'What does <code>typeof null</code> return in JavaScript?',
+        opts:['null','object','undefined','string'], ans:1,
+        exp:'typeof null returns "object" — a known bug from JavaScript\'s earliest days that was never fixed for backwards compatibility.' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Easy', q:'Which method converts a JSON string into a JavaScript object?',
+        opts:['JSON.parse()','JSON.stringify()','JSON.decode()','JSON.convert()'], ans:0,
+        exp:'JSON.parse() parses a JSON-formatted string and returns the corresponding JavaScript object or value.' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Easy', q:'What is the output of <code>Boolean("")</code>?',
+        opts:['true','false','null','undefined'], ans:1,
+        exp:'An empty string is a falsy value in JavaScript, so Boolean("") evaluates to false.' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Medium', q:'What will be logged?\n\nlet x = 5;\nconsole.log(x++ + ++x);',
+        opts:['10','11','12','13'], ans:2, isCode:true,
+        exp:'x++ returns 5 and then x becomes 6. ++x increments x to 7 and returns 7. So 5 + 7 = 12.' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Medium', q:'What is a closure in JavaScript?',
+        opts:['A function that has no return value','A function that remembers its outer scope even after the outer function has returned','A built-in method to close browser windows','A loop that terminates automatically'], ans:1,
+        exp:'A closure is formed when a function retains access to its lexical scope (the enclosing function\'s variables) even after the enclosing function has finished executing.' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Medium', q:'What is the output of <code>[1,2,3].map(x => x * 2)</code>?',
+        opts:['[1,2,3]','[2,4,6]','[3,6,9]','undefined'], ans:1,
+        exp:'Array.map() returns a new array with each element transformed. Here each element is multiplied by 2, giving [2,4,6].' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Hard', q:'What is the event loop in JavaScript?',
+        opts:['A browser API for handling clicks','The mechanism that handles async callbacks by using a call stack, web APIs queue, and callback queue','A loop that fires on every DOM event','A method for creating infinite loops'], ans:1,
+        exp:'The event loop continuously checks the call stack. When empty, it pushes the next callback from the callback/microtask queue onto the stack, enabling non-blocking async behavior.' },
+      { topic:'javascript', cat:'JavaScript', lvl:'Hard', q:'What is the difference between <code>==</code> and <code>===</code> in JavaScript?',
+        opts:['No difference','== checks type only, === checks value only','== performs type coercion before comparing; === compares value AND type strictly','=== is faster than =='], ans:2,
+        exp:'== uses abstract equality comparison (type coercion allowed), so "5" == 5 is true. === uses strict equality — same type AND same value required, so "5" === 5 is false.' },
 
-    // Initialize the page
-    function init() {
-      updateStreakDisplay();
-      updateProgress();
-      loadRandomQuestion();
+      // ── PYTHON ──
+      { topic:'python', cat:'Python', lvl:'Easy', q:'Which keyword defines a function in Python?',
+        opts:['function','def','func','define'], ans:1,
+        exp:'Python uses the "def" keyword to define a function, followed by the function name and parentheses.' },
+      { topic:'python', cat:'Python', lvl:'Easy', q:'What does <code>len([1,2,3,4])</code> return?',
+        opts:['3','4','5','Error'], ans:1,
+        exp:'len() returns the number of items in a sequence. The list [1,2,3,4] has 4 elements, so len() returns 4.' },
+      { topic:'python', cat:'Python', lvl:'Easy', q:'Which of the following is used to insert items into a Python list?',
+        opts:['.add()','.push()','.append()','.insert_item()'], ans:2,
+        exp:'.append() adds a single item to the end of a list. .insert(index, value) can add at a specific position.' },
+      { topic:'python', cat:'Python', lvl:'Medium', q:'What is a Python decorator?',
+        opts:['A class that adds CSS styles','A function that wraps another function to modify its behavior','A module for drawing shapes','A loop construct'], ans:1,
+        exp:'Decorators are functions that take another function as input, add behavior around it, and return a modified function. They use the @decorator_name syntax.' },
+      { topic:'python', cat:'Python', lvl:'Medium', q:'What is the output of <code>print(type([]))</code>?',
+        opts:["<class 'list'>",'[]','list','array'], ans:0,
+        exp:'type() returns the type object of the variable. An empty list [] is of type "list", so it prints <class \'list\'>.' },
+      { topic:'python', cat:'Python', lvl:'Hard', q:'What is the difference between <code>deepcopy</code> and <code>copy</code> in Python?',
+        opts:['deepcopy copies only the first level','copy creates a fully independent copy including nested objects; copy.copy() only copies the top-level object','There is no difference','deepcopy is slower but identical in result'], ans:1,
+        exp:'copy.copy() creates a shallow copy — nested objects still share the same reference. copy.deepcopy() creates a completely independent clone, recursively copying all nested objects.' },
+
+      // ── DSA ──
+      { topic:'dsa', cat:'Data Structures', lvl:'Easy', q:'What is the time complexity of accessing an element in an array by index?',
+        opts:['O(1)','O(n)','O(log n)','O(n²)'], ans:0,
+        exp:'Array element access by index is O(1) — constant time — because arrays store elements in contiguous memory and use direct addressing.' },
+      { topic:'dsa', cat:'Data Structures', lvl:'Easy', q:'Which data structure uses LIFO (Last In, First Out) order?',
+        opts:['Queue','Stack','Linked List','Heap'], ans:1,
+        exp:'A Stack follows LIFO — the last element pushed is the first to be popped. Common uses: function call stacks, undo operations, and expression parsing.' },
+      { topic:'dsa', cat:'Data Structures', lvl:'Medium', q:'What is the time complexity of binary search?',
+        opts:['O(n)','O(n²)','O(log n)','O(1)'], ans:2,
+        exp:'Binary search halves the search space at each step, giving O(log n) time complexity. It requires the array to be sorted.' },
+      { topic:'dsa', cat:'Data Structures', lvl:'Medium', q:'What data structure is best for implementing a priority queue?',
+        opts:['Array','Linked List','Binary Heap','Stack'], ans:2,
+        exp:'A Binary Heap (min-heap or max-heap) gives O(log n) insertion and O(1) peek, making it ideal for priority queues. Arrays give O(n) insertion, which is slower.' },
+      { topic:'dsa', cat:'Data Structures', lvl:'Hard', q:'What is the worst-case time complexity of QuickSort?',
+        opts:['O(n log n)','O(n)','O(n²)','O(log n)'], ans:2,
+        exp:'QuickSort\'s worst case O(n²) occurs when the pivot is always the smallest or largest element (e.g., already sorted array with naive pivot). Average case is O(n log n).' },
+      { topic:'dsa', cat:'Data Structures', lvl:'Hard', q:'What is a balanced BST and why is it important?',
+        opts:['A BST where all nodes have two children','A BST where the height difference between left and right subtrees of any node is at most 1, ensuring O(log n) operations','A BST with no duplicate values','A BST stored in an array'], ans:1,
+        exp:'In a balanced BST (like AVL or Red-Black Tree), the height is kept O(log n), so search, insert, and delete all run in O(log n) worst case instead of O(n) for an unbalanced tree.' },
+
+      // ── DBMS ──
+      { topic:'dbms', cat:'DBMS & SQL', lvl:'Easy', q:'Which SQL clause filters rows returned by a query?',
+        opts:['FILTER','WHERE','HAVING','LIMIT'], ans:1,
+        exp:'WHERE filters rows before any grouping occurs. HAVING filters after GROUP BY. WHERE works on individual row conditions; HAVING works on aggregated results.' },
+      { topic:'dbms', cat:'DBMS & SQL', lvl:'Easy', q:'What does SQL stand for?',
+        opts:['Structured Query Language','Simple Query Language','Sequential Query List','Standard Query Logic'], ans:0,
+        exp:'SQL stands for Structured Query Language — a standard language for managing relational databases and performing CRUD operations.' },
+      { topic:'dbms', cat:'DBMS & SQL', lvl:'Medium', q:'What is the difference between INNER JOIN and LEFT JOIN?',
+        opts:['No difference','INNER JOIN returns all rows from both tables; LEFT JOIN returns only left rows','INNER JOIN returns only matching rows from both tables; LEFT JOIN returns all left rows plus matching right rows','LEFT JOIN is faster'], ans:2,
+        exp:'INNER JOIN returns only rows where there is a match in both tables. LEFT JOIN returns all rows from the left table, with NULL for non-matching right-side columns.' },
+      { topic:'dbms', cat:'DBMS & SQL', lvl:'Medium', q:'What is database normalization?',
+        opts:['Sorting data alphabetically','The process of organizing data to reduce redundancy and improve data integrity, typically through Normal Forms (1NF, 2NF, 3NF)','Compressing database files','Creating indexes on all columns'], ans:1,
+        exp:'Normalization decomposes tables into smaller, well-structured tables using rules called Normal Forms to eliminate data redundancy and prevent update/insert/delete anomalies.' },
+      { topic:'dbms', cat:'DBMS & SQL', lvl:'Hard', q:'What is an index in a database and what are its trade-offs?',
+        opts:['A constraint that enforces uniqueness','A data structure (B-Tree or Hash) that speeds up read queries at the cost of slower writes and extra storage','A synonym for a primary key','A backup of the table data'], ans:1,
+        exp:'An index (commonly a B-Tree) allows fast lookup of rows without scanning the whole table, improving SELECT speed. Trade-offs: additional disk space and slower INSERT/UPDATE/DELETE because indexes must also be updated.' },
+
+      // ── OS ──
+      { topic:'os', cat:'Operating Systems', lvl:'Easy', q:'What is a process in an operating system?',
+        opts:['A file stored on disk','A program in execution with its own memory space and resources','A network connection','A hardware device driver'], ans:1,
+        exp:'A process is an instance of a running program. It has its own virtual address space, code, data, stack, and open file handles, managed by the OS.' },
+      { topic:'os', cat:'Operating Systems', lvl:'Medium', q:'What is the difference between a process and a thread?',
+        opts:['No difference','A thread is a separate program; a process is part of a thread','A process has its own memory space; threads within a process share memory but have their own stack and registers','Processes are faster than threads'], ans:2,
+        exp:'Processes are independent with separate memory spaces. Threads are lighter units within a process that share the heap/code/data but each maintain their own stack and CPU registers.' },
+      { topic:'os', cat:'Operating Systems', lvl:'Medium', q:'What is a deadlock?',
+        opts:['When a process terminates unexpectedly','A situation where two or more processes wait forever for resources held by each other, causing a standstill','When the CPU usage hits 100%','When virtual memory runs out'], ans:1,
+        exp:'Deadlock requires four conditions: mutual exclusion, hold and wait, no preemption, and circular wait. Prevention strategies include resource ordering and using timeouts.' },
+      { topic:'os', cat:'Operating Systems', lvl:'Hard', q:'What is virtual memory and how does paging work?',
+        opts:['Extra RAM added to a computer','An abstraction that lets each process see a large private address space; paging divides this into fixed-size pages mapped to physical frames via a page table','A file on disk used as swap space only','A technique to compress RAM'], ans:1,
+        exp:'Virtual memory separates logical address space from physical RAM. Paging divides both into fixed-size pages/frames. The MMU translates virtual addresses using a page table; pages not in RAM are fetched from disk (page fault).' },
+
+      // ── NETWORKING ──
+      { topic:'networking', cat:'Networking', lvl:'Easy', q:'What does HTTP stand for?',
+        opts:['HyperText Transfer Protocol','High Transfer Text Protocol','Hyper Transfer Text Program','Host Transfer Text Protocol'], ans:0,
+        exp:'HTTP (HyperText Transfer Protocol) is the foundation of data communication on the World Wide Web, used to transfer HTML, JSON, and other web content.' },
+      { topic:'networking', cat:'Networking', lvl:'Easy', q:'What port does HTTPS use by default?',
+        opts:['80','21','443','8080'], ans:2,
+        exp:'HTTPS uses port 443 by default. HTTP uses port 80. HTTPS is HTTP over TLS/SSL, providing encrypted communication.' },
+      { topic:'networking', cat:'Networking', lvl:'Medium', q:'What is the difference between TCP and UDP?',
+        opts:['No difference','TCP is connection-oriented with guaranteed delivery and ordering; UDP is connectionless, faster, but with no delivery guarantee','UDP uses more bandwidth','TCP is used for streaming only'], ans:1,
+        exp:'TCP (Transmission Control Protocol) establishes a connection, ensures ordered delivery, and retransmits lost packets — ideal for HTTP, email. UDP is faster with no guarantees — ideal for gaming, DNS, video streaming.' },
+      { topic:'networking', cat:'Networking', lvl:'Hard', q:'What happens during a TLS handshake?',
+        opts:['Files are transferred between two servers','The client and server negotiate cipher suites, exchange certificates, verify authenticity, and establish shared session keys for encrypted communication','The DNS server resolves a domain','The browser loads cookies'], ans:1,
+        exp:'TLS handshake: (1) Client Hello with supported ciphers, (2) Server Hello + certificate, (3) Client verifies cert, (4) Key exchange (e.g., Diffie-Hellman), (5) Session keys derived, (6) Encrypted communication begins.' },
+
+      // ── REACT ──
+      { topic:'react', cat:'React.js', lvl:'Easy', q:'Which hook is used to manage local state in a React function component?',
+        opts:['useEffect','useContext','useState','useRef'], ans:2,
+        exp:'useState returns a state variable and a setter function. Calling the setter triggers a re-render of the component with the updated state value.' },
+      { topic:'react', cat:'React.js', lvl:'Easy', q:'What is JSX in React?',
+        opts:['A CSS framework','A JavaScript XML syntax extension that lets you write HTML-like code inside JavaScript','A database query language','A testing library'], ans:1,
+        exp:'JSX is a syntax extension for JavaScript that looks like HTML. Babel compiles JSX into React.createElement() calls. It makes component templates more readable.' },
+      { topic:'react', cat:'React.js', lvl:'Medium', q:'Which hook is used to perform side effects in function components?',
+        opts:['useState','useEffect','useContext','useReducer'], ans:1,
+        exp:'useEffect runs after render and is used for side effects: API calls, subscriptions, or DOM mutations. The dependency array controls when it re-runs.' },
+      { topic:'react', cat:'React.js', lvl:'Medium', q:'What is the virtual DOM in React?',
+        opts:['A backend database React uses','A lightweight in-memory representation of the real DOM; React diffs it against the previous version and applies minimal real DOM updates','An alternative to HTML','A browser security feature'], ans:1,
+        exp:'React\'s virtual DOM is a JS object tree mirroring the real DOM. After state changes, React reconciles (diffs) the new and old virtual DOMs and batches only the minimal required real DOM updates.' },
+      { topic:'react', cat:'React.js', lvl:'Hard', q:'When would you use <code>useCallback</code> in React?',
+        opts:['To fetch data from an API','To memoize a function reference so it doesn\'t change between renders, preventing unnecessary child re-renders when passed as a prop','To replace useState','To run code on unmount only'], ans:1,
+        exp:'useCallback(fn, deps) returns a memoized function that only changes if deps change. Useful when passing callbacks to optimized child components (wrapped in React.memo) to prevent unnecessary re-renders.' },
+
+      // ── GIT ──
+      { topic:'git', cat:'Git & DevOps', lvl:'Easy', q:'Which Git command stages all changes for commit?',
+        opts:['git commit -m','git push','git add .','git init'], ans:2,
+        exp:'"git add ." stages all modified and new files in the current directory. You can also use "git add -A" to include deletions.' },
+      { topic:'git', cat:'Git & DevOps', lvl:'Easy', q:'What does <code>git clone</code> do?',
+        opts:['Creates a new empty repository','Makes a local copy of a remote repository including all its history and branches','Deletes a repository','Merges two branches'], ans:1,
+        exp:'git clone copies a remote repository (and all its commits, branches, tags) into a new local directory, and sets the remote as "origin".' },
+      { topic:'git', cat:'Git & DevOps', lvl:'Medium', q:'What is the difference between <code>git fetch</code> and <code>git pull</code>?',
+        opts:['No difference','git fetch downloads remote changes without merging; git pull fetches AND merges into the current branch','git pull is safer','git fetch deletes local branches'], ans:1,
+        exp:'git fetch only downloads new data from remote, keeping your local branches unchanged. git pull = git fetch + git merge (or rebase), immediately integrating remote changes.' },
+      { topic:'git', cat:'Git & DevOps', lvl:'Hard', q:'What is Git rebase and when should you use it over merge?',
+        opts:['Rebase deletes commits','Rebase re-applies commits on top of another branch, creating a linear history — useful for feature branches before merging to main for a clean log','Rebase and merge are identical','Rebase is only for fixing typos in commit messages'], ans:1,
+        exp:'git rebase moves your branch\'s commits to sit on top of the target branch, rewriting history for a clean linear log. Use it on local/feature branches. Avoid rebasing shared/public branches as it rewrites commit SHAs.' },
+
+      // ── ALGORITHMS ──
+      { topic:'algorithms', cat:'Algorithms', lvl:'Easy', q:'What is the time complexity of linear search in the worst case?',
+        opts:['O(1)','O(log n)','O(n)','O(n²)'], ans:2,
+        exp:'Linear search checks each element one by one. In the worst case (element at end or not found), it checks all n elements, giving O(n).' },
+      { topic:'algorithms', cat:'Algorithms', lvl:'Medium', q:'What algorithmic technique does Dynamic Programming use?',
+        opts:['Divide and conquer without memory','Brute force','Breaking a problem into overlapping subproblems and storing results (memoization/tabulation) to avoid recomputation','Random sampling'], ans:2,
+        exp:'DP solves problems by storing solutions to subproblems. Memoization (top-down) caches recursive results; tabulation (bottom-up) fills a table iteratively. Classic examples: Fibonacci, Knapsack, LCS.' },
+      { topic:'algorithms', cat:'Algorithms', lvl:'Hard', q:'What is the time and space complexity of Merge Sort?',
+        opts:['O(n²) time, O(1) space','O(n log n) time, O(n) space','O(n log n) time, O(1) space','O(n) time, O(n) space'], ans:1,
+        exp:'Merge Sort splits the array (log n levels) and merges in O(n) per level → O(n log n) time. It requires O(n) extra space for the temporary merged arrays, unlike QuickSort\'s in-place approach.' },
+
+      // ── SECURITY ──
+      { topic:'security', cat:'Web Security', lvl:'Easy', q:'What does XSS stand for?',
+        opts:['Cross-Server Script','Cross-Site Scripting','Cross-Stack System','Cross-Source Script'], ans:1,
+        exp:'XSS (Cross-Site Scripting) is an attack where malicious scripts are injected into web pages viewed by other users, often to steal cookies or session tokens.' },
+      { topic:'security', cat:'Web Security', lvl:'Medium', q:'What is CSRF and how is it prevented?',
+        opts:['A type of SQL injection','Cross-Site Request Forgery — tricks users into submitting unauthorized requests; prevented with CSRF tokens, SameSite cookies, and origin header checks','A network attack on routers','A type of password brute-force'], ans:1,
+        exp:'CSRF exploits a user\'s active session on site A to make requests to site A from site B. Prevention: use anti-CSRF tokens (random values tied to the session), SameSite=Strict cookies, and validate Origin/Referer headers.' },
+      { topic:'security', cat:'Web Security', lvl:'Hard', q:'What is SQL Injection and how do parameterized queries prevent it?',
+        opts:['An error when SQL syntax is wrong','An attack where user input is inserted into SQL queries to manipulate the database; parameterized queries prevent it by separating data from SQL code, never interpolating user input into the query string','A performance optimization technique','An ORM feature'], ans:1,
+        exp:'SQL injection occurs when unsanitized user input alters query logic, e.g., \' OR \'1\'=\'1. Parameterized queries (prepared statements) send SQL structure and data separately — the DB treats user input as pure data, never executable code.' },
+    ];
+
+    // ─── AI Question Generator ───────────────────────────────
+    let aiQueuedQuestions = [];   // pre-fetched AI questions buffer
+    let isFetchingAI = false;
+    let aiGenCount = 0;           // total AI questions generated this session
+
+    async function generateAIQuestion(topic, level) {
+      const topicName  = activeTopic ? activeTopic.name : 'Computer Science';
+      const levelLabel = level === 'All' ? 'Medium' : level;
+      const prompt = `Generate a unique multiple-choice quiz question about "${topicName}" at ${levelLabel} difficulty for a computer science student.
+
+Rules:
+- The question must be different from common textbook examples
+- 4 answer options (A, B, C, D)
+- Exactly one correct answer
+- Provide a clear, educational explanation (2-3 sentences)
+- If it involves code, wrap it in triple backticks with language hint
+
+Respond ONLY with valid JSON (no markdown, no extra text) in this exact format:
+{
+  "question": "Question text here",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correctIndex": 1,
+  "explanation": "Explanation here",
+  "category": "${topicName}",
+  "difficulty": "${levelLabel}"
+}`;
+
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await resp.json();
+      const raw  = data.content.map(b => b.text || '').join('').trim();
+      const clean = raw.replace(/^```json|^```|```$/gm, '').trim();
+      const parsed = JSON.parse(clean);
+      return {
+        topic:  activeTopic ? activeTopic.id : 'general',
+        cat:    parsed.category,
+        lvl:    parsed.difficulty,
+        q:      parsed.question,
+        opts:   parsed.options,
+        ans:    parsed.correctIndex,
+        exp:    parsed.explanation,
+        isAI:   true
+      };
     }
 
-    // Load a random question that hasn't been used today
-    function loadRandomQuestion() {
-      let availableQuestions = questions.filter(q => !usedQuestionIds.includes(q.id));
-      
-      // If all questions have been used, reset the used questions
-      if (availableQuestions.length === 0) {
-        availableQuestions = questions;
-        usedQuestionIds = [];
+    async function prefetchAIQuestion() {
+      if (isFetchingAI || aiQueuedQuestions.length >= 2) return;
+      isFetchingAI = true;
+      try {
+        const q = await generateAIQuestion(activeTopic, activeLevel);
+        aiQueuedQuestions.push(q);
+      } catch(e) { console.warn('AI prefetch failed', e); }
+      finally { isFetchingAI = false; }
+    }
+
+    // ─── Build Topic Cards ───────────────────────────────────
+    const grid = document.getElementById('topics-grid');
+    TOPICS.forEach(t => {
+      const count = QUESTIONS.filter(q => q.topic === t.id).length;
+      const card = document.createElement('div');
+      card.className = 'topic-card';
+      card.dataset.id = t.id;
+      card.style.setProperty('--tc-from', t.from);
+      card.style.setProperty('--tc-to', t.to);
+      card.innerHTML = `
+        <div class="topic-icon-wrap" style="background:${t.from}">
+          <span>${t.icon}</span>
+        </div>
+        <div class="topic-info">
+          <div class="topic-name">${t.name}</div>
+          <div class="topic-sub">${t.sub}</div>
+        </div>
+        <div class="topic-count">${count}Q</div>`;
+      card.addEventListener('click', () => selectTopic(t));
+      grid.appendChild(card);
+    });
+
+    // ─── State ──────────────────────────────────────────────
+    let activeTopic   = null;   // null = all topics
+    let activeLevel   = 'All';
+    let currentQ      = null;
+    let selectedOpt   = null;
+    let streak        = parseInt(localStorage.getItem('challengeStreak'))    || 0;
+    let todayCorrect  = parseInt(localStorage.getItem('todayCorrect'))       || 0;
+    let todayTotal    = parseInt(localStorage.getItem('todayTotal'))         || 0;
+    let usedIds       = JSON.parse(localStorage.getItem('usedIds') || '[]');
+
+    // Reset if new day
+    const today = new Date().toDateString();
+    if (localStorage.getItem('challengeDay') !== today) {
+      todayCorrect = 0; todayTotal = 0; usedIds = [];
+      localStorage.setItem('challengeDay', today);
+      localStorage.setItem('todayCorrect', 0);
+      localStorage.setItem('todayTotal', 0);
+      localStorage.setItem('usedIds', '[]');
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────
+    function filteredPool() {
+      return QUESTIONS.filter(q => {
+        const topicOk = !activeTopic || q.topic === activeTopic.id;
+        const levelOk = activeLevel === 'All' || q.lvl === activeLevel;
+        return topicOk && levelOk;
+      });
+    }
+
+    function selectTopic(t) {
+      activeTopic = t;
+      usedIds = []; // fresh run for new topic
+      document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.topic-card[data-id="${t.id}"]`).classList.add('active');
+      document.getElementById('active-topic-badge').classList.add('show');
+      document.getElementById('badge-icon').textContent = t.icon;
+      document.getElementById('badge-name').textContent = t.name;
+      document.getElementById('stat-topic').textContent = t.name;
+      loadQuestion();
+      showToast(`Topic: ${t.name} selected`, 'success');
+    }
+
+    function clearTopic() {
+      activeTopic = null;
+      usedIds = [];
+      document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('active-topic-badge').classList.remove('show');
+      document.getElementById('stat-topic').textContent = 'All';
+      loadQuestion();
+    }
+
+    function showQuestionUI(show) {
+      document.getElementById('question-ui').style.display      = show ? 'block' : 'none';
+      document.getElementById('ai-loading').classList.toggle('show', false);
+      document.getElementById('completion-screen').classList.toggle('show', false);
+    }
+    function showLoadingUI(topicLabel) {
+      document.getElementById('question-ui').style.display = 'none';
+      document.getElementById('completion-screen').classList.remove('show');
+      document.getElementById('ai-loading').classList.add('show');
+      document.getElementById('ai-loading-topic').textContent = topicLabel + ' question';
+    }
+    function showCompletionUI(count) {
+      document.getElementById('question-ui').style.display = 'none';
+      document.getElementById('ai-loading').classList.remove('show');
+      document.getElementById('completion-screen').classList.add('show');
+      document.getElementById('completed-count').textContent = count;
+    }
+
+    function renderQuestion(q) {
+      const qEl = document.getElementById('question-text');
+      const text = q.q || '';
+      // Detect code blocks (```...```) and render them
+      if (text.includes('```')) {
+        qEl.innerHTML = text.replace(/```(\w*)\n?([\s\S]*?)```/g,
+          (_, lang, code) => `<div class="code-block">${code.trim()}</div>`);
+      } else if (q.isCode) {
+        qEl.innerHTML = `<div class="code-block">${text}</div>`;
+      } else {
+        qEl.innerHTML = text;
       }
-      
-      const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-      currentQuestion = availableQuestions[randomIndex];
-      
-      // Mark question as used
-      usedQuestionIds.push(currentQuestion.id);
-      localStorage.setItem('usedQuestionIds', JSON.stringify(usedQuestionIds));
-      
-      // Update question display
-      questionText.textContent = currentQuestion.question;
-      questionCategory.textContent = currentQuestion.category;
-      questionDifficulty.textContent = currentQuestion.difficulty;
-      
-      // Clear previous options
-      optionsContainer.innerHTML = '';
-      
-      // Add new options
-      currentQuestion.options.forEach((option, index) => {
-        const optionElement = document.createElement('div');
-        optionElement.className = 'option';
-        optionElement.innerHTML = `
-          <div class="option-letter">${String.fromCharCode(65 + index)}</div>
-          <div class="option-text">${option}</div>
-        `;
-        optionElement.addEventListener('click', () => selectOption(index, optionElement));
-        optionsContainer.appendChild(optionElement);
+
+      document.getElementById('question-category').textContent = q.cat;
+      const diffEl = document.getElementById('question-difficulty');
+      diffEl.textContent = q.lvl;
+      diffEl.className = `difficulty-badge ${q.lvl}`;
+
+      // AI badge
+      document.getElementById('ai-badge').style.display = q.isAI ? 'inline-flex' : 'none';
+
+      const oc = document.getElementById('options-container');
+      oc.innerHTML = '';
+      (q.opts || []).forEach((opt, i) => {
+        const el = document.createElement('div');
+        el.className = 'option';
+        el.innerHTML = `<div class="option-letter">${String.fromCharCode(65+i)}</div><div>${opt}</div>`;
+        el.addEventListener('click', () => pickOption(i, el));
+        oc.appendChild(el);
       });
-      
-      // Reset UI state
-      selectedOption = null;
-      submitBtn.disabled = true;
-      submitBtn.style.display = 'block';
-      nextBtn.style.display = 'none';
-      explanationSection.classList.remove('show');
-      
-      // Animate robot
-      animateRobot();
+
+      selectedOpt = null;
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-btn').style.display = 'block';
+      document.getElementById('next-btn').style.display = 'none';
+      document.getElementById('explanation-section').classList.remove('show');
+      showQuestionUI(true);
+
+      // Robot bounce
+      document.getElementById('robotShell').animate(
+        [{transform:'translateY(0)'},{transform:'translateY(-8px)'},{transform:'translateY(0)'}],
+        {duration:500,iterations:1}
+      );
+
+      // Pre-fetch next AI question in background
+      setTimeout(prefetchAIQuestion, 800);
     }
 
-    // Select an option
-    function selectOption(index, element) {
-      // Remove selected class from all options
-      document.querySelectorAll('.option').forEach(opt => {
-        opt.classList.remove('selected');
-      });
-      
-      // Add selected class to clicked option
-      element.classList.add('selected');
-      selectedOption = index;
-      submitBtn.disabled = false;
+    async function loadQuestion() {
+      const pool = filteredPool().filter(q => !usedIds.includes(q.q));
+
+      // ── Still have static questions ──
+      if (pool.length > 0) {
+        currentQ = pool[Math.floor(Math.random() * pool.length)];
+        usedIds.push(currentQ.q);
+        localStorage.setItem('usedIds', JSON.stringify(usedIds));
+        renderQuestion(currentQ);
+        return;
+      }
+
+      // ── All static done — check AI buffer first ──
+      if (aiQueuedQuestions.length > 0) {
+        currentQ = aiQueuedQuestions.shift();
+        aiGenCount++;
+        updateAICounter();
+        renderQuestion(currentQ);
+        return;
+      }
+
+      // ── Show completion if first time exhausting static pool ──
+      if (aiGenCount === 0 && !isFetchingAI) {
+        const total = filteredPool().length;
+        showCompletionUI(total);
+        return;
+      }
+
+      // ── Generate live via AI ──
+      const topicLabel = activeTopic ? activeTopic.name : 'General CS';
+      showLoadingUI(topicLabel);
+      try {
+        currentQ = await generateAIQuestion(activeTopic, activeLevel);
+        aiGenCount++;
+        updateAICounter();
+        renderQuestion(currentQ);
+      } catch(err) {
+        showQuestionUI(true);
+        // Fallback: reset static pool
+        usedIds = [];
+        localStorage.setItem('usedIds', '[]');
+        showToast('AI error — restarting static questions', 'warn');
+        loadQuestion();
+      }
     }
 
-    // Submit answer
+    function updateAICounter() {
+      const el = document.getElementById('stat-topic');
+      if (activeTopic) el.textContent = activeTopic.name;
+      // Update session stats sidebar
+      document.getElementById('stat-attempted').textContent = todayTotal;
+    }
+
+    function pickOption(i, el) {
+      document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedOpt = i;
+      document.getElementById('submit-btn').disabled = false;
+    }
+
     function submitAnswer() {
-      if (selectedOption === null) return;
-      
-      const options = document.querySelectorAll('.option');
-      const correctIndex = currentQuestion.correctAnswer;
-      
-      // Mark correct and incorrect answers
-      options.forEach((option, index) => {
-        if (index === correctIndex) {
-          option.classList.add('correct');
-        } else if (index === selectedOption && index !== correctIndex) {
-          option.classList.add('incorrect');
-        }
+      if (selectedOpt === null) return;
+      const opts = document.querySelectorAll('.option');
+      opts.forEach((o, i) => {
+        if (i === currentQ.ans) o.classList.add('correct');
+        else if (i === selectedOpt) o.classList.add('incorrect');
       });
-      
-      // Show explanation
-      explanationText.textContent = currentQuestion.explanation;
-      explanationSection.classList.add('show');
-      
-      // Update stats
-      questionsAnsweredToday++;
-      localStorage.setItem('questionsAnsweredToday', questionsAnsweredToday);
-      
-      if (selectedOption === correctIndex) {
-        correctAnswersToday++;
-        localStorage.setItem('correctAnswersToday', correctAnswersToday);
-        showToast('Correct! Well done! 🎉', 'success');
-        
-        // Update streak if this is the first correct answer today
-        if (correctAnswersToday === 1) {
-          updateStreak();
+      // disable further clicking
+      opts.forEach(o => o.style.pointerEvents = 'none');
+
+      document.getElementById('explanation-text').textContent = currentQ.exp;
+      document.getElementById('explanation-section').classList.add('show');
+
+      todayTotal++;
+      localStorage.setItem('todayTotal', todayTotal);
+      const correct = selectedOpt === currentQ.ans;
+
+      if (correct) {
+        todayCorrect++;
+        localStorage.setItem('todayCorrect', todayCorrect);
+        showToast('Correct! 🎉', 'success');
+        // streak update
+        const lastDate = localStorage.getItem('lastStreakDate');
+        if (lastDate !== today) {
+          streak++; localStorage.setItem('challengeStreak', streak);
+          localStorage.setItem('lastStreakDate', today);
         }
       } else {
-        showToast('Incorrect. Try again! 💪', 'error');
+        showToast('Incorrect — review the explanation 💪', 'error');
       }
-      
-      updateProgress();
-      
-      // Update UI
-      submitBtn.style.display = 'none';
-      nextBtn.style.display = 'block';
+
+      updateUI();
+      document.getElementById('submit-btn').style.display = 'none';
+      document.getElementById('next-btn').style.display = 'block';
+
+      // Pre-fetch next AI question silently in background
+      setTimeout(prefetchAIQuestion, 1200);
     }
 
-    // Update streak
-    function updateStreak() {
-      const today = new Date().toDateString();
-      const lastStreakDate = localStorage.getItem('lastStreakDate');
-      
-      if (lastStreakDate !== today) {
-        streak++;
-        localStorage.setItem('challengeStreak', streak);
-        localStorage.setItem('lastStreakDate', today);
-        updateStreakDisplay();
+    function updateUI() {
+      document.getElementById('streak-count').textContent   = streak;
+      document.getElementById('today-correct').textContent  = todayCorrect;
+      document.getElementById('stat-attempted').textContent = todayTotal;
+      document.getElementById('stat-correct').textContent   = todayCorrect;
+      const acc = todayTotal > 0 ? Math.round((todayCorrect/todayTotal)*100) : 0;
+      document.getElementById('progress-fill').style.width  = acc + '%';
+      document.getElementById('progress-text').textContent  = `${todayTotal} question${todayTotal!==1?'s':''} done`;
+      document.getElementById('accuracy-text').textContent  = acc + '%';
+      document.getElementById('stat-accuracy').textContent  = todayTotal > 0 ? acc + '%' : '—';
+      document.getElementById('stat-ai').textContent = aiGenCount + ' ✨';
+    }
+
+    function showToast(msg, type='success') {
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.innerHTML = `<i class="fas fa-${type==='error'?'times':type==='warn'?'exclamation':'check'}"></i> <span>${msg}</span>`;
+      document.body.appendChild(t);
+      setTimeout(() => t.classList.add('show'), 80);
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3200);
+    }
+
+    function go(page) { window.location.href = page; }
+
+    // ─── Event Wiring ───────────────────────────────────────
+    document.getElementById('submit-btn').addEventListener('click', submitAnswer);
+    document.getElementById('next-btn').addEventListener('click', loadQuestion);
+    document.getElementById('new-challenge-btn').addEventListener('click', () => { usedIds=[]; loadQuestion(); });
+    document.getElementById('ai-gen-start-btn').addEventListener('click', async () => {
+      const topicLabel = activeTopic ? activeTopic.name : 'General CS';
+      showLoadingUI(topicLabel);
+      try {
+        currentQ = await generateAIQuestion(activeTopic, activeLevel);
+        aiGenCount++;
+        renderQuestion(currentQ);
+      } catch(e) {
+        usedIds=[]; loadQuestion();
+        showToast('AI unavailable — restarting static questions','warn');
       }
-    }
+    });
 
-    // Update streak display
-    function updateStreakDisplay() {
-      streakCount.textContent = streak;
-      
-      // Add animation for streak increase
-      if (streak > 0) {
-        streakCount.style.animation = 'none';
-        setTimeout(() => {
-          streakCount.style.animation = 'pulse 0.5s ease';
-        }, 10);
-      }
-    }
-
-    // Update progress display
-    function updateProgress() {
-      const accuracy = questionsAnsweredToday > 0 
-        ? Math.round((correctAnswersToday / questionsAnsweredToday) * 100) 
-        : 0;
-        
-      progressFill.style.width = `${accuracy}%`;
-      progressText.textContent = `${questionsAnsweredToday} Questions Today`;
-      completionRate.textContent = `${accuracy}% Accuracy`;
-    }
-
-    // Show toast notification
-    function showToast(message, type = 'success') {
-      const toast = document.createElement('div');
-      toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-      toast.innerHTML = `
-        <i class="fas fa-${type === 'error' ? 'times' : 'check'}"></i>
-        <span>${message}</span>
-      `;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.add('show');
-      }, 100);
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-          document.body.removeChild(toast);
-        }, 300);
-      }, 3000);
-    }
-
-    // Check if it's a new day
-    function checkNewDay() {
-      const today = new Date().toDateString();
-      const lastVisitDate = localStorage.getItem('lastVisitDate');
-      
-      if (lastVisitDate !== today) {
-        // Reset daily counters
-        questionsAnsweredToday = 0;
-        correctAnswersToday = 0;
-        usedQuestionIds = [];
-        
-        localStorage.setItem('questionsAnsweredToday', 0);
-        localStorage.setItem('correctAnswersToday', 0);
-        localStorage.setItem('usedQuestionIds', JSON.stringify([]));
-        localStorage.setItem('lastVisitDate', today);
-      }
-    }
-
-    // Animate robot
-    function animateRobot() {
-      robotShell.animate([
-        { transform: 'translateY(0)' },
-        { transform: 'translateY(-6px)' },
-        { transform: 'translateY(0)' }
-      ], {
-        duration: 500,
-        iterations: 1
+    document.querySelectorAll('.level-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.level-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeLevel = btn.dataset.level;
+        usedIds = [];
+        loadQuestion();
       });
-    }
+    });
 
-    // Go to page function
-    function go(page) {
-      window.location.href = page;
-    }
-
-    // Event listeners
-    newChallengeBtn.addEventListener('click', loadRandomQuestion);
-    submitBtn.addEventListener('click', submitAnswer);
-    nextBtn.addEventListener('click', loadRandomQuestion);
-
-    // Initialize the page
-    checkNewDay();
-    init();
+    // ─── Init ────────────────────────────────────────────────
+    updateUI();
+    loadQuestion();
   </script>
 </body>
 </html>

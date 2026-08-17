@@ -246,6 +246,177 @@
       .nav-center{display:none}
       footer{padding:24px 20px;flex-direction:column;text-align:center}
     }
+
+
+
+
+
+    
+    /* ────────────────────────────────────────────────────────────
+       TOUR OVERLAY + MODAL
+       Paste the <style> block into your existing index.html <style>
+    ──────────────────────────────────────────────────────────── */
+ 
+    /* Dark backdrop — page still visible behind */
+    #tourOverlay {
+      position: fixed; inset: 0; z-index: 800;
+      background: rgba(4, 4, 8, 0.72);
+      backdrop-filter: blur(3px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: fadeOv .3s ease;
+    }
+    @keyframes fadeOv { from{opacity:0} to{opacity:1} }
+    #tourOverlay.hidden { display: none; }
+ 
+    /* Modal card */
+    .tour-card {
+      background: #0d0f14;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(124,92,255,0.08);
+      overflow: hidden;
+      animation: cardPop .35s cubic-bezier(.2,.9,.3,1);
+      position: relative;
+    }
+    @keyframes cardPop { from{transform:scale(.92) translateY(16px);opacity:0} to{transform:none;opacity:1} }
+ 
+    /* Coloured accent strip at the top of each slide */
+    .tour-strip {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: background .4s;
+    }
+ 
+    /* Top bar: label + close button */
+    .tour-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 0;
+    }
+    .tour-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .tour-close {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); font-size: 0.78rem;
+      transition: all .2s;
+    }
+    .tour-close:hover { background: rgba(255,92,141,0.15); color: var(--danger); border-color: rgba(255,92,141,0.3); }
+ 
+    /* Icon area */
+    .tour-icon-wrap {
+      display: flex; justify-content: center;
+      padding: 28px 20px 16px;
+    }
+    .tour-icon {
+      width: 76px; height: 76px; border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+      animation: iconBounce .5s cubic-bezier(.2,.9,.3,1);
+      position: relative;
+    }
+    @keyframes iconBounce { from{transform:scale(.7) translateY(10px);opacity:0} to{transform:none;opacity:1} }
+    .tour-icon::after {
+      content:''; position:absolute; inset:-6px; border-radius:28px;
+      border:1px solid rgba(255,255,255,0.07);
+    }
+ 
+    /* Body text */
+    .tour-body { padding: 0 28px 20px; text-align: center; }
+    .tour-title {
+      font-family:'Montserrat'; font-size:1.3rem; font-weight:800;
+      color:#fff; margin-bottom:10px; line-height:1.25;
+    }
+    .tour-desc {
+      font-size:0.84rem; color:var(--muted); line-height:1.7;
+      margin-bottom:20px;
+    }
+ 
+    /* Feature bullets */
+    .tour-bullets { display:flex; flex-direction:column; gap:9px; margin-bottom:22px; text-align:left; }
+    .tour-bullet {
+      display:flex; align-items:flex-start; gap:11px;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);
+      border-radius:10px; padding:10px 13px;
+    }
+    .tour-bullet-icon {
+      width:28px; height:28px; border-radius:8px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.75rem; margin-top:1px;
+    }
+    .tour-bullet-text { font-size:0.81rem; color:#c8d4e8; line-height:1.5; }
+    .tour-bullet-text strong { color:#fff; display:block; font-size:0.83rem; margin-bottom:1px; }
+ 
+    /* Dots */
+    .tour-dots {
+      display:flex; justify-content:center; gap:7px;
+      margin-bottom:20px;
+    }
+    .tour-dot {
+      height:6px; border-radius:3px; background:rgba(255,255,255,0.12);
+      cursor:pointer; transition:all .3s;
+    }
+    .tour-dot.active { background:var(--accent); }
+ 
+    /* Navigation buttons */
+    .tour-nav {
+      display:flex; gap:10px; padding:0 20px 22px;
+    }
+    .tour-btn {
+      flex:1; padding:11px; border-radius:11px; border:none;
+      font-family:'Poppins'; font-weight:600; font-size:0.84rem;
+      cursor:pointer; transition:all .22s; display:flex;
+      align-items:center; justify-content:center; gap:7px;
+    }
+    .tour-btn.prev {
+      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07);
+      color:var(--muted); flex:0 0 44px; padding:11px 0;
+    }
+    .tour-btn.prev:hover { background:rgba(255,255,255,0.09); color:#fff; }
+    .tour-btn.prev:disabled { opacity:0.3; cursor:not-allowed; }
+    .tour-btn.next {
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#071022;
+    }
+    .tour-btn.next:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(124,92,255,0.4); }
+    .tour-btn.skip {
+      background:transparent; border:1px solid rgba(255,255,255,0.07);
+      color:var(--muted); flex:1;
+    }
+    .tour-btn.skip:hover { color:#fff; border-color:rgba(255,255,255,0.15); }
+ 
+    /* "Don't show again" checkbox */
+    .tour-footer {
+      padding:0 20px 18px;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      font-size:0.75rem; color:var(--muted);
+    }
+    .tour-footer input[type=checkbox] { accent-color:var(--accent); width:14px; height:14px; cursor:pointer; }
+    .tour-footer label { cursor:pointer; }
+    .tour-footer label:hover { color:#e6eef8; }
+ 
+    /* Trigger button (floating, visible on the page) */
+    .tour-trigger-btn {
+      position: fixed; bottom: 28px; right: 28px; z-index: 700;
+      display: flex; align-items: center; gap: 9px;
+      padding: 11px 20px; border-radius: 14px; border: none;
+      background: linear-gradient(90deg,var(--accent),var(--accent2));
+      color: #071022; font-family:'Poppins'; font-weight:700; font-size:0.83rem;
+      cursor:pointer; box-shadow:0 8px 28px rgba(124,92,255,0.45);
+      transition:all .25s;
+    }
+    .tour-trigger-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(124,92,255,0.55); }
+    .tour-trigger-btn i { font-size:0.85rem; }
+ 
+    /* Slide-change animation */
+    .tour-body.anim  { animation: slideIn .28s cubic-bezier(.2,.9,.3,1); }
+    @keyframes slideIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:none} }
   </style>
 </head>
 <body>
@@ -266,11 +437,16 @@
   <!-- ══ NAVBAR ════════════════════════════════════════════════ -->
   <nav id="navbar">
     <a class="nav-logo" href="index.html">
-      <i class="fas fa-book-open"></i><span>Student Notes Hub</span>
+      <i class="fas fa-book-open"></i><span>Astra AI
+Powered by Career Twin™</span>
     </a>
     <div class="nav-center">
-      <a class="nav-item" href="#tools">Tools</a>
-      <a class="nav-item" href="#features">Features</a>
+
+      
+      <a class="nav-item" href="#tools">🚀 Astra AI
+The Operating System for Modern Students</a>
+      <!-- <a class="nav-item" href="#features">Features</a> -->
+
     </div>
     <div class="nav-right">
       <!-- Notification bell (logged-in only) -->
@@ -357,7 +533,7 @@
             <div class="welcome-sub"  id="welcomeSub">Ready to learn something new today?</div>
 
             <div class="stat-pills">
-              <div class="stat-pill"><i class="fas fa-fire" style="color:var(--warning)"></i><strong id="spStreak">0</strong><span>day streak</span></div>
+              <div class="stat-pill"><i class="fas fa-fire" style="color:var(--warning)"></i><strong id="spStreak"></strong><span>day streak</span></div>
               <div class="stat-pill"><i class="fas fa-sticky-note"></i><strong id="spNotes">0</strong><span>notes</span></div>
               <div class="stat-pill"><i class="fas fa-robot"></i><strong id="spAI">0</strong><span>AI chats</span></div>
               <div class="stat-pill"><i class="fas fa-code"></i><strong id="spCode">0</strong><span>code runs</span></div>
@@ -386,6 +562,23 @@
         <div class="sec-sub" id="toolsSub">6 AI-powered tools</div>
       </div>
       <div class="actions" role="toolbar" aria-label="Main tools">
+
+        <div class="action-btn" id="btn-career-twin" onclick="toolClick('career-twin.html',true)">
+  <div class="lock-tag"><i class="fas fa-lock"></i>Login required</div>
+  <i class="fas fa-dna"></i>
+  <div><div class="label">Career Twin</div><div class="desc">AI-mapped skills, gaps &amp; roadmap</div></div>
+</div>
+
+<div class="action-btn" id="btn-interview" onclick="toolClick('interview.html',true)">
+  <div class="lock-tag"><i class="fas fa-lock"></i>Login required</div>
+  <i class="fas fa-comments"></i>
+  <div><div class="label">AI Mock Interview</div><div class="desc">Practice with instant feedback</div></div>
+</div>
+<div class="action-btn" id="btn-interview" onclick="toolClick('voice-coach.html',true)">
+  <div class="lock-tag"><i class="fas fa-lock"></i>Login required</div>
+  <i class="fas fa-comments"></i>
+  <div><div class="label">AI voice communication practice</div><div class="desc">Practice with Ai for imporve communication skills and instant feedback</div></div>
+</div>
 
         <div class="action-btn" id="btn-assistant" onclick="toolClick('assistant.html',true)">
           <div class="lock-tag"><i class="fas fa-lock"></i>Login required</div>
@@ -455,9 +648,9 @@
 
     <!-- STATS COUNTER BAR -->
     <div class="stats-bar">
-      <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="10000">0</span>+</div><div class="stats-lbl">Notes Generated</div></div>
-      <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="5000">0</span>+</div><div class="stats-lbl">Students Using</div></div>
-      <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="50000">0</span>+</div><div class="stats-lbl">AI Conversations</div></div>
+      <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="80">0</span>+</div><div class="stats-lbl">Notes Generated</div></div>
+      <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="20">0</span>+</div><div class="stats-lbl">Students Using</div></div>
+      <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="120">0</span>+</div><div class="stats-lbl">AI Conversations</div></div>
       <div class="stats-bar-item"><div class="stats-num"><span class="grad" data-target="100">0</span>%</div><div class="stats-lbl">Free Forever</div></div>
     </div>
 
@@ -465,7 +658,8 @@
 
   <!-- FOOTER -->
   <footer>
-    <div class="foot-logo"><i class="fas fa-book-open"></i><span>Student Notes Hub</span></div>
+    <div class="foot-logo"><i class="fas fa-book-open"></i><span>© 2026 Astra AI
+Career Intelligence powered by Career Twin™</span></div>
     <div class="foot-links">
       <a class="foot-link" href="#tools">Tools</a>
       <a class="foot-link" href="#features">Features</a>
@@ -473,7 +667,8 @@
       <a class="foot-link" onclick="toolClick('notes.html',true)">Notes</a>
       <a class="foot-link" onclick="toolClick('resume.html',true)">Resume</a>
     </div>
-    <div class="foot-copy">© 2025 Student Notes Hub · Built for students ❤️</div>
+    <div class="foot-copy">© 2026 Astra AI
+Founded and engineered by Sumit Kumar</div>
   </footer>
 
   <!-- LOGIN PROMPT MODAL -->
@@ -508,9 +703,282 @@
     </div>
   </div>
 
+   <div id="tourOverlay">
+    <div class="tour-card" id="tourCard">
+ 
+      <!-- Colour strip -->
+      <div class="tour-strip" id="tourStrip"></div>
+ 
+      <!-- Top bar -->
+      <div class="tour-topbar">
+        <span class="tour-label">Platform Tour</span>
+        <button class="tour-close" onclick="closeTour()" aria-label="Close tour">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+ 
+      <!-- Icon -->
+      <div class="tour-icon-wrap">
+        <div class="tour-icon" id="tourIcon"></div>
+      </div>
+ 
+      <!-- Body -->
+      <div class="tour-body" id="tourBody">
+        <div class="tour-title"  id="tourTitle"></div>
+        <div class="tour-desc"   id="tourDesc"></div>
+        <div class="tour-bullets" id="tourBullets"></div>
+      </div>
+ 
+      <!-- Dots -->
+      <div class="tour-dots" id="tourDots"></div>
+ 
+      <!-- Nav -->
+      <div class="tour-nav">
+        <button class="tour-btn prev" id="tourPrev" onclick="tourStep(-1)" aria-label="Previous">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="tour-btn next" id="tourNext" onclick="tourStep(1)">
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="tour-btn skip" onclick="closeTour()">
+          Skip <i class="fas fa-forward"></i>
+        </button>
+      </div>
+ 
+      <!-- Don't show again -->
+      <div class="tour-footer">
+        <input type="checkbox" id="dontShow" onchange="handleDontShow(this)">
+        <label for="dontShow">Don't show this again</label>
+      </div>
+ 
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script>
+
+
+
+
+ 
+    /* ── TOUR SLIDE DATA ───────────────────────────────────── */
+    const TOUR_SLIDES = [
+      {
+        icon: '🧬',
+        iconGrad: 'linear-gradient(135deg,#7c5cff,#2dd4bf)',
+        strip:    'linear-gradient(90deg,#7c5cff,#2dd4bf)',
+        title: 'Career Twin',
+        desc:  'Your AI career mirror — maps your skills against real job descriptions and builds a personalised roadmap to your dream role.',
+        bullets: [
+          { icon:'fas fa-map-signs', color:'rgba(124,92,255,0.2)', icolor:'#7c5cff', title:'Skill Gap Analysis', text:'See exactly what you are missing for any role' },
+          { icon:'fas fa-road',      color:'rgba(0,180,255,0.2)',  icolor:'#00b4ff', title:'Learning Roadmap',  text:'Step-by-step plan generated by AI' },
+          { icon:'fas fa-bullseye',  color:'rgba(0,217,166,0.2)', icolor:'#00d9a6', title:'Role-Fit Score',    text:'Percentage match with actionable tips' },
+        ],
+      },
+      {
+        icon: '🎤',
+        iconGrad: 'linear-gradient(135deg,#00b4ff,#7c5cff)',
+        strip:    'linear-gradient(90deg,#00b4ff,#7c5cff)',
+        title: 'AI Mock Interview',
+        desc:  'Sit in a real-feeling interview with Claude AI. Answer questions by voice or text, and receive honest scores with model answers.',
+        bullets: [
+          { icon:'fas fa-microphone-alt', color:'rgba(0,180,255,0.2)',  icolor:'#00b4ff', title:'Voice-Based',    text:'Speak your answers just like a real interview' },
+          { icon:'fas fa-star',           color:'rgba(124,92,255,0.2)', icolor:'#7c5cff', title:'Instant Scoring', text:'Clarity, depth & accuracy rated after each answer' },
+          { icon:'fas fa-lightbulb',      color:'rgba(255,184,77,0.2)', icolor:'#ffb84d', title:'Model Answers',   text:'See the ideal response after every question' },
+        ],
+      },
+      {
+        icon: '🗣️',
+        iconGrad: 'linear-gradient(135deg,#00d9a6,#00b4ff)',
+        strip:    'linear-gradient(90deg,#00d9a6,#00b4ff)',
+        title: 'Voice Communication Practice',
+        desc:  'Build confidence in spoken English. AI listens, detects filler words, measures pacing, and gives instant communication feedback.',
+        bullets: [
+          { icon:'fas fa-waveform-path', color:'rgba(0,217,166,0.2)', icolor:'#00d9a6', title:'Filler Detection', text:'Catch "um", "uh", "like" in real time' },
+          { icon:'fas fa-chart-line',    color:'rgba(0,180,255,0.2)', icolor:'#00b4ff', title:'Confidence Score', text:'Session-by-session improvement tracking' },
+          { icon:'fas fa-redo',          color:'rgba(124,92,255,0.2)',icolor:'#7c5cff', title:'Scenario Practice', text:'Presentations, GDs, HR rounds & more' },
+        ],
+      },
+      {
+        icon: '🤖',
+        iconGrad: 'linear-gradient(135deg,#7c5cff,#ff5c8d)',
+        strip:    'linear-gradient(90deg,#7c5cff,#ff5c8d)',
+        title: 'AI Assistant — Astra',
+        desc:  'Your always-on AI tutor. Ask anything by voice or text. Get structured answers, code solutions, essay help, and quick summaries.',
+        bullets: [
+          { icon:'fas fa-microphone',  color:'rgba(124,92,255,0.2)', icolor:'#7c5cff', title:'Voice + TTS',     text:'Speak in, hear Astra speak back' },
+          { icon:'fas fa-history',     color:'rgba(0,180,255,0.2)',  icolor:'#00b4ff', title:'Memory',         text:'Full multi-turn conversation context' },
+          { icon:'fas fa-sliders-h',   color:'rgba(255,92,141,0.2)', icolor:'#ff5c8d', title:'5 Personalities', text:'Friendly, professional, enthusiastic & more' },
+        ],
+      },
+      {
+        icon: '📝',
+        iconGrad: 'linear-gradient(135deg,#ffb84d,#7c5cff)',
+        strip:    'linear-gradient(90deg,#ffb84d,#7c5cff)',
+        title: 'AI Notes Generator',
+        desc:  'Type any topic, pick a style, get comprehensive study notes in seconds. Download as PDF, Markdown, or HTML instantly.',
+        bullets: [
+          { icon:'fas fa-magic',    color:'rgba(255,184,77,0.2)', icolor:'#ffb84d', title:'5 Note Styles',  text:'Detailed, Concise, Exam Prep, Beginner, Visual' },
+          { icon:'fas fa-download', color:'rgba(0,217,166,0.2)', icolor:'#00d9a6', title:'4 Formats',      text:'PDF, Markdown, HTML or plain text' },
+          { icon:'fas fa-star',     color:'rgba(124,92,255,0.2)',icolor:'#7c5cff', title:'Save & Search',  text:'Favourite and search your notes locally' },
+        ],
+      },
+      {
+        icon: '📄',
+        iconGrad: 'linear-gradient(135deg,#00d9a6,#00b4ff)',
+        strip:    'linear-gradient(90deg,#00d9a6,#00b4ff)',
+        title: 'Resume Builder',
+        desc:  'Build a job-winning resume with a live split-screen preview. AI improves your bullet points and exports a clean ATS-ready PDF.',
+        bullets: [
+          { icon:'fas fa-eye',         color:'rgba(0,217,166,0.2)', icolor:'#00d9a6', title:'Live Preview',    text:'See the PDF update as you type' },
+          { icon:'fas fa-robot',       color:'rgba(0,180,255,0.2)', icolor:'#00b4ff', title:'AI Enhancer',    text:'One-click bullet point improvement' },
+          { icon:'fas fa-file-export', color:'rgba(124,92,255,0.2)',icolor:'#7c5cff', title:'ATS Export',     text:'Clean, recruiter-friendly PDF output' },
+        ],
+      },
+      {
+        icon: '💻',
+        iconGrad: 'linear-gradient(135deg,#00b4ff,#2dd4bf)',
+        strip:    'linear-gradient(90deg,#00b4ff,#2dd4bf)',
+        title: 'Code Playground',
+        desc:  'Write and run real code in your browser — no setup. Supports Python, Java, C++, JS and more. Get AI debugging help instantly.',
+        bullets: [
+          { icon:'fas fa-play',    color:'rgba(0,180,255,0.2)',  icolor:'#00b4ff', title:'10+ Languages', text:'Python, Java, C++, JavaScript & more' },
+          { icon:'fas fa-bug',     color:'rgba(0,217,166,0.2)', icolor:'#00d9a6', title:'AI Debugger',  text:'Paste error → get the fix instantly' },
+          { icon:'fas fa-terminal',color:'rgba(124,92,255,0.2)',icolor:'#7c5cff', title:'Monaco Editor', text:'Syntax highlighting & auto-complete' },
+        ],
+      },
+      {
+        icon: '⚡',
+        iconGrad: 'linear-gradient(135deg,#ff5c8d,#7c5cff)',
+        strip:    'linear-gradient(90deg,#ff5c8d,#ffb84d)',
+        title: 'Daily Challenge',
+        desc:  'Build daily study habits with curated MCQ challenges. Filter by topic and difficulty. AI generates unlimited fresh questions when you run out.',
+        bullets: [
+          { icon:'fas fa-fire',     color:'rgba(255,92,141,0.2)', icolor:'#ff5c8d', title:'Streak Tracking', text:'Daily habit building with fire streaks' },
+          { icon:'fas fa-infinity', color:'rgba(124,92,255,0.2)', icolor:'#7c5cff', title:'AI Questions',    text:'Unlimited fresh questions generated on demand' },
+          { icon:'fas fa-filter',   color:'rgba(255,184,77,0.2)', icolor:'#ffb84d', title:'10 Topics',       text:'Filter by Easy / Medium / Hard per topic' },
+        ],
+      },
+      {
+        icon: '🎓',
+        iconGrad: 'linear-gradient(135deg,#ffb84d,#00d9a6)',
+        strip:    'linear-gradient(90deg,#ffb84d,#00d9a6)',
+        title: 'Study Material Library',
+        desc:  'A curated library of semester-wise notes and PYQs for B.Tech, BCA, BBA, MCA, MBA, B.Pharm and Diploma — all in one place.',
+        bullets: [
+          { icon:'fas fa-graduation-cap', color:'rgba(255,184,77,0.2)', icolor:'#ffb84d', title:'7 Courses',        text:'B.Tech, BCA, BBA, MCA, MBA, B.Pharm, Diploma' },
+          { icon:'fas fa-book',           color:'rgba(0,217,166,0.2)',  icolor:'#00d9a6', title:'Semester-wise',    text:'Notes and PYQs organised per semester' },
+          { icon:'fas fa-search',         color:'rgba(0,180,255,0.2)',  icolor:'#00b4ff', title:'Quick Search',     text:'Find any subject instantly by name' },
+        ],
+      },
+    ];
+ 
+    let tourIndex = 0;
+ 
+    /* ── Render a slide ─────────────────────────────────────── */
+    function renderTourSlide(idx, direction = 1) {
+      const s  = TOUR_SLIDES[idx];
+      const n  = TOUR_SLIDES.length;
+ 
+      // Strip colour
+      document.getElementById('tourStrip').style.background = s.strip;
+ 
+      // Icon
+      const icon = document.getElementById('tourIcon');
+      icon.textContent = s.icon;
+      icon.style.background = s.iconGrad;
+      // re-trigger animation
+      icon.style.animation = 'none';
+      void icon.offsetWidth;
+      icon.style.animation = '';
+ 
+      // Body with slide-in animation
+      const body = document.getElementById('tourBody');
+      body.classList.remove('anim');
+      void body.offsetWidth;
+      body.classList.add('anim');
+ 
+      document.getElementById('tourTitle').textContent   = s.title;
+      document.getElementById('tourDesc').textContent    = s.desc;
+ 
+      // Bullets
+      document.getElementById('tourBullets').innerHTML = s.bullets.map(b => `
+        <div class="tour-bullet">
+          <div class="tour-bullet-icon" style="background:${b.color};color:${b.icolor}">
+            <i class="${b.icon}"></i>
+          </div>
+          <div class="tour-bullet-text">
+            <strong>${b.title}</strong>${b.text}
+          </div>
+        </div>`).join('');
+ 
+      // Dots
+      document.getElementById('tourDots').innerHTML = TOUR_SLIDES.map((_, i) => `
+        <div class="tour-dot ${i===idx?'active':''}"
+             style="width:${i===idx?'22px':'6px'}"
+             onclick="goToTourSlide(${i})"></div>`).join('');
+ 
+      // Buttons
+      document.getElementById('tourPrev').disabled = (idx === 0);
+      const nextBtn = document.getElementById('tourNext');
+      if (idx === n - 1) {
+        nextBtn.innerHTML = '<i class="fas fa-check"></i> Get Started';
+        nextBtn.onclick   = () => closeTour();
+      } else {
+        nextBtn.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
+        nextBtn.onclick   = () => tourStep(1);
+      }
+    }
+ 
+    function tourStep(delta) {
+      const next = tourIndex + delta;
+      if (next < 0 || next >= TOUR_SLIDES.length) return;
+      tourIndex = next;
+      renderTourSlide(tourIndex, delta);
+    }
+ 
+    function goToTourSlide(idx) {
+      tourIndex = idx;
+      renderTourSlide(idx);
+    }
+ 
+    function openTour() {
+      tourIndex = 0;
+      document.getElementById('tourOverlay').classList.remove('hidden');
+      renderTourSlide(0);
+    }
+ 
+    function closeTour() {
+      document.getElementById('tourOverlay').classList.add('hidden');
+    }
+ 
+    function handleDontShow(cb) {
+      if (cb.checked) localStorage.setItem('astraTourSeen', '1');
+      else            localStorage.removeItem('astraTourSeen');
+    }
+ 
+    /* ── Auto-show on first visit ──────────────────────────── */
+    if (!localStorage.getItem('astraTourSeen')) {
+      renderTourSlide(0);
+    } else {
+      document.getElementById('tourOverlay').classList.add('hidden');
+    }
+ 
+    /* ── Click outside modal to close ─────────────────────── */
+    document.getElementById('tourOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeTour();
+    });
+ 
+    /* ── Keyboard navigation ───────────────────────────────── */
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('tourOverlay').classList.contains('hidden')) return;
+      if (e.key === 'ArrowRight' || e.key === 'Enter') tourStep(1);
+      if (e.key === 'ArrowLeft')  tourStep(-1);
+      if (e.key === 'Escape')     closeTour();
+    });
+  
     /* ── PARTICLES (ORIGINAL unchanged) ─────────────────────── */
+
     const canvas = document.getElementById('particles');
     const ctx    = canvas.getContext('2d');
     function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
@@ -554,7 +1022,7 @@
       document.getElementById('heroGuest').style.display='block';
       document.getElementById('heroUser').style.display='none';
       // Mark auth-required tools as locked
-      ['btn-assistant','btn-notes','btn-resume','btn-code'].forEach(id=>{
+      ['btn-assistant','btn-notes','btn-resume','btn-code','btn-career-twin','btn-interview'].forEach(id=>{
         const el=document.getElementById(id);
         if(el)el.classList.add('locked');
       });
