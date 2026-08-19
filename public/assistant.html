@@ -359,76 +359,6 @@ Powered by Career Twin™</span>
   <script src="js/api.js"></script>
   <script>
 
-    let GEMINI_MODELS    = [];   // filled by discoverModels()
-    let activeModelIndex = 0;
-    let lastRequestTime  = 0;
-    const MIN_REQUEST_GAP_MS = 2200;
-
-    /* Priority keywords — models matching earlier entries rank higher */
-    const MODEL_PRIORITY = [
-      'gemini-2.0-flash',
-      'gemini-1.5-flash-8b',
-      'gemini-1.5-flash',
-      'gemini-2.0',
-      'gemini-1.5',
-      'gemini'
-    ];
-
-    function modelScore(name) {
-      for (let i = 0; i < MODEL_PRIORITY.length; i++) {
-        if (name.includes(MODEL_PRIORITY[i])) return i;
-      }
-      return MODEL_PRIORITY.length;
-    }
-
-    async function discoverModels() {
-      try {
-        setAiBadge('Connecting...', false);
-        const res  = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
-        );
-        if (!res.ok) {
-          const e = await res.json().catch(() => ({}));
-          throw new Error(e?.error?.message || `HTTP ${res.status}`);
-        }
-        const data = await res.json();
-
-        /* Keep only models that support generateContent & aren't embeddings */
-        GEMINI_MODELS = (data.models || [])
-          .filter(m =>
-            Array.isArray(m.supportedGenerationMethods) &&
-            m.supportedGenerationMethods.includes('generateContent') &&
-            !m.name.includes('embed') &&
-            !m.name.includes('aqa')
-          )
-          .map(m => m.name.replace('models/', ''))   // strip "models/" prefix
-          .sort((a, b) => modelScore(a) - modelScore(b));  // flash-first
-
-        if (GEMINI_MODELS.length === 0) throw new Error('No usable models found for this API key.');
-
-        console.log('✅ Available Gemini models:', GEMINI_MODELS);
-        document.getElementById('chatMeta').textContent = `● ${GEMINI_MODELS[0]}`;
-        setAiBadge('AI Ready', true);
-        setRobotStatus('Ready to help');
-
-      } catch(err) {
-        console.error('Model discovery failed:', err.message);
-        /* Hard fallback — try these short names; worst case callGemini will skip broken ones */
-        GEMINI_MODELS = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-2.0-flash-lite'];
-
-        if (err.message.includes('API_KEY') || err.message.includes('API key') || err.message.includes('invalid')) {
-          setAiBadge('Bad API Key', false);
-          addBubble('⚠️ **Invalid API key** — Open `assistant.html`, find `GEMINI_API_KEY` and paste your key from **aistudio.google.com/app/apikey**', 'bot', true);
-        } else {
-          setAiBadge('AI Ready', true);
-        }
-      }
-    }
-
-    function geminiEndpoint(model) {
-      return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
-    }
-
     /* ═══════════════════════════════════════════════════════════
        AUTH
     ═══════════════════════════════════════════════════════════ */
@@ -494,7 +424,7 @@ Powered by Career Twin™</span>
     let isListening = false;
     let isSending   = false;
     let recognition;
-    /* Gemini multi-turn history format:
+    /* Local chat history format (Gemini-style, kept for UI/context):
        [{ role:'user', parts:[{text:'...'}] }, { role:'model', parts:[{text:'...'}] }] */
     let chatHistory = [];
     let msgCount    = 0;
@@ -611,108 +541,34 @@ Powered by Career Twin™</span>
     }
 
     /* ═══════════════════════════════════════════════════════════
-       🚀  REAL GEMINI API CALL
-          • Tries each model in GEMINI_MODELS in order
-          • On quota/rate-limit → waits, then tries next model
-          • Rate-limit guard: enforces MIN_REQUEST_GAP_MS
+       🚀  REAL AI CALL — routed through backend (/api/ai/chat)
+          Backend (aiController.js) owns the Gemini API key and
+          model choice — nothing sensitive lives in this file.
     ═══════════════════════════════════════════════════════════ */
-    async function callGeminiWithModel(model, userMessage, isRetry = false) {
-      const emotionStyle = {
-        neutral:      'You are Astra, a helpful AI study assistant. Be clear, accurate, and concise.',
-        friendly:     'You are Astra, a warm and encouraging AI study assistant. Be friendly and supportive. Use occasional emojis.',
-        enthusiastic: 'You are Astra, an energetic AI study assistant! Be enthusiastic and motivating! Use emojis and exclamation marks!',
-        calm:         'You are Astra, a calm and patient AI study assistant. Be measured, gentle and thorough.',
-        professional: 'You are Astra, a professional AI study assistant. Be precise, formal, and well-structured.'
-      }[emotionPreset.value] || 'You are Astra, a helpful AI study assistant.';
-
-      const systemText = emotionStyle + ' You help students with academics, coding, essays, and any learning topic. Format responses in Markdown when useful.';
-
-      const body = {
-        system_instruction: { parts: [{ text: systemText }] },
-        contents: chatHistory.slice(-20),
-        generationConfig: { temperature: 0.8, topK: 40, topP: 0.95, maxOutputTokens: 2048 },
-        safetySettings: [
-          { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
-        ]
-      };
-
-      const response = await fetch(geminiEndpoint(model), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) {
-        const errData  = await response.json().catch(() => ({}));
-        const errMsg   = errData?.error?.message || `HTTP ${response.status}`;
-        const isKey    = errMsg.includes('API_KEY') || errMsg.includes('API key') || errMsg.includes('PERMISSION_DENIED');
-        const isSkip   = errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED')
-                      || errMsg.includes('not found') || errMsg.includes('not supported')
-                      || errMsg.includes('limit') || errMsg.includes('404');
-        if (isKey)  throw Object.assign(new Error(errMsg), { isKeyError: true });
-        if (isSkip) throw Object.assign(new Error(errMsg), { isSkip: true });
-        throw new Error(errMsg);
-      }
-
-      const data  = await response.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!reply) throw new Error('Empty response. Please try again.');
-      return reply;
-    }
-
     async function callGemini(userMessage) {
-      /* Wait if we sent a request too recently */
-      const now  = Date.now();
-      const wait = MIN_REQUEST_GAP_MS - (now - lastRequestTime);
-      if (wait > 0) await new Promise(r => setTimeout(r, wait));
-      lastRequestTime = Date.now();
-
-      /* Push user turn */
+      // Push user turn locally (kept for UI + local context building)
       chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
 
-      /* Try each model starting from activeModelIndex */
-      for (let i = activeModelIndex; i < GEMINI_MODELS.length; i++) {
-        const model = GEMINI_MODELS[i];
-        try {
-          if (i > activeModelIndex) {
-            setRobotStatus(`Trying ${model}... 🔄`);
-            setAiBadge(`Switching model...`, false);
-            await new Promise(r => setTimeout(r, 800));
-          }
+      // Backend expects history as [{ role, text }], not Gemini's {parts:[{text}]} shape
+      const historyForBackend = chatHistory
+        .slice(0, -1)   // exclude the turn we just pushed (backend adds it itself)
+        .slice(-20)      // keep last 20 turns of context
+        .map(m => ({ role: m.role, text: m.parts[0].text }));
 
-          const reply = await callGeminiWithModel(model, userMessage);
+      try {
+        const res = await API.chat({
+          message: userMessage,
+          history: historyForBackend
+        });
 
-          /* ✅ Success */
-          activeModelIndex = i;
-          document.getElementById('chatMeta').textContent = `● ${model}`;
-          chatHistory.push({ role: 'model', parts: [{ text: reply }] });
-          return reply;
+        chatHistory.push({ role: 'model', parts: [{ text: res.reply }] });
+        document.getElementById('chatMeta').textContent = '● Gemini (server)';
+        return res.reply;
 
-        } catch(err) {
-          /* Key error — stop immediately, no point trying other models */
-          if (err.isKeyError) { chatHistory.pop(); throw err; }
-
-          /* Model broken/quota — remove it from the list and try next */
-          if (err.isSkip) {
-            console.warn(`⚠️ Skipping model "${model}": ${err.message}`);
-            GEMINI_MODELS.splice(i, 1);   // remove this model permanently
-            i--;                           // recheck same index (now has next model)
-            activeModelIndex = Math.max(0, Math.min(activeModelIndex, GEMINI_MODELS.length - 1));
-            continue;
-          }
-
-          /* Other error on last model — give up */
-          if (i >= GEMINI_MODELS.length - 1) { chatHistory.pop(); throw err; }
-          console.warn(`Model ${model} error: ${err.message}`);
-        }
+      } catch (err) {
+        chatHistory.pop(); // remove the failed user turn so context stays clean
+        throw err;
       }
-
-      /* All models exhausted */
-      chatHistory.pop();
-      throw new Error('All available models are currently unavailable. Please wait a moment and try again.');
     }
 
     /* ═══════════════════════════════════════════════════════════
@@ -731,7 +587,7 @@ Powered by Career Twin™</span>
     ];
 
     /* ═══════════════════════════════════════════════════════════
-       respond() — shortcuts first, then real Gemini
+       respond() — shortcuts first, then real AI call
     ═══════════════════════════════════════════════════════════ */
     async function respond(query) {
       /* Canned shortcut check */
@@ -745,7 +601,7 @@ Powered by Career Twin™</span>
         }
       }
 
-      /* Real Gemini */
+      /* Real AI call */
       showTyping();
       setAiBadge('Thinking...', false);
       setRobotStatus('Thinking... 🧠');
@@ -763,24 +619,22 @@ Powered by Career Twin™</span>
 
       } catch(err) {
         hideTyping();
-        console.error('Gemini error:', err);
+        console.error('Assistant error:', err);
 
         let userMsg = '⚠️ ' + (err.message || 'Something went wrong. Please try again.');
 
-        if (err.isKeyError || err.message?.includes('API_KEY') || err.message?.includes('API key'))
-          userMsg = '⚠️ **Invalid API key** — Please check that a valid Gemini API key is set in the code. Get one free at **aistudio.google.com/app/apikey**.';
-        else if (err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED') || err.message?.includes('limit'))
-          userMsg = '⚠️ **All models quota-exceeded** — All free-tier models are rate-limited right now. Wait ~1 minute and try again, or upgrade your Gemini plan at **aistudio.google.com**.';
+        if (err.message?.includes('busy') || err.message?.includes('429'))
+          userMsg = '⚠️ **AI is busy** — Gemini free-tier rate limit hit. Please wait a moment and try again.';
+        else if (err.message?.includes('Session expired'))
+          userMsg = '⚠️ Your session expired — please log in again.';
         else if (err.message?.includes('SAFETY'))
           userMsg = '⚠️ That message was blocked by safety filters. Please rephrase your question.';
-        else if (err.message?.includes('fetch') || err.message?.includes('network') || err.message?.includes('Failed') || err.message?.includes('NetworkError'))
+        else if (err.message?.includes('network') || err.message?.includes('Failed') || err.message?.includes('NetworkError') || err.message?.includes('connect to server'))
           userMsg = '⚠️ **Network error** — Please check your internet connection and try again.';
 
         addBubble(userMsg, 'bot', true);
         setAiBadge('Error — retry', false);
         setRobotStatus('Error — please retry');
-        /* Reset model index so next attempt starts from scratch */
-        activeModelIndex = 0;
 
       } finally {
         sendBtn.disabled = false; isSending = false;
@@ -880,18 +734,21 @@ Powered by Career Twin™</span>
     }
 
     /* ═══════════════════════════════════════════════════════════
-       PAGE INIT — discover real models first, then greet user
+       PAGE INIT
     ═══════════════════════════════════════════════════════════ */
     (async () => {
-      /* Show welcome immediately (doesn't need AI) */
       addBubble(
         `Hi${user ? ', ' + user.name.split(' ')[0] : ''}! I am **Astra** — your AI study assistant. 🤖\n\nI can help you with:\n- **Explaining** any concept simply\n- **Answering** academic questions\n- **Coding** problems with working solutions\n- **Writing** essays and checking grammar\n- **Practice quizzes** on any topic\n\nTry **speaking** 🎙️ or typing below. Use \`summary: [text]\` to quickly summarize anything!`,
         'bot'
       );
       setTimeout(() => speak('Hi! I am Astra, your AI study assistant. You can speak or type your questions.'), 600);
 
-      /* Auto-detect which models actually work with this API key */
-      await discoverModels();
+      // AI runs server-side now, so we're ready immediately — no client-side
+      // model discovery needed (that used to hit Gemini directly with an
+      // exposed API key).
+      setAiBadge('AI Ready', true);
+      setRobotStatus('Ready to help');
+      document.getElementById('chatMeta').textContent = '● Gemini (server)';
     })();
 
     if (window.speechSynthesis) {
