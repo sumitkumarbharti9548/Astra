@@ -12,6 +12,14 @@ const Activity = require('../models/Activity');
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 
+// ── Helper: parse ADMIN_EMAILS env var into a clean lowercase array ──
+// Supports comma-separated list, e.g. "a@x.com, b@y.com,"
+const getAdminEmails = () =>
+  (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean);
+
 // ── FIXED: role field was missing — upload button needs it ────
 const sendTokenResponse = (user, statusCode, res) => {
   const token = generateToken(user._id);
@@ -37,9 +45,9 @@ exports.signup = async (req, res, next) => {
     if (await User.findOne({ email }))
       return res.status(400).json({ success: false, message: 'Email already registered' });
 
-    // Auto-assign admin role if email matches ADMIN_EMAIL in .env
-    const role = email.toLowerCase() === (process.env.ADMIN_EMAIL || '').toLowerCase()
-      ? 'admin' : 'student';
+    // Auto-assign admin role if email is in ADMIN_EMAILS (comma-separated list in .env)
+    const adminEmails = getAdminEmails();
+    const role = adminEmails.includes(email.toLowerCase()) ? 'admin' : 'student';
 
     const user = await User.create({ name, email, password, role });
 
@@ -69,13 +77,11 @@ exports.login = async (req, res, next) => {
     if (!user || !(await user.matchPassword(password)))
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
 
-    // ── FIXED: auto-promote if ADMIN_EMAIL matches but role wasn't set ──
-    if (
-      email.toLowerCase() === (process.env.ADMIN_EMAIL || '').toLowerCase() &&
-      user.role !== 'admin'
-    ) {
+    // ── FIXED: auto-promote if email is in ADMIN_EMAILS but role wasn't set ──
+    const adminEmails = getAdminEmails();
+    if (adminEmails.includes(email.toLowerCase()) && user.role !== 'admin') {
       user.role = 'admin';
-      console.log(`✅ Promoted ${email} to admin (matched ADMIN_EMAIL)`);
+      console.log(`✅ Promoted ${email} to admin (matched ADMIN_EMAILS)`);
     }
 
     // Update streak
